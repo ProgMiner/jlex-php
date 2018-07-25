@@ -1,5 +1,4 @@
-<?php # vim:ft=php
-include 'jlex.php';
+<?php
 include '../lemon/c.php';
 /* This is a lexer for the C language */
 
