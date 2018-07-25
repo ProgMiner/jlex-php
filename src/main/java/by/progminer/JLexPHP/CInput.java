@@ -60,9 +60,10 @@ class CInput {
     }
     
     /**
-     * Returns true on EOF, false otherwise.
      * Guarantees not to return a blank line, or a line
      * of zero length.
+     *
+     * @return true on EOF, false otherwise.
      */
     boolean getLine() throws IOException {
         int elem;
@@ -101,6 +102,8 @@ class CInput {
                 return EOF;
             }
             
+            // TODO Replace Unicode chars to \uXX sequences
+
             m_line = (lineStr + "\n").toCharArray();
             m_line_read = m_line.length;
             

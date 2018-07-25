@@ -8,8 +8,8 @@ import java.util.Vector;
 
 class CLexGen {
     
-    private java.io.Reader m_instream; /* JLex specification file. */
-    private java.io.PrintWriter m_outstream; /* Lexical analyzer source file. */
+    private Reader m_instream; /* JLex specification file. */
+    private PrintWriter m_outstream; /* Lexical analyzer source file. */
     
     private CInput m_input; /* Input buffer class. */
     
@@ -57,7 +57,7 @@ class CLexGen {
         
         try {
             // Open input stream.
-            m_instream = new java.io.FileReader(filename);
+            m_instream = new FileReader(filename);
         } catch (IOException e) {
             System.out.println("Error: Unable to open input file " + filename + ".");
             
