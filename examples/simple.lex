@@ -1,6 +1,4 @@
-<?php # vim:ft=php
-include 'jlex.php';
-
+<?php
 %%
 
 %{
