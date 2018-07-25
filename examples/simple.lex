@@ -20,34 +20,18 @@ WHITE_SPACE=([\ \n\r\t\f])+
 
 %%
 
-<YYINITIAL> {NUMBER} { 
-	  return $this->createToken();
-}
-<YYINITIAL> {WHITE_SPACE} { }
+<YYINITIAL> {NUMBER} { return $this->createToken(); }
+<YYINITIAL> {WHITE_SPACE} {}
 
-<YYINITIAL> "+" { 
-	  return $this->createToken();
-} 
-<YYINITIAL> "-" { 
-	  return $this->createToken();
-} 
-<YYINITIAL> "*" { 
-	  return $this->createToken();
-} 
-<YYINITIAL> "/" { 
-	  return $this->createToken();
-} 
-<YYINITIAL> ";" { 
-	  return $this->createToken();
-} 
-<YYINITIAL> "//" {
-	  $this->yybegin(self::COMMENTS);
-}
-<COMMENTS> [^\n] {
-}
-<COMMENTS> [\n] {
-	  $this->yybegin(self::YYINITIAL);
-}
-<YYINITIAL> . {
-	  throw new Exception("bah!");
-}
+<YYINITIAL> "+" { return $this->createToken(); }
+<YYINITIAL> "-" { return $this->createToken(); }
+<YYINITIAL> "*" { return $this->createToken(); }
+<YYINITIAL> "/" { return $this->createToken(); }
+
+<YYINITIAL> ";" { return $this->createToken(); }
+
+<YYINITIAL> "//" { $this->yybegin(self::COMMENTS); }
+<COMMENTS> [^\n] {}
+<COMMENTS> [\n] { $this->yybegin(self::YYINITIAL); }
+
+<YYINITIAL> . { throw new Exception("bah!"); }

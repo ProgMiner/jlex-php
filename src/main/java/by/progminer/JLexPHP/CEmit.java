@@ -165,7 +165,7 @@ class CEmit {
         
         // Internal
         m_outstream.println("\tconst YY_BOL = " + m_spec.BOL + ";");
-        m_outstream.println("\t$YY_EOF = " + m_spec.EOF + ";");
+        m_outstream.println("\tconst YY_EOF = " + m_spec.EOF + ";");
         
         // External
         if (m_spec.m_integer_type || m_spec.m_yyeof)
@@ -494,22 +494,17 @@ class CEmit {
         }
         
         emit_table();
+    
+        m_outstream.print("\tpublic function ");
         
-        if (m_spec.m_integer_type) {
-            m_outstream.print("\tpublic function ");
-            m_outstream.print(new String(m_spec.m_function_name));
-            m_outstream.println(" ()");
-        } else if (m_spec.m_intwrap_type) {
-            m_outstream.print("\tpublic function ");
-            m_outstream.print(new String(m_spec.m_function_name));
-            m_outstream.println(" ()");
-        } else {
-            m_outstream.print("\tpublic function /*");
+        if (!m_spec.m_integer_type && !m_spec.m_intwrap_type) {
+            m_outstream.print("/*");
             m_outstream.print(new String(m_spec.m_type_name));
             m_outstream.print("*/ ");
-            m_outstream.print(new String(m_spec.m_function_name));
-            m_outstream.println(" ()");
         }
+    
+        m_outstream.print(new String(m_spec.m_function_name));
+        m_outstream.println(" () {");
         
         m_outstream.println("\t\t$yy_anchor = self::YY_NO_ANCHOR;");
         m_outstream.println("\t\t$yy_state = self::$yy_state_dtrans[$this->yy_lexical_state];");
@@ -519,47 +514,48 @@ class CEmit {
         m_outstream.println();
         
         m_outstream.println("\t\t$this->yy_mark_start();");
+        m_outstream.println();
+        
         m_outstream.println("\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
-        m_outstream.println("\t\tif (self::YY_NOT_ACCEPT != $yy_this_accept) {");
+        m_outstream.println("\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
         m_outstream.println("\t\t\t$yy_last_accept_state = $yy_state;");
         m_outstream.println("\t\t\t$this->yy_mark_end();");
         m_outstream.println("\t\t}");
+        m_outstream.println();
         
         if (NOT_EDBG) {
             m_outstream.println("\t\techo \"Begin\\n\";");
+            m_outstream.println();
         }
         
         m_outstream.println("\t\twhile (true) {");
+    
+        m_outstream.println("\t\t\t$yy_lookahead = self::YY_BOL;");
+        m_outstream.println();
         
-        m_outstream.println("\t\t\tif ($yy_initial && $this->yy_at_bol) " +
-                                "$yy_lookahead = self::YY_BOL;");
-        m_outstream.println("\t\t\telse $yy_lookahead = $this->yy_advance();");
-        m_outstream.println("\t\t\t$yy_next_state = "
-                                + "self::$yy_nxt[self::$yy_rmap[$yy_state]][self::$yy_cmap[$yy_lookahead]];");
+        m_outstream.println("\t\t\tif (!$yy_initial || !$this->yy_at_bol) {");
+        m_outstream.println("\t\t\t\t$yy_lookahead = $this->yy_advance();");
+        m_outstream.println("\t\t\t}");
+        m_outstream.println();
         
-        if (NOT_EDBG) {
-            m_outstream.println("print(\"Current state: \""
-                                    + " . $yy_state . ");
-            m_outstream.println(". \"\tCurrent input: \"");
-            m_outstream.println(" . $yy_lookahead);");
-        }
+        m_outstream.println("\t\t\t$yy_next_state = self::$yy_nxt[self::$yy_rmap[$yy_state]][self::$yy_cmap[$yy_lookahead]];");
+        m_outstream.println();
         
         if (NOT_EDBG) {
-            m_outstream.println("\t\t\tprint(\"State = \""
-                                    + ". $yy_state . \"\\n\");");
-            m_outstream.println("\t\t\tprint(\"Accepting status = \""
-                                    + ". $yy_this_accept);");
-            m_outstream.println("\t\t\tprint(\"Last accepting state = \""
-                                    + ". $yy_last_accept_state);");
-            m_outstream.println("\t\t\tprint(\"Next state = \""
-                                    + ". $yy_next_state);");
-            m_outstream.println("\t\t\tprint(\"Lookahead input = \""
-                                    + ". $yy_lookahead);");
+            m_outstream.println("\t\t\techo \"Current state: $yy_state\tCurrent input: $yy_lookahead\";");
+            m_outstream.println();
+            
+            m_outstream.println("\t\t\techo \"State = $yy_state\\n\";");
+            m_outstream.println("\t\t\techo \"Accepting status = $yy_this_accept\";");
+            m_outstream.println("\t\t\techo \"Last accepting state = $yy_last_accept_state\";");
+            m_outstream.println("\t\t\techo \"Next state = $yy_next_state\";");
+            m_outstream.println("\t\t\techo \"Lookahead input = $yy_lookahead;\"");
+            m_outstream.println();
         }
         
         // handle bare EOF.
         
-        m_outstream.println("\t\t\tif ($this->YY_EOF == $yy_lookahead && true == $yy_initial) {");
+        m_outstream.println("\t\t\tif (self::YY_EOF === $yy_lookahead && $yy_initial) {");
         
         if (null != m_spec.m_eof_code) {
             m_outstream.println("\t\t\t\t$this->yy_do_eof();");
@@ -574,54 +570,60 @@ class CEmit {
         }
         
         m_outstream.println("\t\t\t}");
+        m_outstream.println();
         
-        m_outstream.println("\t\t\tif (self::YY_F != $yy_next_state) {");
+        m_outstream.println("\t\t\tif (self::YY_F !== $yy_next_state) {");
         m_outstream.println("\t\t\t\t$yy_state = $yy_next_state;");
         m_outstream.println("\t\t\t\t$yy_initial = false;");
+        m_outstream.println();
+        
         m_outstream.println("\t\t\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
-        m_outstream.println("\t\t\t\tif (self::YY_NOT_ACCEPT != $yy_this_accept) {");
+        m_outstream.println("\t\t\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
         m_outstream.println("\t\t\t\t\t$yy_last_accept_state = $yy_state;");
         m_outstream.println("\t\t\t\t\t$this->yy_mark_end();");
         m_outstream.println("\t\t\t\t}");
-        m_outstream.println("\t\t\t}");
-        
-        m_outstream.println("\t\t\telse {");
-        
-        m_outstream.println("\t\t\t\tif (self::YY_NO_STATE == $yy_last_accept_state) {");
-        
-        m_outstream.println("\t\t\t\t\tthrow new Exception(\"Lexical Error: Unmatched Input.\");");
-        m_outstream.println("\t\t\t\t}");
-        
-        m_outstream.println("\t\t\t\telse {");
-        
+        m_outstream.println("\t\t\t} else {");
+        m_outstream.println("\t\t\t\tif (self::YY_NO_STATE === $yy_last_accept_state) {");
+        m_outstream.println("\t\t\t\t\tthrow new \\Exception(\"Lexical Error: Unmatched Input.\");");
+        m_outstream.println("\t\t\t\t} else {");
         m_outstream.println("\t\t\t\t\t$yy_anchor = self::$yy_acpt[$yy_last_accept_state];");
-        m_outstream.println("\t\t\t\t\tif (0 != (self::YY_END & $yy_anchor)) {");
+        m_outstream.println();
+        
+        m_outstream.println("\t\t\t\t\tif (0 !== (self::YY_END & $yy_anchor)) {");
         m_outstream.println("\t\t\t\t\t\t$this->yy_move_end();");
         m_outstream.println("\t\t\t\t\t}");
+        m_outstream.println();
+        
         m_outstream.println("\t\t\t\t\t$this->yy_to_mark();");
+        m_outstream.println();
         
         m_outstream.println("\t\t\t\t\tswitch ($yy_last_accept_state) {");
-        
-        emit_actions("\t\t\t\t\t\t");
+        emit_actions("\t\t\t\t\t");
         
         m_outstream.println("\t\t\t\t\t\tdefault:");
-        m_outstream.println("\t\t\t\t\t\t$this->yy_error('INTERNAL',false);");
-        m_outstream.println("\t\t\t\t\tcase -1:");
+        m_outstream.println("\t\t\t\t\t\t\t$this->yy_error('INTERNAL', false);");
+        m_outstream.println();
+        
+        m_outstream.println("\t\t\t\t\t\tcase -1:");
+        m_outstream.println();
+        
         m_outstream.println("\t\t\t\t\t}");
+        m_outstream.println();
         
         m_outstream.println("\t\t\t\t\t$yy_initial = true;");
         m_outstream.println("\t\t\t\t\t$yy_state = self::$yy_state_dtrans[$this->yy_lexical_state];");
         m_outstream.println("\t\t\t\t\t$yy_next_state = self::YY_NO_STATE;");
         m_outstream.println("\t\t\t\t\t$yy_last_accept_state = self::YY_NO_STATE;");
+        m_outstream.println();
         
         m_outstream.println("\t\t\t\t\t$this->yy_mark_start();");
+        m_outstream.println();
         
         m_outstream.println("\t\t\t\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
-        m_outstream.println("\t\t\t\t\tif (self::YY_NOT_ACCEPT != $yy_this_accept) {");
+        m_outstream.println("\t\t\t\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
         m_outstream.println("\t\t\t\t\t\t$yy_last_accept_state = $yy_state;");
         m_outstream.println("\t\t\t\t\t\t$this->yy_mark_end();");
         m_outstream.println("\t\t\t\t\t}");
-        
         m_outstream.println("\t\t\t\t}");
         m_outstream.println("\t\t\t}");
         m_outstream.println("\t\t}");
@@ -639,12 +641,12 @@ class CEmit {
             CAccept accept = m_spec.m_accept_vector.elementAt(elem);
             
             if (null != accept) {
-                m_outstream.println(tabs + "case " + elem + ":");
-                m_outstream.print(tabs + "\t");
-                m_outstream.print(new String(accept.m_action, 0, accept.m_action_read));
-                m_outstream.println();
+                m_outstream.print(tabs + "case " + elem + ": ");
+                m_outstream.println(new String(accept.m_action, 0, accept.m_action_read));
+                
                 m_outstream.println(tabs + "case " + bogus_index + ":");
                 m_outstream.println(tabs + "\tbreak;");
+                m_outstream.println();
                 
                 --bogus_index;
             }
