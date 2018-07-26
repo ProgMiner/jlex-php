@@ -22,6 +22,32 @@ import java.util.Vector;
 public final class SparseBitSet implements Cloneable {
     
     /**
+     * Binary operation
+     */
+    private interface BinOp {
+        long op(long a, long b);
+    }
+    
+    /**
+     * Binary operations for binOp().
+     */
+    private static final BinOp AND = new BinOp() {
+        public final long op(long a, long b) {
+            return a & b;
+        }
+    };
+    private static final BinOp OR = new BinOp() {
+        public final long op(long a, long b) {
+            return a | b;
+        }
+    };
+    private static final BinOp XOR = new BinOp() {
+        public final long op(long a, long b) {
+            return a ^ b;
+        }
+    };
+    
+    /**
      * Sorted array of bit-block offsets.
      */
     int offs[];
@@ -69,39 +95,56 @@ public final class SparseBitSet implements Cloneable {
         size = 0;
     }
     
-    private void new_block(int idx, int bnum) {
+    private void newBlock(int idx, int bNum) {
         if (size == bits.length) { // resize
-            long[] nbits = new long[size * 3];
-            int[] noffs = new int[size * 3];
-            System.arraycopy(bits, 0, nbits, 0, size);
-            System.arraycopy(offs, 0, noffs, 0, size);
-            bits = nbits;
-            offs = noffs;
+            long[] nBits = new long[size * 3];
+            int[] nOffs = new int[size * 3];
+            
+            System.arraycopy(bits, 0, nBits, 0, size);
+            System.arraycopy(offs, 0, nOffs, 0, size);
+            
+            bits = nBits;
+            offs = nOffs;
         }
+        
         Utility.ASSERT(size < bits.length);
-        insert_block(idx, bnum);
+        insertBlock(idx, bNum);
     }
     
-    private void insert_block(int idx, int bnum) {
+    private void insertBlock(int idx, int bNum) {
         Utility.ASSERT(idx <= size);
-        Utility.ASSERT(idx == size || offs[idx] != bnum);
+        Utility.ASSERT(idx == size || offs[idx] != bNum);
+        
         System.arraycopy(bits, idx, bits, idx + 1, size - idx);
         System.arraycopy(offs, idx, offs, idx + 1, size - idx);
-        offs[idx] = bnum;
-        bits[idx] = 0; //clear them bits.
+        
+        offs[idx] = bNum;
+        bits[idx] = 0; //clear them bits
+        
         size++;
     }
     
-    private int bsearch(int bnum) {
+    private int bSearch(int bNum) {
         int l = 0, r = size; // search interval is [l, r)
+        
         while (l < r) {
             int p = (l + r) / 2;
-            if (bnum < offs[p]) r = p;
-            else if (bnum > offs[p]) l = p + 1;
-            else return p;
+            
+            if (bNum < offs[p]) {
+                
+                r = p;
+            } else if (bNum > offs[p]) {
+                
+                l = p + 1;
+            } else {
+                
+                return p;
+            }
         }
+        
         Utility.ASSERT(l == r);
-        return l; // index at which the bnum *should* be, if it's not.
+        
+        return l; // index at which the bNum *should* be, if it's not
     }
     
     /**
@@ -110,10 +153,13 @@ public final class SparseBitSet implements Cloneable {
      * @param bit the bit to be set
      */
     public void set(int bit) {
-        int bnum = bit >> LG_BITS;
-        int idx = bsearch(bnum);
-        if (idx >= size || offs[idx] != bnum)
-            new_block(idx, bnum);
+        int bNum = bit >> LG_BITS;
+        int idx = bSearch(bNum);
+        
+        if (idx >= size || offs[idx] != bNum) {
+            newBlock(idx, bNum);
+        }
+        
         bits[idx] |= (1L << (bit & BITS_M1));
     }
     
@@ -123,10 +169,13 @@ public final class SparseBitSet implements Cloneable {
      * @param bit the bit to be cleared
      */
     public void clear(int bit) {
-        int bnum = bit >> LG_BITS;
-        int idx = bsearch(bnum);
-        if (idx >= size || offs[idx] != bnum)
-            new_block(idx, bnum);
+        int bNum = bit >> LG_BITS;
+        int idx = bSearch(bNum);
+        
+        if (idx >= size || offs[idx] != bNum) {
+            newBlock(idx, bNum);
+        }
+        
         bits[idx] &= ~(1L << (bit & BITS_M1));
     }
     
@@ -143,10 +192,13 @@ public final class SparseBitSet implements Cloneable {
      * @param bit the bit to be gotten
      */
     public boolean get(int bit) {
-        int bnum = bit >> LG_BITS;
-        int idx = bsearch(bnum);
-        if (idx >= size || offs[idx] != bnum)
+        int bNum = bit >> LG_BITS;
+        int idx = bSearch(bNum);
+        
+        if (idx >= size || offs[idx] != bNum) {
             return false;
+        }
+        
         return 0 != (bits[idx] & (1L << (bit & BITS_M1)));
     }
     
@@ -156,7 +208,7 @@ public final class SparseBitSet implements Cloneable {
      * @param set the bit set to be ANDed with
      */
     public void and(SparseBitSet set) {
-        binop(this, set, AND);
+        binOp(this, set, AND);
     }
     
     /**
@@ -165,7 +217,7 @@ public final class SparseBitSet implements Cloneable {
      * @param set the bit set to be ORed with
      */
     public void or(SparseBitSet set) {
-        binop(this, set, OR);
+        binOp(this, set, OR);
     }
     
     /**
@@ -174,82 +226,69 @@ public final class SparseBitSet implements Cloneable {
      * @param set the bit set to be XORed with
      */
     public void xor(SparseBitSet set) {
-        binop(this, set, XOR);
+        binOp(this, set, XOR);
     }
     
-    // BINARY OPERATION MACHINERY
-    private interface BinOp {
-        long op(long a, long b);
-    }
-    
-    private static final BinOp AND = new BinOp() {
-        public final long op(long a, long b) {
-            return a & b;
-        }
-    };
-    private static final BinOp OR = new BinOp() {
-        public final long op(long a, long b) {
-            return a | b;
-        }
-    };
-    private static final BinOp XOR = new BinOp() {
-        public final long op(long a, long b) {
-            return a ^ b;
-        }
-    };
-    
-    private static void binop(SparseBitSet a, SparseBitSet b, BinOp op) {
-        int nsize = a.size + b.size;
-        long[] nbits;
-        int[] noffs;
-        int a_zero, a_size;
+    private static void binOp(SparseBitSet a, SparseBitSet b, BinOp op) {
+        int nSize = a.size + b.size;
+        long[] nBits;
+        int[] nOffs;
         
-        // be very clever and avoid allocating more memory if we can.
-        if (a.bits.length < nsize) { // oh well, have to make working space.
-            nbits = new long[nsize];
-            noffs = new int[nsize];
-            a_zero = 0;
-            a_size = a.size;
+        int aZero, aSize;
+        
+        // be very clever and avoid allocating more memory if we can
+        if (a.bits.length < nSize) { // oh well, have to make working space
+            nBits = new long[nSize];
+            nOffs = new int[nSize];
+            
+            aZero = 0;
+            aSize = a.size;
         } else { // reduce, reuse, recycle!
-            nbits = a.bits;
-            noffs = a.offs;
-            a_zero = a.bits.length - a.size;
-            a_size = a.bits.length;
-            System.arraycopy(a.bits, 0, a.bits, a_zero, a.size);
-            System.arraycopy(a.offs, 0, a.offs, a_zero, a.size);
+            nBits = a.bits;
+            nOffs = a.offs;
+            
+            aZero = a.bits.length - a.size;
+            aSize = a.bits.length;
+            
+            System.arraycopy(a.bits, 0, a.bits, aZero, a.size);
+            System.arraycopy(a.offs, 0, a.offs, aZero, a.size);
         }
         
-        // ok, crunch through and binop those sets!
-        nsize = 0;
-        for (int i = a_zero, j = 0; i < a_size || j < b.size; ) {
+        // ok, crunch through and binOp those sets!
+        nSize = 0;
+        for (int i = aZero, j = 0; i < aSize || j < b.size; ) {
             long nb;
             int no;
             
-            if (i < a_size && (j >= b.size || a.offs[i] < b.offs[j])) {
+            if (i < aSize && (j >= b.size || a.offs[i] < b.offs[j])) {
                 nb = op.op(a.bits[i], 0);
                 no = a.offs[i];
+                
                 i++;
-            } else if (j < b.size && (i >= a_size || a.offs[i] > b.offs[j])) {
+            } else if (j < b.size && (i >= aSize || a.offs[i] > b.offs[j])) {
                 nb = op.op(0, b.bits[j]);
                 no = b.offs[j];
+                
                 j++;
-            } else { // equal keys; merge.
+            } else { // equal keys; merge
                 nb = op.op(a.bits[i], b.bits[j]);
                 no = a.offs[i];
+                
                 i++;
                 j++;
             }
             
             if (nb != 0) {
-                nbits[nsize] = nb;
-                noffs[nsize] = no;
-                nsize++;
+                nBits[nSize] = nb;
+                nOffs[nSize] = no;
+                
+                nSize++;
             }
         }
         
-        a.bits = nbits;
-        a.offs = noffs;
-        a.size = nsize;
+        a.bits = nBits;
+        a.offs = nOffs;
+        a.size = nSize;
     }
     
     /**
@@ -257,16 +296,19 @@ public final class SparseBitSet implements Cloneable {
      */
     public int hashCode() {
         long h = 1234;
-        for (int i = 0; i < size; i++)
+        
+        for (int i = 0; i < size; i++) {
             h ^= bits[i] * offs[i];
+        }
+        
         return (int) ((h >> 32) ^ h);
     }
     
     /**
-     * Calculates and returns the set's size
+     * Calculates and returns the set's size.
      */
     public int size() {
-        return (size == 0) ? 0 : ((1 + offs[size - 1]) << LG_BITS);
+        return (size == 0)? 0: ((1 + offs[size - 1]) << LG_BITS);
     }
     
     /**
@@ -291,13 +333,17 @@ public final class SparseBitSet implements Cloneable {
     public static boolean equals(SparseBitSet a, SparseBitSet b) {
         for (int i = 0, j = 0; i < a.size || j < b.size; ) {
             if (i < a.size && (j >= b.size || a.offs[i] < b.offs[j])) {
+                
                 if (a.bits[i++] != 0) return false;
             } else if (i >= a.size || a.offs[i] > b.offs[j]) {
+                
                 if (b.bits[j++] != 0) return false;
             } else { // equal keys
+                
                 if (a.bits[i++] != b.bits[j++]) return false;
             }
         }
+        
         return true;
     }
     
@@ -309,6 +355,7 @@ public final class SparseBitSet implements Cloneable {
             SparseBitSet set = (SparseBitSet) super.clone();
             set.bits = bits.clone();
             set.offs = offs.clone();
+            
             return set;
         } catch (CloneNotSupportedException e) {
             // this shouldn't happen, since we are Cloneable
@@ -374,12 +421,24 @@ public final class SparseBitSet implements Cloneable {
      * Check validity.
      */
     private boolean isValid() {
-        if (bits.length != offs.length) return false;
-        if (size > bits.length) return false;
-        if (size != 0 && 0 <= offs[0]) return false;
-        for (int i = 1; i < size; i++)
-            if (offs[i] < offs[i - 1])
+        if (bits.length != offs.length) {
+            return false;
+        }
+        
+        if (size > bits.length) {
+            return false;
+        }
+        
+        if (size != 0 && 0 <= offs[0]) {
+            return false;
+        }
+        
+        for (int i = 1; i < size; i++) {
+            if (offs[i] < offs[i - 1]) {
                 return false;
+            }
+        }
+        
         return true;
     }
     
@@ -389,55 +448,77 @@ public final class SparseBitSet implements Cloneable {
     public static void main(String[] args) {
         final int ITER = 500;
         final int RANGE = 65536;
+        
         SparseBitSet a = new SparseBitSet();
         Utility.ASSERT(!a.get(0) && !a.get(1));
         Utility.ASSERT(!a.get(123329));
+        
         a.set(0);
         Utility.ASSERT(a.get(0) && !a.get(1));
+        
         a.set(1);
         Utility.ASSERT(a.get(0) && a.get(1));
+        
         a.clearAll();
         Utility.ASSERT(!a.get(0) && !a.get(1));
+        
         Random r = new java.util.Random();
-        Vector<Integer> v = new Vector <Integer> ();
+        Vector <Integer> v = new Vector <Integer> ();
         for (int n = 0; n < ITER; n++) {
             int rr = ((r.nextInt() >>> 1) % RANGE) << 1;
+            
             a.set(rr);
             v.addElement(rr);
+            
             // check that all the numbers are there.
             Utility.ASSERT(a.get(rr) && !a.get(rr + 1) && !a.get(rr - 1));
-            for (int i = 0; i < v.size(); i++)
+            for (int i = 0; i < v.size(); i++) {
                 Utility.ASSERT(a.get(v.elementAt(i)));
+            }
         }
+        
         SparseBitSet b = (SparseBitSet) a.clone();
         Utility.ASSERT(a.equals(b) && b.equals(a));
+        
         for (int n = 0; n < ITER / 2; n++) {
             int rr = (r.nextInt() >>> 1) % v.size();
             int m = v.elementAt(rr);
+            
             b.clear(m);
             v.removeElementAt(rr);
+            
             // check that numbers are removed properly.
             Utility.ASSERT(!b.get(m));
         }
+        
         Utility.ASSERT(!a.equals(b));
+        
         SparseBitSet c = (SparseBitSet) a.clone();
         SparseBitSet d = (SparseBitSet) a.clone();
+        
         c.and(a);
         Utility.ASSERT(c.equals(a) && a.equals(c));
+        
         c.xor(a);
         Utility.ASSERT(!c.equals(a) && c.size() == 0);
+        
         d.or(b);
         Utility.ASSERT(d.equals(a) && !b.equals(d));
+        
         d.and(b);
         Utility.ASSERT(!d.equals(a) && b.equals(d));
+        
         d.xor(a);
         Utility.ASSERT(!d.equals(a) && !b.equals(d));
+        
         c.or(d);
         c.or(b);
         Utility.ASSERT(c.equals(a) && a.equals(c));
+        
         c = (SparseBitSet) d.clone();
         c.and(b);
         Utility.ASSERT(c.size() == 0);
+        
         System.out.println("Success.");
     }
 }
