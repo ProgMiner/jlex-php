@@ -58,7 +58,7 @@ public class Minimize {
     /**
      * Copies source column into destination column.
      */
-    private void col_copy(int dest, int src) {
+    private void colCopy(int dest, int src) {
         int n = spec.dTransVector.size();
 
         for (int i = 0; i < n; ++i) {
@@ -196,7 +196,7 @@ public class Minimize {
                     continue;
                 }
 
-                col_copy(j, i);
+                colCopy(j, i);
             }
         }
 
