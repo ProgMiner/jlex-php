@@ -464,7 +464,7 @@ public final class SparseBitSet implements Cloneable {
         a.clearAll();
         Utility.ASSERT(!a.get(0) && !a.get(1));
         
-        Random r = new java.util.Random();
+        Random r = new Random();
         Vector <Integer> v = new Vector <Integer> ();
         for (int n = 0; n < ITER; n++) {
             int rr = ((r.nextInt() >>> 1) % RANGE) << 1;

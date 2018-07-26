@@ -187,7 +187,7 @@ public class Nfa2DFA {
             Utility.ASSERT(null != bunch);
 
             // For IDE
-            if (null == bunch) { throw new java.lang.Error(); }
+            if (null == bunch) { throw new Error(); }
 
             Utility.ASSERT(null != bunch.nfaSet);
             Utility.ASSERT(null != bunch.nfaBit);

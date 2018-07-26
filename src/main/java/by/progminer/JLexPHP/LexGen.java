@@ -348,7 +348,7 @@ public class LexGen {
         char prevCode[],
         int prevCodeLength,
         int specified
-    ) throws java.io.IOException {
+    ) throws IOException {
         if (Utility.DEBUG) {
             Utility.ASSERT(
                 INIT_CODE == specified ||
@@ -762,7 +762,7 @@ public class LexGen {
      * Processes third section of JLex
      * specification and creates minimized transition table.
      */
-    private void userRules() throws java.io.IOException {
+    private void userRules() throws IOException {
         if (!initFlag) {
             Error.parseError(Error.E_INIT, 0);
         }
@@ -1631,7 +1631,7 @@ public class LexGen {
     /**
      * Returns code for next token.
      */
-    public int advance() throws java.io.IOException {
+    public int advance() throws IOException {
         if (input.isEOFReached) {
 	        // EOF has already been reached,
 	        // so return appropriate code.
