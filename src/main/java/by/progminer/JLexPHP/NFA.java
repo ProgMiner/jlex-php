@@ -28,7 +28,7 @@ class NFA {
     /**
      * Set to store character classes.
      */
-    CSet set;
+    Set set;
     
     /**
      * Next state (or null if none).
@@ -78,7 +78,7 @@ class NFA {
         
         if (null != nfa.set) {
             if (null == set) {
-                set = new CSet();
+                set = new Set();
             }
             
             set.mimic(nfa.set);

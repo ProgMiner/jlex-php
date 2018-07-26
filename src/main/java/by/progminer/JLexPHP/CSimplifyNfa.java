@@ -37,7 +37,7 @@ class CSimplifyNfa {
             }
             
             if (nfa.edge == nfa.CCL) {
-                CSet ncset = new CSet();
+                Set ncset = new Set();
                 
                 ncset.map(nfa.set, ccls); // map it.
                 nfa.set = ncset;

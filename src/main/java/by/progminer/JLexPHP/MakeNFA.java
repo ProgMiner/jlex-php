@@ -157,7 +157,7 @@ class MakeNFA {
         p.next.edge = NFA.CCL;
         p.next.next = Alloc.newNFA(spec);
 
-        p.next.set = new CSet();
+        p.next.set = new Set();
         p.next.set.add(spec.BOL);
         p.next.set.add(spec.EOF);
 
@@ -184,7 +184,7 @@ class MakeNFA {
         int anchor = CSpec.NONE;
         NFA start, end;
 
-        CNfaPair pair = Alloc.newNFAPair();
+        NFAPair pair = Alloc.newNFAPair();
         if (LexGen.AT_BOL == spec.m_current_token) {
             anchor = anchor | CSpec.START;
             lexGen.advance();
@@ -194,13 +194,13 @@ class MakeNFA {
 
             start = Alloc.newNFA(spec);
             start.edge = spec.BOL;
-            start.next = pair.m_start;
+            start.next = pair.start;
 
-            end = pair.m_end;
+            end = pair.end;
         } else {
             expr(pair);
-            start = pair.m_start;
-            end = pair.m_end;
+            start = pair.start;
+            end = pair.end;
         }
 
         if (LexGen.AT_EOL == spec.m_current_token) {
@@ -208,16 +208,16 @@ class MakeNFA {
 
             // CSA: fixed end-of-line operator. 8-aug-1999
 
-            CNfaPair nlPair = Alloc.newNLPair(spec);
+            NFAPair nlPair = Alloc.newNLPair(spec);
 
             end.next = Alloc.newNFA(spec);
-            end.next.next = nlPair.m_start;
+            end.next.next = nlPair.start;
 
             end.next.next2 = Alloc.newNFA(spec);
             end.next.next2.edge = spec.EOF;
-            end.next.next2.next = nlPair.m_end;
+            end.next.next2.next = nlPair.end;
 
-            end = nlPair.m_end;
+            end = nlPair.end;
 
             anchor = anchor | CSpec.END;
         }
@@ -244,7 +244,7 @@ class MakeNFA {
     /**
      * Recursive descent regular expression parser.
      */
-    private void expr(CNfaPair pair) throws IOException {
+    private void expr(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
             CUtility.enter("expr", spec.m_lexeme, spec.m_current_token);
         }
@@ -253,7 +253,7 @@ class MakeNFA {
             CUtility.ASSERT(null != pair);
         }
 
-        CNfaPair e2Pair = Alloc.newNFAPair();
+        NFAPair e2Pair = Alloc.newNFAPair();
 
         catExpr(pair);
         while (LexGen.OR == spec.m_current_token) {
@@ -261,14 +261,14 @@ class MakeNFA {
             catExpr(e2Pair);
 
             NFA p = Alloc.newNFA(spec);
-            p.next2 = e2Pair.m_start;
-            p.next = pair.m_start;
-            pair.m_start = p;
+            p.next2 = e2Pair.start;
+            p.next = pair.start;
+            pair.start = p;
 
             p = Alloc.newNFA(spec);
-            e2Pair.m_end.next = p;
-            pair.m_end.next = p;
-            pair.m_end = p;
+            e2Pair.end.next = p;
+            pair.end.next = p;
+            pair.end = p;
         }
 
         if (CUtility.DESCENT_DEBUG) {
@@ -279,7 +279,7 @@ class MakeNFA {
     /**
      * Recursive descent regular expression parser.
      */
-    private void catExpr(CNfaPair pair) throws IOException {
+    private void catExpr(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
             CUtility.enter("catExpr", spec.m_lexeme, spec.m_current_token);
         }
@@ -288,7 +288,7 @@ class MakeNFA {
             CUtility.ASSERT(null != pair);
         }
 
-        CNfaPair e2Pair = Alloc.newNFAPair();
+        NFAPair e2Pair = Alloc.newNFAPair();
 
         if (firstInCat(spec.m_current_token)) {
             factor(pair);
@@ -298,10 +298,10 @@ class MakeNFA {
             factor(e2Pair);
 
             // Destroy
-            pair.m_end.mimic(e2Pair.m_start);
-            discardNFA(e2Pair.m_start);
+            pair.end.mimic(e2Pair.start);
+            discardNFA(e2Pair.start);
 
-            pair.m_end = e2Pair.m_end;
+            pair.end = e2Pair.end;
         }
 
         if (CUtility.DESCENT_DEBUG) {
@@ -344,7 +344,7 @@ class MakeNFA {
     /**
      * Recursive descent regular expression parser.
      */
-    private void factor(CNfaPair pair) throws IOException {
+    private void factor(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
             CUtility.enter("factor", spec.m_lexeme, spec.m_current_token);
         }
@@ -359,8 +359,8 @@ class MakeNFA {
             NFA start = Alloc.newNFA(spec),
                  end = Alloc.newNFA(spec);
 
-            start.next = pair.m_start;
-            pair.m_end.next = end;
+            start.next = pair.start;
+            pair.end.next = end;
 
             if (
                 LexGen.CLOSURE == spec.m_current_token ||
@@ -373,11 +373,11 @@ class MakeNFA {
                 LexGen.CLOSURE == spec.m_current_token ||
                 LexGen.PLUS_CLOSE == spec.m_current_token
             ) {
-                pair.m_end.next2 = pair.m_start;
+                pair.end.next2 = pair.start;
             }
 
-            pair.m_start = start;
-            pair.m_end = end;
+            pair.start = start;
+            pair.end = end;
             lexGen.advance();
         }
 
@@ -389,7 +389,7 @@ class MakeNFA {
     /**
      * Recursive descent regular expression parser.
      */
-    private void term(CNfaPair pair) throws IOException {
+    private void term(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
             CUtility.enter("term", spec.m_lexeme, spec.m_current_token);
         }
@@ -405,10 +405,10 @@ class MakeNFA {
             }
         } else {
             NFA start = Alloc.newNFA(spec);
-            pair.m_start = start;
+            pair.start = start;
 
             start.next = Alloc.newNFA(spec);
-            pair.m_end = start.next;
+            pair.end = start.next;
 
             boolean isAlphaL = (LexGen.L == spec.m_current_token && Character.isLetter(spec.m_lexeme));
             if (
@@ -421,11 +421,11 @@ class MakeNFA {
             } else {
                 start.edge = NFA.CCL;
 
-                start.set = new CSet();
+                start.set = new Set();
 
                 // Match case-insensitive letters using character class
                 if (spec.m_ignorecase && isAlphaL) {
-                    start.set.addncase(spec.m_lexeme);
+                    start.set.addNCase(spec.m_lexeme);
                 }
 
                 // Match dot (.) using character class
@@ -466,7 +466,7 @@ class MakeNFA {
     /**
      * Recursive descent regular expression parser.
      */
-    private void doDash(CSet set) throws IOException {
+    private void doDash(Set set) throws IOException {
         int first = -1;
 
         if (CUtility.DESCENT_DEBUG) {
@@ -492,7 +492,7 @@ class MakeNFA {
 
                 for (; first <= spec.m_lexeme; ++first) {
                     if (spec.m_ignorecase) {
-                        set.addncase((char) first);
+                        set.addNCase((char) first);
                     } else {
                         set.add(first);
                     }
@@ -501,7 +501,7 @@ class MakeNFA {
                 first = spec.m_lexeme;
 
                 if (spec.m_ignorecase) {
-                    set.addncase(spec.m_lexeme);
+                    set.addNCase(spec.m_lexeme);
                 } else {
                     set.add(spec.m_lexeme);
                 }

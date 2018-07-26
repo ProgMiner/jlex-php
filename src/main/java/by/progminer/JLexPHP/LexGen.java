@@ -815,7 +815,7 @@ class LexGen {
      * Debugging routine that outputs readable form
      * of character class.
      */
-    private void printCCl(CSet set) {
+    private void printCCl(Set set) {
         System.out.print(" [");
         
         for (int i = 0; i < spec.m_dtrans_ncols; ++i) {
