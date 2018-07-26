@@ -69,7 +69,7 @@ class LexGen {
      * Spec class holds information
      * about the generated lexer.
      */
-    private CSpec spec;
+    private Spec spec;
     
     /**
      * Flag set to true only upon
@@ -192,7 +192,7 @@ class LexGen {
         tokens.put('}', CLOSE_CURLY);
         
         // Initialize spec structure
-        spec = new CSpec(this);
+        spec = new Spec(this);
         
         // NFA to dfa converter
         nfa2DFA = new Nfa2DFA();
@@ -219,7 +219,7 @@ class LexGen {
             CUtility.ASSERT(initFlag);
         }
         
-        if (spec.m_verbose) {
+        if (spec.verbose) {
             System.out.println("Processing first section -- user code.");
         }
         
@@ -229,7 +229,7 @@ class LexGen {
             Error.parseError(Error.E_EOF, input.lineNumber);
         }
         
-        if (spec.m_verbose) {
+        if (spec.verbose) {
             System.out.println("Processing second section -- JLex declarations.");
         }
         
@@ -239,7 +239,7 @@ class LexGen {
             Error.parseError(Error.E_EOF, input.lineNumber);
         }
         
-        if (spec.m_verbose) {
+        if (spec.verbose) {
             System.out.println("Processing third section -- lexical rules.");
         }
         
@@ -249,13 +249,13 @@ class LexGen {
             printHeader();
         }
         
-        if (spec.m_verbose) {
+        if (spec.verbose) {
             System.out.println("Outputting lexical analyzer code.");
         }
         
         emit.all(spec, out);
         
-        if (spec.m_verbose && CUtility.OLD_DUMP_DEBUG) {
+        if (spec.verbose && CUtility.OLD_DUMP_DEBUG) {
             details();
         }
         
@@ -389,31 +389,31 @@ class LexGen {
                     
                     switch (specified) {
                     case CLASS_CODE:
-                        spec.m_class_read = prevCodeLength;
+                        spec.classLength = prevCodeLength;
                         break;
                     
                     case INIT_CODE:
-                        spec.m_init_read = prevCodeLength;
+                        spec.initLength = prevCodeLength;
                         break;
                     
                     case EOF_CODE:
-                        spec.m_eof_read = prevCodeLength;
+                        spec.eofLength = prevCodeLength;
                         break;
                     
                     case EOF_VALUE_CODE:
-                        spec.m_eof_value_read = prevCodeLength;
+                        spec.eofValueLength = prevCodeLength;
                         break;
                     
                     case INIT_THROW_CODE:
-                        spec.m_init_throw_read = prevCodeLength;
+                        spec.initThrowLength = prevCodeLength;
                         break;
                     
                     case YYLEX_THROW_CODE:
-                        spec.m_yylex_throw_read = prevCodeLength;
+                        spec.yylexThrowLength = prevCodeLength;
                         break;
                     
                     case EOF_THROW_CODE:
-                        spec.m_eof_throw_read = prevCodeLength;
+                        spec.eofThrowLength = prevCodeLength;
                         break;
                     
                     default:
@@ -482,11 +482,11 @@ class LexGen {
                 switch (input.line[1]) {
                 case '{':
                     if (0 == CUtility.charncmp(input.line, 0, classCodeDir, 0, classCodeDir.length - 1)) {
-                        spec.m_class_code = packCode(
+                        spec.classCode = packCode(
                             classCodeDir,
                             classCodeEndDir,
-                            spec.m_class_code,
-                            spec.m_class_read,
+                            spec.classCode,
+                            spec.classLength,
                             CLASS_CODE
                         );
                         
@@ -502,24 +502,24 @@ class LexGen {
                         // Set line counting to ON
                         
                         input.lineIndex = charDir.length;
-                        spec.m_count_chars = true;
+                        spec.countChars = true;
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, classDir, 0, classDir.length - 1)) {
                         input.lineIndex = classDir.length;
-                        spec.m_class_name = getName();
+                        spec.className = getName();
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, cupDir, 0, cupDir.length - 1)) {
                         // Set Java CUP compatibility to ON
                         
                         input.lineIndex = cupDir.length;
-                        spec.m_cup_compatible = true;
+                        spec.cupCompatible = true;
                         
                         // this is what %cup does: [CSA, 27-Jul-1999]
-                        spec.m_implements_name = "java_cup.runtime.Scanner".toCharArray();
-                        spec.m_function_name = "next_token".toCharArray();
-                        spec.m_type_name = "java_cup.runtime.Symbol".toCharArray();
+                        spec.implementsName = "java_cup.runtime.Scanner".toCharArray();
+                        spec.functionName = "next_token".toCharArray();
+                        spec.typeName = "java_cup.runtime.Symbol".toCharArray();
                         
                         break;
                     }
@@ -530,31 +530,31 @@ class LexGen {
                 
                 case 'e':
                     if (0 == CUtility.charncmp(input.line, 0, eofCodeDir, 0, eofCodeDir.length - 1)) {
-                        spec.m_eof_code = packCode(
+                        spec.eofCode = packCode(
                             eofCodeDir,
                             eofCodeEndDir,
-                            spec.m_eof_code,
-                            spec.m_eof_read,
+                            spec.eofCode,
+                            spec.eofLength,
                             EOF_CODE
                         );
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, eofValueCodeDir, 0, eofValueCodeDir.length - 1)) {
-                        spec.m_eof_value_code = packCode(
+                        spec.eofValueCode = packCode(
                             eofValueCodeDir,
                             eofValueCodeEndDir,
-                            spec.m_eof_value_code,
-                            spec.m_eof_value_read,
+                            spec.eofValueCode,
+                            spec.eofValueLength,
                             EOF_VALUE_CODE
                         );
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, eofThrowCodeDir, 0, eofThrowCodeDir.length - 1)) {
-                        spec.m_eof_throw_code = packCode(
+                        spec.eofThrowCode = packCode(
                             eofThrowCodeDir,
                             eofThrowCodeEndDir,
-                            spec.m_eof_throw_code,
-                            spec.m_eof_throw_read,
+                            spec.eofThrowCode,
+                            spec.eofThrowLength,
                             EOF_THROW_CODE
                         );
                         
@@ -570,12 +570,12 @@ class LexGen {
                         // Set line counting to ON
                         
                         input.lineIndex = functionDir.length;
-                        spec.m_function_name = getName();
+                        spec.functionName = getName();
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, fullDir, 0, fullDir.length - 1)) {
                         input.lineIndex = fullDir.length;
-                        spec.m_dtrans_ncols = CUtility.MAX_EIGHT_BIT + 1;
+                        spec.dTransNCols = CUtility.MAX_EIGHT_BIT + 1;
                         
                         break;
                     }
@@ -589,46 +589,46 @@ class LexGen {
                         // Set line counting to ON
                         
                         input.lineIndex = integerDir.length;
-                        spec.m_integer_type = true;
+                        spec.integerType = true;
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, intwrapDir, 0, intwrapDir.length - 1)) {
                         // Set line counting to ON
                         
                         input.lineIndex = integerDir.length;
-                        spec.m_intwrap_type = true;
+                        spec.intWrapType = true;
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, initCodeDir, 0, initCodeDir.length - 1)) {
-                        spec.m_init_code = packCode(
+                        spec.initCode = packCode(
                             initCodeDir,
                             initCodeEndDir,
-                            spec.m_init_code,
-                            spec.m_init_read,
+                            spec.initCode,
+                            spec.initLength,
                             INIT_CODE
                         );
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, initThrowCodeDir, 0, initThrowCodeDir.length - 1)) {
-                        spec.m_init_throw_code = packCode(
+                        spec.initThrowCode = packCode(
                             initThrowCodeDir,
                             initThrowCodeEndDir,
-                            spec.m_init_throw_code,
-                            spec.m_init_throw_read,
+                            spec.initThrowCode,
+                            spec.initThrowLength,
                             INIT_THROW_CODE
                         );
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, implementsDir, 0, implementsDir.length - 1)) {
                         input.lineIndex = implementsDir.length;
-                        spec.m_implements_name = getName();
+                        spec.implementsName = getName();
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, ignorecaseDir, 0, ignorecaseDir.length - 1)) {
-                        // Set m_ignorecase to ON
+                        // Set ignoreCase to ON
                         
                         input.lineIndex = ignorecaseDir.length;
-                        spec.m_ignorecase = true;
+                        spec.ignoreCase = true;
                         
                         break;
                     }
@@ -642,7 +642,7 @@ class LexGen {
                         // Set line counting to ON
                         
                         input.lineIndex = lineDir.length;
-                        spec.m_count_lines = true;
+                        spec.countLines = true;
                         
                         break;
                     }
@@ -656,7 +656,7 @@ class LexGen {
                         // Set line counting to ON
                         
                         input.lineIndex = notunixDir.length;
-                        spec.m_unix = false;
+                        spec.unix = false;
                         
                         break;
                     }
@@ -670,7 +670,7 @@ class LexGen {
                         // Set public flag
                         
                         input.lineIndex = publicDir.length;
-                        spec.m_public = true;
+                        spec.public_ = true;
                         
                         break;
                     }
@@ -698,7 +698,7 @@ class LexGen {
                         // Set Java CUP compatibility to ON
                         
                         input.lineIndex = typeDir.length;
-                        spec.m_type_name = getName();
+                        spec.typeName = getName();
                         
                         break;
                     }
@@ -710,7 +710,7 @@ class LexGen {
                 case 'u':
                     if (0 == CUtility.charncmp(input.line, 0, unicodeDir, 0, unicodeDir.length - 1)) {
                         input.lineIndex = unicodeDir.length;
-                        spec.m_dtrans_ncols = CUtility.MAX_SIXTEEN_BIT + 1;
+                        spec.dTransNCols = CUtility.MAX_SIXTEEN_BIT + 1;
                         
                         break;
                     }
@@ -722,15 +722,15 @@ class LexGen {
                 case 'y':
                     if (0 == CUtility.charncmp(input.line, 0, yyeofDir, 0, yyeofDir.length - 1)) {
                         input.lineIndex = yyeofDir.length;
-                        spec.m_yyeof = true;
+                        spec.yyeof = true;
                         
                         break;
                     } else if (0 == CUtility.charncmp(input.line, 0, yylexThrowCodeDir, 0, yylexThrowCodeDir.length - 1)) {
-                        spec.m_yylex_throw_code = packCode(
+                        spec.yylexThrowCode = packCode(
                             yylexThrowCodeDir,
                             yylexThrowCodeEndDir,
-                            spec.m_yylex_throw_code,
-                            spec.m_yylex_throw_read,
+                            spec.yylexThrowCode,
+                            spec.yylexThrowLength,
                             YYLEX_THROW_CODE
                         );
                         
@@ -779,7 +779,7 @@ class LexGen {
         
         // TODO: UNDONE: Need to handle states preceding rules
         
-        if (spec.m_verbose) {
+        if (spec.verbose) {
             System.out.println("Creating NFA machine representation.");
         }
         
@@ -791,10 +791,10 @@ class LexGen {
         // printNFA();
         
         if (CUtility.DEBUG) {
-            CUtility.ASSERT(END_OF_INPUT == spec.m_current_token);
+            CUtility.ASSERT(END_OF_INPUT == spec.currentToken);
         }
         
-        if (spec.m_verbose) {
+        if (spec.verbose) {
             System.out.println("Creating DFA transition table.");
         }
         
@@ -804,7 +804,7 @@ class LexGen {
             printHeader();
         }
         
-        if (spec.m_verbose) {
+        if (spec.verbose) {
             System.out.println("Minimizing DFA transition table.");
         }
         
@@ -818,7 +818,7 @@ class LexGen {
     private void printCCl(Set set) {
         System.out.print(" [");
         
-        for (int i = 0; i < spec.m_dtrans_ncols; ++i) {
+        for (int i = 0; i < spec.dTransNCols; ++i) {
             if (set.contains(i)) {
                 System.out.print(interpretInt(i));
             }
@@ -832,7 +832,7 @@ class LexGen {
             return ("--");
         }
         
-        return Integer.toString(spec.m_NFA_states.indexOf(state));
+        return Integer.toString(spec.nfaStates.indexOf(state));
     }
     
     private String interpretInt(int i) {
@@ -865,7 +865,7 @@ class LexGen {
     void printNFA() {
         System.out.println("--------------------- NFA -----------------------");
         
-        for (NFA nfa: spec.m_NFA_states) {
+        for (NFA nfa: spec.nfaStates) {
             System.out.print("nfa state " + stateLabel(nfa) + ": ");
             
             if (null == nfa.next) {
@@ -889,31 +889,31 @@ class LexGen {
                 }
             }
             
-            if (0 == spec.m_NFA_states.indexOf(nfa)) {
+            if (0 == spec.nfaStates.indexOf(nfa)) {
                 System.out.print(" (START STATE)");
             }
             
             if (null != nfa.accept) {
                 System.out.print(
                     " accepting " +
-                    ((0 != (nfa.anchor & CSpec.START))? "^": "") +
+                    ((0 != (nfa.anchor & Spec.START))? "^": "") +
                     "<" + new String(nfa.accept.action, 0, nfa.accept.actionLength) + ">" +
-                    ((0 != (nfa.anchor & CSpec.END))? "$": "")
+                    ((0 != (nfa.anchor & Spec.END))? "$": "")
                 );
             }
             
             System.out.println();
         }
         
-        for (Map.Entry <String, Integer> entry: spec.m_states.entrySet()) {
+        for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
             String state = entry.getKey();
             int i = entry.getValue();
             
             System.out.println("State \"" + state + "\" has identifying index " + i + ".");
             System.out.print("\tStart states of matching rules: ");
     
-            for (NFA nfa: spec.m_state_rules[i]) {
-                System.out.print(spec.m_NFA_states.indexOf(nfa) + " ");
+            for (NFA nfa: spec.stateRules[i]) {
+                System.out.print(spec.nfaStates.indexOf(nfa) + " ");
             }
     
             System.out.println();
@@ -1025,7 +1025,7 @@ class LexGen {
                 
                 // Save name after checking definition
                 String name = new String(input.line, startState, countState);
-                Integer index = spec.m_states.get(name);
+                Integer index = spec.states.get(name);
                 
                 if (null == index) {
                     // Uninitialized state
@@ -1044,7 +1044,7 @@ class LexGen {
         if (null == all_states) {
             all_states = new SparseBitSet();
             
-            for (int i = 0; i < spec.m_states.size(); ++i) {
+            for (int i = 0; i < spec.states.size(); ++i) {
                 all_states.set(i);
             }
         }
@@ -1108,7 +1108,7 @@ class LexGen {
         
         // Get macro definition
         String name = new String(input.line, startName, nameLength);
-        String def = spec.m_macros.get(name);
+        String def = spec.macros.get(name);
         
         if (null == def) {
             // Error.msg("Undefined macro \"" + name + "\".")
@@ -1283,7 +1283,7 @@ class LexGen {
         if (CUtility.DEBUG) {
             CUtility.ASSERT(0 < defLength);
             CUtility.ASSERT(0 < nameLength);
-            CUtility.ASSERT(null != spec.m_macros);
+            CUtility.ASSERT(null != spec.macros);
         }
         
         if (CUtility.OLD_DEBUG) {
@@ -1292,7 +1292,7 @@ class LexGen {
         }
         
         // Add macro name and definition to table
-        spec.m_macros.put(
+        spec.macros.put(
             new String(input.line, startName, nameLength),
             new String(input.line, startDef, defLength)
         );
@@ -1300,7 +1300,7 @@ class LexGen {
     
     /**
      * Takes state declaration and makes entries
-     * for them in state hashtable in CSpec structure.
+     * for them in state hashtable in Spec structure.
      *
      * State declaration should be of the form:
      * %state name0[, name1, name2 ...]
@@ -1365,11 +1365,11 @@ class LexGen {
             
             if (CUtility.OLD_DEBUG) {
                 System.out.println("State name \"" + new String(input.line, stateStart, stateLength) + "\".");
-                System.out.println("Integer index \"" + spec.m_states.size() + "\".");
+                System.out.println("Integer index \"" + spec.states.size() + "\".");
             }
             
             // Enter new state name, along with unique index
-            spec.m_states.put(new String(input.line, stateStart, stateLength), spec.m_states.size());
+            spec.states.put(new String(input.line, stateStart, stateLength), spec.states.size());
             
             // Skip comma
             if (',' == input.line[input.lineIndex]) {
@@ -1639,16 +1639,16 @@ class LexGen {
 	        // EOF has already been reached,
 	        // so return appropriate code.
             
-            spec.m_current_token = END_OF_INPUT;
-            spec.m_lexeme = '\0';
+            spec.currentToken = END_OF_INPUT;
+            spec.lexeme = '\0';
             
-            return spec.m_current_token;
+            return spec.currentToken;
         }
 
 	    // End of previous regular expression?
 	    // Refill line buffer?
-        if (EOS == spec.m_current_token || input.lineIndex >= input.lineLength) {
-            if (spec.m_in_quote) {
+        if (EOS == spec.currentToken || input.lineIndex >= input.lineLength) {
+            if (spec.inQuote) {
                 Error.parseError(Error.E_SYNTAX, input.lineNumber);
             }
     
@@ -1658,10 +1658,10 @@ class LexGen {
                         /* EOF has already been reached,
                            so return appropriate code. */
                 
-                        spec.m_current_token = END_OF_INPUT;
-                        spec.m_lexeme = '\0';
+                        spec.currentToken = END_OF_INPUT;
+                        spec.lexeme = '\0';
                         
-                        return spec.m_current_token;
+                        return spec.currentToken;
                     }
                     
                     input.lineIndex = 0;
@@ -1683,26 +1683,26 @@ class LexGen {
         }
         
         while (true) {
-            if (!spec.m_in_quote && '{' == input.line[input.lineIndex]) {
+            if (!spec.inQuote && '{' == input.line[input.lineIndex]) {
                 if (!expandMacro()) {
                     break;
                 }
                 
                 if (input.lineIndex >= input.lineLength) {
-                    spec.m_current_token = EOS;
-                    spec.m_lexeme = '\0';
+                    spec.currentToken = EOS;
+                    spec.lexeme = '\0';
                     
-                    return spec.m_current_token;
+                    return spec.currentToken;
                 }
             } else if ('\"' == input.line[input.lineIndex]) {
-                spec.m_in_quote = !spec.m_in_quote;
+                spec.inQuote = !spec.inQuote;
                 ++input.lineIndex;
                 
                 if (input.lineIndex >= input.lineLength) {
-                    spec.m_current_token = EOS;
-                    spec.m_lexeme = '\0';
+                    spec.currentToken = EOS;
+                    spec.lexeme = '\0';
                     
-                    return spec.m_current_token;
+                    return spec.currentToken;
                 }
             } else {
                 break;
@@ -1720,22 +1720,22 @@ class LexGen {
            escape sequence. */
         boolean saw_escape = ('\\' == input.line[input.lineIndex]);
         
-        if (!spec.m_in_quote) {
-            if (!spec.m_in_ccl && CUtility.isspace(input.line[input.lineIndex])) {
+        if (!spec.inQuote) {
+            if (!spec.inCCl && CUtility.isspace(input.line[input.lineIndex])) {
                 /* White space means the end of
                    the current regular expression. */
                 
-                spec.m_current_token = EOS;
-                spec.m_lexeme = '\0';
+                spec.currentToken = EOS;
+                spec.lexeme = '\0';
                 
-                return spec.m_current_token;
+                return spec.currentToken;
             }
             
             // Process escape sequence, if needed
             if (saw_escape) {
-                spec.m_lexeme = expandEscape();
+                spec.lexeme = expandEscape();
             } else {
-                spec.m_lexeme = input.line[input.lineIndex];
+                spec.lexeme = input.line[input.lineIndex];
                 ++input.lineIndex;
             }
         } else {
@@ -1744,42 +1744,42 @@ class LexGen {
                 (input.lineIndex + 1) < input.lineLength &&
                 '\"' == input.line[input.lineIndex + 1]
             ) {
-                spec.m_lexeme = '\"';
+                spec.lexeme = '\"';
                 input.lineIndex = input.lineIndex + 2;
             } else {
-                spec.m_lexeme = input.line[input.lineIndex];
+                spec.lexeme = input.line[input.lineIndex];
                 ++input.lineIndex;
             }
         }
     
-        Integer code = tokens.get(spec.m_lexeme);
-        if (spec.m_in_quote || saw_escape) {
-            spec.m_current_token = L;
+        Integer code = tokens.get(spec.lexeme);
+        if (spec.inQuote || saw_escape) {
+            spec.currentToken = L;
         } else {
             if (null == code) {
-                spec.m_current_token = L;
+                spec.currentToken = L;
             } else {
-                spec.m_current_token = code;
+                spec.currentToken = code;
             }
         }
         
-        if (CCL_START == spec.m_current_token) {
-            spec.m_in_ccl = true;
+        if (CCL_START == spec.currentToken) {
+            spec.inCCl = true;
         }
         
-        if (CCL_END == spec.m_current_token) {
-            spec.m_in_ccl = false;
+        if (CCL_END == spec.currentToken) {
+            spec.inCCl = false;
         }
         
         if (CUtility.FOODEBUG) {
             System.out.println(
-                "Lexeme: " + spec.m_lexeme +
-                "\tToken: " + spec.m_current_token +
+                "Lexeme: " + spec.lexeme +
+                "\tToken: " + spec.currentToken +
                 "\tIndex: " + input.lineIndex
             );
         }
         
-        return spec.m_current_token;
+        return spec.currentToken;
     }
     
     /**
@@ -1789,7 +1789,7 @@ class LexGen {
         System.out.println();
         System.out.println("\t** Macros **");
         
-        for (Map.Entry <String, String> entry: spec.m_macros.entrySet()) {
+        for (Map.Entry <String, String> entry: spec.macros.entrySet()) {
             String name = entry.getKey();
             String def = entry.getValue();
     
@@ -1803,18 +1803,18 @@ class LexGen {
         System.out.println();
         System.out.println("\t** States **");
     
-        for (Map.Entry <String, Integer> entry: spec.m_states.entrySet()) {
+        for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
             System.out.println("State \"" + entry.getValue() + "\" has identifying index " + entry.getKey() + ".");
         }
         
         System.out.println();
         System.out.println("\t** Character Counting **");
         
-        if (!spec.m_count_chars) {
+        if (!spec.countChars) {
             System.out.println("Character counting is off.");
         } else {
             if (CUtility.DEBUG) {
-                CUtility.ASSERT(spec.m_count_lines);
+                CUtility.ASSERT(spec.countLines);
             }
             
             System.out.println("Character counting is on.");
@@ -1823,7 +1823,7 @@ class LexGen {
         System.out.println();
         System.out.println("\t** Line Counting **");
         
-        if (!spec.m_count_lines) {
+        if (!spec.countLines) {
             System.out.println("Line counting is off.");
         } else {
             System.out.println("Line counting is on.");
@@ -1832,7 +1832,7 @@ class LexGen {
         System.out.println();
         System.out.println("\t** Operating System Specificity **");
         
-        if (!spec.m_unix) {
+        if (!spec.unix) {
             System.out.println("Not generating UNIX-specific code.");
             System.out.println("(This means that \"\\r\\n\" is a newline, rather than \"\\n\".)");
         } else {
@@ -1843,7 +1843,7 @@ class LexGen {
         System.out.println();
         System.out.println("\t** Java CUP Compatibility **");
         
-        if (!spec.m_cup_compatible) {
+        if (!spec.cupCompatible) {
             System.out.println("Generating CUP compatible code.");
             System.out.println("(Scanner implements java_cup.runtime.Scanner.)");
         } else {
@@ -1851,7 +1851,7 @@ class LexGen {
         }
         
         if (CUtility.FOODEBUG) {
-            if (null != spec.m_NFA_states && null != spec.m_NFA_start) {
+            if (null != spec.nfaStates && null != spec.nfaStart) {
                 System.out.println();
                 System.out.println("\t** NFA machine **");
                 
@@ -1859,7 +1859,7 @@ class LexGen {
             }
         }
         
-        if (null != spec.m_dtrans_vector) {
+        if (null != spec.dTransVector) {
             System.out.println();
             System.out.println("\t** DFA transition table **");
             
@@ -1875,7 +1875,7 @@ class LexGen {
         }
         
         for (NFA nfa: nfaSet) {
-            // System.out.print(spec.m_NFA_states.indexOf(nfa) + " ");
+            // System.out.print(spec.nfaStates.indexOf(nfa) + " ");
             System.out.print(nfa.label + " ");
         }
     }
@@ -1883,23 +1883,23 @@ class LexGen {
     private void printHeader() {
         System.out.println("/*---------------------- DFA -----------------------");
     
-        for (Map.Entry <String, Integer> entry: spec.m_states.entrySet()) {
+        for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
             String state = entry.getKey();
             int i = entry.getValue();
     
             System.out.println("State \"" + state + "\" has identifying index " + i + ".");
     
-            if (DTrans.F != spec.m_state_dtrans[i]) {
-                System.out.println("\tStart index in transition table: " + spec.m_state_dtrans[i]);
+            if (DTrans.F != spec.stateDTrans[i]) {
+                System.out.println("\tStart index in transition table: " + spec.stateDTrans[i]);
             } else {
                 System.out.println("\tNo associated transition states.");
             }
         }
         
-        for (int i = 0; i < spec.m_dtrans_vector.size(); ++i) {
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(i);
+        for (int i = 0; i < spec.dTransVector.size(); ++i) {
+            DTrans dTrans = spec.dTransVector.elementAt(i);
             
-            if (null == spec.m_accept_vector && null == spec.m_anchor_array) {
+            if (null == spec.acceptVector && null == spec.anchorArray) {
                 if (null == dTrans.accept) {
                     System.out.print(" * State " + i + " [nonaccepting]");
                 } else {
@@ -1909,16 +1909,16 @@ class LexGen {
                         " <" + new String(dTrans.accept.action, 0, dTrans.accept.actionLength) + ">]"
                     );
                     
-                    if (CSpec.NONE != dTrans.anchor) {
+                    if (Spec.NONE != dTrans.anchor) {
                         System.out.print(
                             " Anchor: " +
-                            ((0 != (dTrans.anchor & CSpec.START))? "start ": "") +
-                            ((0 != (dTrans.anchor & CSpec.END))? "end ": "")
+                            ((0 != (dTrans.anchor & Spec.START))? "start ": "") +
+                            ((0 != (dTrans.anchor & Spec.END))? "end ": "")
                         );
                     }
                 }
             } else {
-                Accept accept = spec.m_accept_vector.elementAt(i);
+                Accept accept = spec.acceptVector.elementAt(i);
                 
                 if (null == accept) {
                     System.out.print(" * State " + i + " [nonaccepting]");
@@ -1929,18 +1929,18 @@ class LexGen {
                         " <" + new String(accept.action, 0, accept.actionLength) + ">]"
                     );
                     
-                    if (CSpec.NONE != spec.m_anchor_array[i]) {
+                    if (Spec.NONE != spec.anchorArray[i]) {
                         System.out.print(
                             " Anchor: " +
-                            ((0 != (spec.m_anchor_array[i] & CSpec.START))? "start ": "") +
-                            ((0 != (spec.m_anchor_array[i] & CSpec.END))? "end ": "")
+                            ((0 != (spec.anchorArray[i] & Spec.START))? "start ": "") +
+                            ((0 != (spec.anchorArray[i] & Spec.END))? "end ": "")
                         );
                     }
                 }
             }
             
             int lastTransition = -1;
-            for (int j = 0; j < spec.m_dtrans_ncols; ++j) {
+            for (int j = 0; j < spec.dTransNCols; ++j) {
                 if (DTrans.F != dTrans.dtrans[j]) {
                     int chars_printed = 0;
                     

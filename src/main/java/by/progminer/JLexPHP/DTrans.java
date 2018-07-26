@@ -9,10 +9,10 @@ class DTrans {
     int anchor;
     int label;
     
-    DTrans(int label, CSpec spec) {
-        dtrans = new int[spec.m_dtrans_ncols];
+    DTrans(int label, Spec spec) {
+        dtrans = new int[spec.dTransNCols];
         accept = null;
-        anchor = CSpec.NONE;
+        anchor = Spec.NONE;
         this.label = label;
     }
 }

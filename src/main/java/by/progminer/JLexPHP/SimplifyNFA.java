@@ -1,6 +1,5 @@
 package by.progminer.JLexPHP;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
@@ -25,10 +24,10 @@ class SimplifyNFA {
      */
     private int mappedCharsetSize;
     
-    void simplify(CSpec spec) {
+    void simplify(Spec spec) {
         computeClasses(spec); // initialize fields
         
-        for (NFA nfa: spec.m_NFA_states) {
+        for (NFA nfa: spec.nfaStates) {
             if (nfa.edge == NFA.EMPTY || nfa.edge == NFA.EPSILON) {
                 continue; // no change
             }
@@ -46,8 +45,8 @@ class SimplifyNFA {
         }
         
         // now update spec with the mapping
-        spec.m_ccls_map = cCls;
-        spec.m_dtrans_ncols = mappedCharsetSize;
+        spec.cClsMap = cCls;
+        spec.dTransNCols = mappedCharsetSize;
     }
     
     /**
@@ -57,8 +56,8 @@ class SimplifyNFA {
      * as we see edges that require discrimination between characters in
      * the class. [CSA, 25-Jul-1999]
      */
-    private void computeClasses(CSpec spec) {
-        this.originalCharsetSize = spec.m_dtrans_ncols;
+    private void computeClasses(Spec spec) {
+        this.originalCharsetSize = spec.dTransNCols;
         this.cCls = new int[originalCharsetSize]; // initially all zero
         
         int nextCls = 1;
@@ -67,7 +66,7 @@ class SimplifyNFA {
         
         System.out.print("Working on character classes.");
         
-        for (NFA nfa: spec.m_NFA_states) {
+        for (NFA nfa: spec.nfaStates) {
             if (nfa.edge == NFA.EMPTY || nfa.edge == NFA.EPSILON) {
                 continue; // no discriminatory information
             }

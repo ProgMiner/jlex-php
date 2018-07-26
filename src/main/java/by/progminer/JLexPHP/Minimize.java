@@ -4,7 +4,7 @@ import java.util.Vector;
 
 class Minimize {
 
-    CSpec spec;
+    Spec spec;
     Vector <Vector <DTrans> > group;
     int inGroup[];
 
@@ -24,7 +24,7 @@ class Minimize {
     /**
      * Sets member variables.
      */
-    private void set(CSpec spec) {
+    private void set(Spec spec) {
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != spec);
         }
@@ -37,7 +37,7 @@ class Minimize {
     /**
      * High-level access function to module.
      */
-    void minDFA(CSpec spec) {
+    void minDFA(Spec spec) {
         set(spec);
 
         // Remove redundant states.
@@ -54,10 +54,10 @@ class Minimize {
      * Copies source column into destination column.
      */
     private void col_copy(int dest, int src) {
-        int n = spec.m_dtrans_vector.size();
+        int n = spec.dTransVector.size();
 
         for (int i = 0; i < n; ++i) {
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(i);
+            DTrans dTrans = spec.dTransVector.elementAt(i);
             dTrans.dtrans[dest] = dTrans.dtrans[src];
         }
     }
@@ -66,11 +66,11 @@ class Minimize {
      * Truncates each column to the 'correct' length.
      */
     private void truncCol() {
-        int n = spec.m_dtrans_vector.size();
+        int n = spec.dTransVector.size();
 
         for (int i = 0; i < n; ++i) {
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(i);
-            int[] nDTrans = new int[spec.m_dtrans_ncols];
+            DTrans dTrans = spec.dTransVector.elementAt(i);
+            int[] nDTrans = new int[spec.dTransNCols];
 
             System.arraycopy(dTrans.dtrans, 0, nDTrans, 0, nDTrans.length);
             dTrans.dtrans = nDTrans;
@@ -81,14 +81,14 @@ class Minimize {
      * Copies source row into destination row.
      */
     private void rowCopy(int dest, int src) {
-        spec.m_dtrans_vector.setElementAt(spec.m_dtrans_vector.elementAt(src), dest);
+        spec.dTransVector.setElementAt(spec.dTransVector.elementAt(src), dest);
     }
 
     private boolean colEquiv(int col1, int col2) {
-        int n = spec.m_dtrans_vector.size();
+        int n = spec.dTransVector.size();
 
         for (int i = 0; i < n; ++i) {
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(i);
+            DTrans dTrans = spec.dTransVector.elementAt(i);
 
             if (dTrans.dtrans[col1] != dTrans.dtrans[col2]) {
                 return false;
@@ -99,10 +99,10 @@ class Minimize {
     }
 
     private boolean rowEquiv(int row1, int row2) {
-        DTrans dTrans1 = spec.m_dtrans_vector.elementAt(row1),
-               dTrans2 = spec.m_dtrans_vector.elementAt(row2);
+        DTrans dTrans1 = spec.dTransVector.elementAt(row1),
+               dTrans2 = spec.dTransVector.elementAt(row2);
 
-        for (int i = 0; i < spec.m_dtrans_ncols; ++i) {
+        for (int i = 0; i < spec.dTransNCols; ++i) {
             if (dTrans1.dtrans[i] != dTrans2.dtrans[i]) {
                 return false;
             }
@@ -115,24 +115,24 @@ class Minimize {
         SparseBitSet set = new SparseBitSet();
 
         // Save accept nodes and anchor entries
-        int size = spec.m_dtrans_vector.size();
+        int size = spec.dTransVector.size();
 
-        spec.m_anchor_array = new int[size];
-        spec.m_accept_vector = new Vector <Accept> ();
+        spec.anchorArray = new int[size];
+        spec.acceptVector = new Vector <Accept> ();
 
         for (int i = 0; i < size; ++i) {
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(i);
+            DTrans dTrans = spec.dTransVector.elementAt(i);
 
-            spec.m_accept_vector.addElement(dTrans.accept);
-            spec.m_anchor_array[i] = dTrans.anchor;
+            spec.acceptVector.addElement(dTrans.accept);
+            spec.anchorArray[i] = dTrans.anchor;
 
             dTrans.accept = null;
         }
 
         // Allocate column map
-        spec.m_col_map = new int[spec.m_dtrans_ncols];
-        for (int i = 0; i < spec.m_dtrans_ncols; ++i) {
-            spec.m_col_map[i] = -1;
+        spec.colMap = new int[spec.dTransNCols];
+        for (int i = 0; i < spec.dTransNCols; ++i) {
+            spec.colMap[i] = -1;
         }
 
         int reducedNCols;
@@ -141,47 +141,47 @@ class Minimize {
         for (reducedNCols = 0; ; ++reducedNCols) {
             if (CUtility.DEBUG) {
                 for (int i = 0; i < reducedNCols; ++i) {
-                    CUtility.ASSERT(-1 != spec.m_col_map[i]);
+                    CUtility.ASSERT(-1 != spec.colMap[i]);
                 }
             }
 
             int i;
-            for (i = reducedNCols; i < spec.m_dtrans_ncols; ++i) {
-                if (-1 == spec.m_col_map[i]) {
+            for (i = reducedNCols; i < spec.dTransNCols; ++i) {
+                if (-1 == spec.colMap[i]) {
                     break;
                 }
             }
 
-            if (i >= spec.m_dtrans_ncols) {
+            if (i >= spec.dTransNCols) {
                 break;
             }
 
             if (CUtility.DEBUG) {
                 CUtility.ASSERT(!set.get(i));
-                CUtility.ASSERT(-1 == spec.m_col_map[i]);
+                CUtility.ASSERT(-1 == spec.colMap[i]);
             }
 
             set.set(i);
 
-            spec.m_col_map[i] = reducedNCols;
+            spec.colMap[i] = reducedNCols;
 
             // UNDONE: Optimize by doing all comparisons in one batch
-            for (int j = i + 1; j < spec.m_dtrans_ncols; ++j) {
-                if (-1 == spec.m_col_map[j] && colEquiv(i, j)) {
-                    spec.m_col_map[j] = reducedNCols;
+            for (int j = i + 1; j < spec.dTransNCols; ++j) {
+                if (-1 == spec.colMap[j] && colEquiv(i, j)) {
+                    spec.colMap[j] = reducedNCols;
                 }
             }
         }
 
         // Reduce columns
         int k = 0;
-        for (int i = 0; i < spec.m_dtrans_ncols; ++i) {
+        for (int i = 0; i < spec.dTransNCols; ++i) {
             if (set.get(i)) {
                 ++k;
 
                 set.clear(i);
 
-                int j = spec.m_col_map[i];
+                int j = spec.colMap[i];
 
                 if (CUtility.DEBUG) {
                     CUtility.ASSERT(j <= i);
@@ -195,7 +195,7 @@ class Minimize {
             }
         }
 
-        spec.m_dtrans_ncols = reducedNCols;
+        spec.dTransNCols = reducedNCols;
 
         // truncate dTrans at proper length (freeing extra)
         truncCol();
@@ -205,11 +205,11 @@ class Minimize {
         }
 
         // Allocate row map
-        int nRows = spec.m_dtrans_vector.size();
+        int nRows = spec.dTransVector.size();
 
-        spec.m_row_map = new int[nRows];
+        spec.rowMap = new int[nRows];
         for (int i = 0; i < nRows; ++i) {
-            spec.m_row_map[i] = -1;
+            spec.rowMap[i] = -1;
         }
 
         int reducedNRows;
@@ -218,13 +218,13 @@ class Minimize {
         for (reducedNRows = 0; ; ++reducedNRows) {
             if (CUtility.DEBUG) {
                 for (int i = 0; i < reducedNRows; ++i) {
-                    CUtility.ASSERT(-1 != spec.m_row_map[i]);
+                    CUtility.ASSERT(-1 != spec.rowMap[i]);
                 }
             }
 
             int i;
             for (i = reducedNRows; i < nRows; ++i) {
-                if (-1 == spec.m_row_map[i]) {
+                if (-1 == spec.rowMap[i]) {
                     break;
                 }
             }
@@ -235,17 +235,17 @@ class Minimize {
 
             if (CUtility.DEBUG) {
                 CUtility.ASSERT(!set.get(i));
-                CUtility.ASSERT(-1 == spec.m_row_map[i]);
+                CUtility.ASSERT(-1 == spec.rowMap[i]);
             }
 
             set.set(i);
 
-            spec.m_row_map[i] = reducedNRows;
+            spec.rowMap[i] = reducedNRows;
 
             // TODO: UNDONE: Optimize by doing all comparisons in one batch
             for (int j = i + 1; j < nRows; ++j) {
-                if (-1 == spec.m_row_map[j] && rowEquiv(i, j)) {
-                    spec.m_row_map[j] = reducedNRows;
+                if (-1 == spec.rowMap[j] && rowEquiv(i, j)) {
+                    spec.rowMap[j] = reducedNRows;
                 }
             }
         }
@@ -258,7 +258,7 @@ class Minimize {
 
                 set.clear(i);
 
-                int j = spec.m_row_map[i];
+                int j = spec.rowMap[i];
 
                 if (CUtility.DEBUG) {
                     CUtility.ASSERT(j <= i);
@@ -272,7 +272,7 @@ class Minimize {
             }
         }
 
-        spec.m_dtrans_vector.setSize(reducedNRows);
+        spec.dTransVector.setSize(reducedNRows);
 
         if (CUtility.DEBUG) {
             // System.out.println("k = " + k + "\nreducedNRows = " + reducedNRows + "");
@@ -288,10 +288,10 @@ class Minimize {
     private void fixDTrans() {
         Vector <DTrans> newVector = new Vector <DTrans> ();
 
-        int size = spec.m_state_dtrans.length;
+        int size = spec.stateDTrans.length;
         for (int i = 0; i < size; ++i) {
-            if (DTrans.F != spec.m_state_dtrans[i]) {
-                spec.m_state_dtrans[i] = inGroup[spec.m_state_dtrans[i]];
+            if (DTrans.F != spec.stateDTrans[i]) {
+                spec.stateDTrans[i] = inGroup[spec.stateDTrans[i]];
             }
         }
 
@@ -302,7 +302,7 @@ class Minimize {
             DTrans first = dTransGroup.elementAt(0);
             newVector.addElement(first);
 
-            for (int c = 0; c < spec.m_dtrans_ncols; ++c) {
+            for (int c = 0; c < spec.dTransNCols; ++c) {
                 if (DTrans.F != first.dtrans[c]) {
                     first.dtrans[c] = inGroup[first.dtrans[c]];
                 }
@@ -310,7 +310,7 @@ class Minimize {
         }
 
         group = null;
-        spec.m_dtrans_vector = newVector;
+        spec.dTransVector = newVector;
     }
 
     /**
@@ -344,7 +344,7 @@ class Minimize {
                 for (int j = 1; j < group_size; ++j) {
                     DTrans next = dTransGroup.elementAt(j);
 
-                    for (int c = 0; c < spec.m_dtrans_ncols; ++c) {
+                    for (int c = 0; c < spec.dTransNCols; ++c) {
                         int goto_first = first.dtrans[c];
                         int goto_next = next.dtrans[c];
 
@@ -396,7 +396,7 @@ class Minimize {
 
         System.out.println(group.size() + " states after removal of redundant states.");
 
-        if (spec.m_verbose && CUtility.OLD_DUMP_DEBUG) {
+        if (spec.verbose && CUtility.OLD_DUMP_DEBUG) {
             System.out.println();
             System.out.println("States grouped as follows after minimization");
 
@@ -410,12 +410,12 @@ class Minimize {
         group = new Vector <Vector <DTrans> > ();
         int groupCount = 0;
 
-        int size = spec.m_dtrans_vector.size();
+        int size = spec.dTransVector.size();
         inGroup = new int[size];
 
         for (int i = 0; i < size; ++i) {
             boolean isGroupFound = false;
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(i);
+            DTrans dTrans = spec.dTransVector.elementAt(i);
 
             if (CUtility.DEBUG) {
                 CUtility.ASSERT(i == dTrans.label);
@@ -464,7 +464,7 @@ class Minimize {
             }
         }
 
-        if (spec.m_verbose && CUtility.OLD_DUMP_DEBUG) {
+        if (spec.verbose && CUtility.OLD_DUMP_DEBUG) {
             System.out.println("Initial grouping:");
             printGroups();
             System.out.println();
@@ -486,7 +486,7 @@ class Minimize {
         }
 
         System.out.println();
-        for (int i = 0; i < spec.m_dtrans_vector.size(); ++i) {
+        for (int i = 0; i < spec.dTransVector.size(); ++i) {
             System.out.println("\tstate " + i + " is in group " + inGroup[i]);
         }
     }

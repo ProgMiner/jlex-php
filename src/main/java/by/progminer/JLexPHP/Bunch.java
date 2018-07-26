@@ -33,7 +33,7 @@ class Bunch {
         nfaSet = null;
         nfaBit = null;
         accept = null;
-        anchor = CSpec.NONE;
+        anchor = Spec.NONE;
         acceptIndex = -1;
     }
 }

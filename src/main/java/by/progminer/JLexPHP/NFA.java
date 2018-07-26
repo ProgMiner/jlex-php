@@ -64,7 +64,7 @@ class NFA {
         next = null;
         next2 = null;
         accept = null;
-        anchor = CSpec.NONE;
+        anchor = Spec.NONE;
         label = NO_LABEL;
         states = null;
     }

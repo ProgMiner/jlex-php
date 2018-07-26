@@ -7,6 +7,6 @@ class AcceptAnchor {
     
     AcceptAnchor() {
         accept = null;
-        anchor = CSpec.NONE;
+        anchor = Spec.NONE;
     }
 }

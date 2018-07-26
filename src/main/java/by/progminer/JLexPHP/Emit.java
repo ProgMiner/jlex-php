@@ -8,7 +8,7 @@ class Emit {
     @SuppressWarnings("FieldCanBeLocal")
     private final boolean NOT_EDBG = false;
     
-    private CSpec spec;
+    private Spec spec;
     private PrintWriter outstream;
     
     Emit() {
@@ -26,7 +26,7 @@ class Emit {
     /**
      * Initializes member variables.
      */
-    private void set(CSpec spec, PrintWriter outstream) {
+    private void set(Spec spec, PrintWriter outstream) {
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != spec);
             CUtility.ASSERT(null != outstream);
@@ -41,7 +41,7 @@ class Emit {
      * generated source file.
      */
     /*
-    void emit_imports(CSpec spec, PrintWriter outstream) throws IOException {
+    void emit_imports(Spec spec, PrintWriter outstream) throws IOException {
         set(spec, outstream);
 
         if (CUtility.DEBUG) {
@@ -63,10 +63,10 @@ class Emit {
     private void printDetails() {
         System.out.println("---------------------- Transition Table ----------------------");
         
-        for (int i = 0; i < spec.m_row_map.length; ++i) {
+        for (int i = 0; i < spec.rowMap.length; ++i) {
             System.out.print("State " + i);
             
-            Accept accept = spec.m_accept_vector.elementAt(i);
+            Accept accept = spec.acceptVector.elementAt(i);
             if (null == accept) {
                 System.out.println(" [nonaccepting]");
             } else {
@@ -76,10 +76,10 @@ class Emit {
                 );
             }
             
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(spec.m_row_map[i]);
+            DTrans dTrans = spec.dTransVector.elementAt(spec.rowMap[i]);
             
             boolean tr = false;
-            int state = dTrans.dtrans[spec.m_col_map[0]];
+            int state = dTrans.dtrans[spec.colMap[0]];
             
             if (DTrans.F != state) {
                 tr = true;
@@ -87,8 +87,8 @@ class Emit {
                 System.out.print("\tgoto " + state + " on [" + ((char) 0));
             }
             
-            for (int j = 1; j < spec.m_dtrans_ncols; ++j) {
-                int next = dTrans.dtrans[spec.m_col_map[j]];
+            for (int j = 1; j < spec.dTransNCols; ++j) {
+                int next = dTrans.dtrans[spec.colMap[j]];
                 
                 if (state == next) {
                     if (DTrans.F != state) {
@@ -122,7 +122,7 @@ class Emit {
     /**
      * High-level access function to module.
      */
-    void all(CSpec spec, PrintWriter outstream) {
+    void all(Spec spec, PrintWriter outstream) {
         set(spec, outstream);
         
         if (CUtility.DEBUG) {
@@ -168,21 +168,21 @@ class Emit {
         outstream.println("\tconst YY_EOF = " + spec.EOF + ";");
         
         // External
-        if (spec.m_integer_type || spec.m_yyeof)
+        if (spec.integerType || spec.yyeof)
             outstream.println("\tconst YYEOF = -1;");
         
         /* User specified class code. */
-        if (null != spec.m_class_code) {
-            outstream.print(new String(spec.m_class_code, 0, spec.m_class_read));
+        if (null != spec.classCode) {
+            outstream.print(new String(spec.classCode, 0, spec.classLength));
         }
         
         // Member Variables
         
-        if (spec.m_count_chars) {
+        if (spec.countChars) {
             outstream.println("\tprotected $yy_count_chars = true;");
         }
         
-        if (spec.m_count_lines) {
+        if (spec.countLines) {
             outstream.println("\tprotected $yy_count_lines = true;");
         }
         
@@ -196,8 +196,8 @@ class Emit {
         outstream.println("\t\t$this->yy_lexical_state = self::YYINITIAL;");
         
         // User specified constructor code.
-        if (null != spec.m_init_code) {
-            outstream.print(new String(spec.m_init_code, 0, spec.m_init_read));
+        if (null != spec.initCode) {
+            outstream.print(new String(spec.initCode, 0, spec.initLength));
         }
         
         outstream.println("\t}");
@@ -210,15 +210,15 @@ class Emit {
      * including YYINITIAL.
      */
     private void states() {
-        for (Map.Entry <String, Integer> entry: spec.m_states.entrySet()) {
+        for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
             outstream.println("\tconst " + entry.getKey() + " = " + entry.getValue() + ";");
         }
         
         outstream.println("\tstatic $yy_state_dtrans = [");
-        for (int index = 0; index < spec.m_state_dtrans.length; ++index) {
-            outstream.print("\t\t" + spec.m_state_dtrans[index]);
+        for (int index = 0; index < spec.stateDTrans.length; ++index) {
+            outstream.print("\t\t" + spec.stateDTrans[index]);
             
-            if (index < spec.m_state_dtrans.length - 1) {
+            if (index < spec.stateDTrans.length - 1) {
                 outstream.println(",");
             } else {
                 outstream.println();
@@ -237,13 +237,13 @@ class Emit {
             CUtility.ASSERT(null != outstream);
         }
         
-        if (null != spec.m_eof_code) {
+        if (null != spec.eofCode) {
             // Function yy_do_eof
             
             outstream.print("\tprivate function yy_do_eof () {");
             
             outstream.println("\t\tif (false === $this->yy_eof_done) {");
-            outstream.print(new String(spec.m_eof_code, 0, spec.m_eof_read));
+            outstream.print(new String(spec.eofCode, 0, spec.eofLength));
             outstream.println("\t\t}");
             outstream.println("\t\t$this->yy_eof_done = true;");
             outstream.println("\t}");
@@ -264,17 +264,17 @@ class Emit {
         
         outstream.println();
         
-        if (spec.m_public) {
+        if (spec.public_) {
             outstream.print("public ");
         }
         
         outstream.print("class ");
-        outstream.print(new String(spec.m_class_name, 0, spec.m_class_name.length));
+        outstream.print(new String(spec.className, 0, spec.className.length));
         outstream.print(" extends JLexPHP\\Base ");
         
-        if (spec.m_implements_name.length > 0) {
+        if (spec.implementsName.length > 0) {
             outstream.print(" implements ");
-            outstream.print(new String(spec.m_implements_name, 0, spec.m_implements_name.length));
+            outstream.print(new String(spec.implementsName, 0, spec.implementsName.length));
         }
         
         outstream.println(" {");
@@ -291,14 +291,14 @@ class Emit {
         
         outstream.println("\tstatic $yy_acpt = [");
         
-        int size = spec.m_accept_vector.size();
+        int size = spec.acceptVector.size();
         for (int elem = 0; elem < size; ++elem) {
-            Accept accept = spec.m_accept_vector.elementAt(elem);
+            Accept accept = spec.acceptVector.elementAt(elem);
             
             outstream.print("\t\t/* " + elem + " */ ");
             if (null != accept) {
-                boolean is_start = (0 != (spec.m_anchor_array[elem] & CSpec.START));
-                boolean is_end = (0 != (spec.m_anchor_array[elem] & CSpec.END));
+                boolean is_start = (0 != (spec.anchorArray[elem] & Spec.START));
+                boolean is_end = (0 != (spec.anchorArray[elem] & Spec.END));
                 
                 if (is_start && is_end) {
                     outstream.print("3 /* self::YY_START | self::YY_END */");
@@ -324,9 +324,9 @@ class Emit {
         
         // CSA: modified yy_cmap to use string packing 9-Aug-1999
         
-        int[] yy_cmap = new int[spec.m_ccls_map.length];
-        for (int i = 0; i < spec.m_ccls_map.length; ++i) {
-            yy_cmap[i] = spec.m_col_map[spec.m_ccls_map[i]];
+        int[] yy_cmap = new int[spec.cClsMap.length];
+        for (int i = 0; i < spec.cClsMap.length; ++i) {
+            yy_cmap[i] = spec.colMap[spec.cClsMap[i]];
         }
         
         outstream.print("\t\tstatic $yy_cmap = ");
@@ -336,19 +336,19 @@ class Emit {
         // CSA: modified yy_rmap to use string packing 9-Aug-1999
         
         outstream.print("\t\tstatic $yy_rmap = ");
-        tableAsArray(spec.m_row_map);
+        tableAsArray(spec.rowMap);
         outstream.println();
         
         // 6/24/98 Raimondas Lencevicius
         // modified to use
         //    int[][] unpackFromString(int size1, int size2, String st)
         
-        size = spec.m_dtrans_vector.size();
+        size = spec.dTransVector.size();
         int[][] yy_nxt = new int[size][];
         for (int elem = 0; elem < size; elem++) {
-            DTrans dTrans = spec.m_dtrans_vector.elementAt(elem);
+            DTrans dTrans = spec.dTransVector.elementAt(elem);
             
-            CUtility.ASSERT(dTrans.dtrans.length == spec.m_dtrans_ncols);
+            CUtility.ASSERT(dTrans.dtrans.length == spec.dTransNCols);
             
             yy_nxt[elem] = dTrans.dtrans;
         }
@@ -489,13 +489,13 @@ class Emit {
     
         outstream.print("\tpublic function ");
         
-        if (!spec.m_integer_type && !spec.m_intwrap_type) {
+        if (!spec.integerType && !spec.intWrapType) {
             outstream.print("/*");
-            outstream.print(new String(spec.m_type_name));
+            outstream.print(new String(spec.typeName));
             outstream.print("*/ ");
         }
     
-        outstream.print(new String(spec.m_function_name));
+        outstream.print(new String(spec.functionName));
         outstream.println(" () {");
         
         outstream.println("\t\t$yy_anchor = self::YY_NO_ANCHOR;");
@@ -549,14 +549,14 @@ class Emit {
         
         outstream.println("\t\t\tif (self::YY_EOF === $yy_lookahead && $yy_initial) {");
         
-        if (null != spec.m_eof_code) {
+        if (null != spec.eofCode) {
             outstream.println("\t\t\t\t$this->yy_do_eof();");
         }
         
-        if (spec.m_integer_type) {
+        if (spec.integerType) {
             outstream.println("\t\t\t\treturn self::YYEOF;");
-        } else if (null != spec.m_eof_value_code) {
-            outstream.print(new String(spec.m_eof_value_code, 0, spec.m_eof_value_read));
+        } else if (null != spec.eofValueCode) {
+            outstream.print(new String(spec.eofValueCode, 0, spec.eofValueLength));
         } else {
             outstream.println("\t\t\t\treturn null;");
         }
@@ -624,13 +624,13 @@ class Emit {
     
     private void actions(String tabs) {
         if (CUtility.DEBUG) {
-            CUtility.ASSERT(spec.m_accept_vector.size() == spec.m_anchor_array.length);
+            CUtility.ASSERT(spec.acceptVector.size() == spec.anchorArray.length);
         }
         
         int bogus_index = -2;
-        int size = spec.m_accept_vector.size();
+        int size = spec.acceptVector.size();
         for (int elem = 0; elem < size; ++elem) {
-            Accept accept = spec.m_accept_vector.elementAt(elem);
+            Accept accept = spec.acceptVector.elementAt(elem);
             
             if (null != accept) {
                 outstream.print(tabs + "case " + elem + ": ");

@@ -2,11 +2,11 @@ package by.progminer.JLexPHP;
 
 class Alloc {
     
-    static DFA newDFA(CSpec spec) {
+    static DFA newDFA(Spec spec) {
         DFA dfa;
         
-        dfa = new DFA(spec.m_DFA_states.size());
-        spec.m_DFA_states.addElement(dfa);
+        dfa = new DFA(spec.dfaStates.size());
+        spec.dfaStates.addElement(dfa);
         
         return dfa;
     }
@@ -20,7 +20,7 @@ class Alloc {
      *
      * @return a new NFAPair that matches a new line: (\r\n?|[\n\uu2028\uu2029])
      */
-    static NFAPair newNLPair(CSpec spec) {
+    static NFAPair newNLPair(Spec spec) {
         NFAPair pair = newNFAPair();
         
         pair.end = newNFA(spec); // newline accepting state
@@ -33,7 +33,7 @@ class Alloc {
         pair.start.next.set = new Set();
         pair.start.next.set.add('\n');
         
-        if (spec.m_dtrans_ncols - CSpec.NUM_PSEUDO > 2029) {
+        if (spec.dTransNCols - Spec.NUM_PSEUDO > 2029) {
             pair.start.next.set.add(2028); // U+2028 is LS, the line separator
             pair.start.next.set.add(2029); // U+2029 is PS, the paragraph sep.
         }
@@ -53,14 +53,14 @@ class Alloc {
         return pair;
     }
     
-    static NFA newNFA(CSpec spec) {
+    static NFA newNFA(Spec spec) {
         NFA p;
         
         // UNDONE: Buffer this?
         
         p = new NFA();
         
-        spec.m_NFA_states.addElement(p);
+        spec.nfaStates.addElement(p);
         p.edge = NFA.EPSILON;
         
         return p;

@@ -20,7 +20,7 @@ class DFA {
         mark = false;
         
         accept = null;
-        anchor = CSpec.NONE;
+        anchor = Spec.NONE;
         
         nfaSet = null;
         nfaBit = null;

@@ -5,7 +5,7 @@ import java.util.Vector;
 
 class MakeNFA {
 
-    private CSpec spec;
+    private Spec spec;
     private LexGen lexGen;
     private Input input;
     MakeNFA() {
@@ -24,7 +24,7 @@ class MakeNFA {
     /**
      * Sets MakeNFA member variables.
      */
-    private void set(LexGen lexGen, CSpec spec, Input input) {
+    private void set(LexGen lexGen, Spec spec, Input input) {
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != input);
             CUtility.ASSERT(null != lexGen);
@@ -39,38 +39,38 @@ class MakeNFA {
     /**
      * Expands character class to include special BOL and
      * EOF characters. Puts numeric index of these characters in
-     * input CSpec.
+     * input Spec.
      */
-    void allocateBolEof(CSpec spec) {
+    void allocateBolEof(Spec spec) {
         //noinspection ConstantConditions
-        CUtility.ASSERT(CSpec.NUM_PSEUDO == 2);
+        CUtility.ASSERT(Spec.NUM_PSEUDO == 2);
 
-        spec.BOL = spec.m_dtrans_ncols++;
-        spec.EOF = spec.m_dtrans_ncols++;
+        spec.BOL = spec.dTransNCols++;
+        spec.EOF = spec.dTransNCols++;
     }
 
     /**
      * High level access function to module.
-     * Deposits result in input CSpec.
+     * Deposits result in input Spec.
      */
-    void thompson(LexGen lexGen, CSpec spec, Input input) throws IOException {
+    void thompson(LexGen lexGen, Spec spec, Input input) throws IOException {
         // Set member variables
         reset();
         set(lexGen, spec, input);
 
-        int size = this.spec.m_states.size();
-        this.spec.m_state_rules = new Vector[size];
+        int size = this.spec.states.size();
+        this.spec.stateRules = new Vector[size];
 
         for (int i = 0; i < size; ++i) {
-            this.spec.m_state_rules[i] = new Vector <NFA> ();
+            this.spec.stateRules[i] = new Vector <NFA> ();
         }
 
-        this.spec.m_NFA_start = machine();
+        this.spec.nfaStart = machine();
 
         // Set labels in created NFA machine
-        size = this.spec.m_NFA_states.size();
+        size = this.spec.nfaStates.size();
         for (int i = 0; i < size; ++i) {
-            NFA elem = this.spec.m_NFA_states.elementAt(i);
+            NFA elem = this.spec.nfaStates.elementAt(i);
             elem.label = i;
         }
 
@@ -79,23 +79,23 @@ class MakeNFA {
             this.lexGen.printNFA();
         }
 
-        if (this.spec.m_verbose) {
-            System.out.println("NFA comprised of " + (this.spec.m_NFA_states.size() + 1) + " states.");
+        if (this.spec.verbose) {
+            System.out.println("NFA comprised of " + (this.spec.nfaStates.size() + 1) + " states.");
         }
 
         reset();
     }
 
     private void discardNFA(NFA nfa) {
-        spec.m_NFA_states.removeElement(nfa);
+        spec.nfaStates.removeElement(nfa);
     }
 
     private void processStates(SparseBitSet states, NFA current) {
-        int size = spec.m_states.size();
+        int size = spec.states.size();
 
         for (int i = 0; i < size; ++i) {
             if (states.get(i)) {
-                spec.m_state_rules[i].addElement(current);
+                spec.stateRules[i].addElement(current);
             }
         }
     }
@@ -105,7 +105,7 @@ class MakeNFA {
      */
     private NFA machine() throws IOException {
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("machine", spec.m_lexeme, spec.m_current_token);
+            CUtility.enter("machine", spec.lexeme, spec.currentToken);
         }
 
         NFA start = Alloc.newNFA(spec);
@@ -114,24 +114,24 @@ class MakeNFA {
         SparseBitSet states = lexGen.getStates();
 
         // Begin: Added for states
-        spec.m_current_token = LexGen.EOS;
+        spec.currentToken = LexGen.EOS;
         lexGen.advance();
         // End: Added for states
 
-        if (LexGen.END_OF_INPUT != spec.m_current_token) {
+        if (LexGen.END_OF_INPUT != spec.currentToken) {
             // CSA fix
 
             p.next = rule();
             processStates(states, p.next);
         }
 
-        while (LexGen.END_OF_INPUT != spec.m_current_token) {
+        while (LexGen.END_OF_INPUT != spec.currentToken) {
             // Make state changes HERE
             states = lexGen.getStates();
 
             // Begin: Added for states
             lexGen.advance();
-            if (LexGen.END_OF_INPUT == spec.m_current_token) {
+            if (LexGen.END_OF_INPUT == spec.currentToken) {
                 break;
             }
             // End: Added for states
@@ -145,7 +145,7 @@ class MakeNFA {
 
         // CSA: add pseudo-rules for BOL and EOF
         SparseBitSet all_states = new SparseBitSet();
-        for (int i = 0; i < spec.m_states.size(); ++i) {
+        for (int i = 0; i < spec.states.size(); ++i) {
             all_states.set(i);
         }
 
@@ -167,7 +167,7 @@ class MakeNFA {
         // CSA: done
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("machine", spec.m_lexeme, spec.m_current_token);
+            CUtility.leave("machine", spec.lexeme, spec.currentToken);
         }
 
         return start;
@@ -178,15 +178,15 @@ class MakeNFA {
      */
     private NFA rule() throws IOException {
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("rule", spec.m_lexeme, spec.m_current_token);
+            CUtility.enter("rule", spec.lexeme, spec.currentToken);
         }
 
-        int anchor = CSpec.NONE;
+        int anchor = Spec.NONE;
         NFA start, end;
 
         NFAPair pair = Alloc.newNFAPair();
-        if (LexGen.AT_BOL == spec.m_current_token) {
-            anchor = anchor | CSpec.START;
+        if (LexGen.AT_BOL == spec.currentToken) {
+            anchor = anchor | Spec.START;
             lexGen.advance();
             expr(pair);
 
@@ -203,7 +203,7 @@ class MakeNFA {
             end = pair.end;
         }
 
-        if (LexGen.AT_EOL == spec.m_current_token) {
+        if (LexGen.AT_EOL == spec.currentToken) {
             lexGen.advance();
 
             // CSA: fixed end-of-line operator. 8-aug-1999
@@ -219,7 +219,7 @@ class MakeNFA {
 
             end = nlPair.end;
 
-            anchor = anchor | CSpec.END;
+            anchor = anchor | Spec.END;
         }
 
         // Check for null rules. Charles Fischer found this bug [CSA]
@@ -235,7 +235,7 @@ class MakeNFA {
         end.anchor = anchor;
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("rule", spec.m_lexeme, spec.m_current_token);
+            CUtility.leave("rule", spec.lexeme, spec.currentToken);
         }
 
         return start;
@@ -246,7 +246,7 @@ class MakeNFA {
      */
     private void expr(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("expr", spec.m_lexeme, spec.m_current_token);
+            CUtility.enter("expr", spec.lexeme, spec.currentToken);
         }
 
         if (CUtility.DEBUG) {
@@ -256,7 +256,7 @@ class MakeNFA {
         NFAPair e2Pair = Alloc.newNFAPair();
 
         catExpr(pair);
-        while (LexGen.OR == spec.m_current_token) {
+        while (LexGen.OR == spec.currentToken) {
             lexGen.advance();
             catExpr(e2Pair);
 
@@ -272,7 +272,7 @@ class MakeNFA {
         }
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("expr", spec.m_lexeme, spec.m_current_token);
+            CUtility.leave("expr", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -281,7 +281,7 @@ class MakeNFA {
      */
     private void catExpr(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("catExpr", spec.m_lexeme, spec.m_current_token);
+            CUtility.enter("catExpr", spec.lexeme, spec.currentToken);
         }
 
         if (CUtility.DEBUG) {
@@ -290,11 +290,11 @@ class MakeNFA {
 
         NFAPair e2Pair = Alloc.newNFAPair();
 
-        if (firstInCat(spec.m_current_token)) {
+        if (firstInCat(spec.currentToken)) {
             factor(pair);
         }
 
-        while (firstInCat(spec.m_current_token)) {
+        while (firstInCat(spec.currentToken)) {
             factor(e2Pair);
 
             // Destroy
@@ -305,7 +305,7 @@ class MakeNFA {
         }
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("catExpr", spec.m_lexeme, spec.m_current_token);
+            CUtility.leave("catExpr", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -346,15 +346,15 @@ class MakeNFA {
      */
     private void factor(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("factor", spec.m_lexeme, spec.m_current_token);
+            CUtility.enter("factor", spec.lexeme, spec.currentToken);
         }
 
         term(pair);
 
         if (
-            LexGen.CLOSURE == spec.m_current_token ||
-            LexGen.PLUS_CLOSE == spec.m_current_token ||
-            LexGen.OPTIONAL == spec.m_current_token
+            LexGen.CLOSURE == spec.currentToken ||
+            LexGen.PLUS_CLOSE == spec.currentToken ||
+            LexGen.OPTIONAL == spec.currentToken
         ) {
             NFA start = Alloc.newNFA(spec),
                  end = Alloc.newNFA(spec);
@@ -363,15 +363,15 @@ class MakeNFA {
             pair.end.next = end;
 
             if (
-                LexGen.CLOSURE == spec.m_current_token ||
-                LexGen.OPTIONAL == spec.m_current_token
+                LexGen.CLOSURE == spec.currentToken ||
+                LexGen.OPTIONAL == spec.currentToken
             ) {
                 start.next2 = end;
             }
 
             if (
-                LexGen.CLOSURE == spec.m_current_token ||
-                LexGen.PLUS_CLOSE == spec.m_current_token
+                LexGen.CLOSURE == spec.currentToken ||
+                LexGen.PLUS_CLOSE == spec.currentToken
             ) {
                 pair.end.next2 = pair.start;
             }
@@ -382,7 +382,7 @@ class MakeNFA {
         }
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("factor", spec.m_lexeme, spec.m_current_token);
+            CUtility.leave("factor", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -391,14 +391,14 @@ class MakeNFA {
      */
     private void term(NFAPair pair) throws IOException {
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("term", spec.m_lexeme, spec.m_current_token);
+            CUtility.enter("term", spec.lexeme, spec.currentToken);
         }
 
-        if (LexGen.OPEN_PAREN == spec.m_current_token) {
+        if (LexGen.OPEN_PAREN == spec.currentToken) {
             lexGen.advance();
             expr(pair);
 
-            if (LexGen.CLOSE_PAREN == spec.m_current_token) {
+            if (LexGen.CLOSE_PAREN == spec.currentToken) {
                 lexGen.advance();
             } else {
                 Error.parseError(Error.E_SYNTAX, input.lineNumber);
@@ -410,13 +410,13 @@ class MakeNFA {
             start.next = Alloc.newNFA(spec);
             pair.end = start.next;
 
-            boolean isAlphaL = (LexGen.L == spec.m_current_token && Character.isLetter(spec.m_lexeme));
+            boolean isAlphaL = (LexGen.L == spec.currentToken && Character.isLetter(spec.lexeme));
             if (
-                LexGen.ANY != spec.m_current_token &&
-                LexGen.CCL_START != spec.m_current_token &&
-                (!spec.m_ignorecase || !isAlphaL)
+                LexGen.ANY != spec.currentToken &&
+                LexGen.CCL_START != spec.currentToken &&
+                (!spec.ignoreCase || !isAlphaL)
             ) {
-                start.edge = spec.m_lexeme;
+                start.edge = spec.lexeme;
                 lexGen.advance();
             } else {
                 start.edge = NFA.CCL;
@@ -424,12 +424,12 @@ class MakeNFA {
                 start.set = new Set();
 
                 // Match case-insensitive letters using character class
-                if (spec.m_ignorecase && isAlphaL) {
-                    start.set.addNCase(spec.m_lexeme);
+                if (spec.ignoreCase && isAlphaL) {
+                    start.set.addNCase(spec.lexeme);
                 }
 
                 // Match dot (.) using character class
-                else if (LexGen.ANY == spec.m_current_token) {
+                else if (LexGen.ANY == spec.currentToken) {
                     start.set.add('\n');
                     start.set.add('\r');
 
@@ -440,7 +440,7 @@ class MakeNFA {
                 } else {
                     lexGen.advance();
 
-                    if (LexGen.AT_BOL == spec.m_current_token) {
+                    if (LexGen.AT_BOL == spec.currentToken) {
                         lexGen.advance();
 
                         // CSA: exclude BOL and EOF from character classes
@@ -449,7 +449,7 @@ class MakeNFA {
                         start.set.complement();
                     }
 
-                    if (LexGen.CCL_END != spec.m_current_token) {
+                    if (LexGen.CCL_END != spec.currentToken) {
                         doDash(start.set);
                     }
                 }
@@ -459,7 +459,7 @@ class MakeNFA {
         }
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("term", spec.m_lexeme, spec.m_current_token);
+            CUtility.leave("term", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -470,40 +470,40 @@ class MakeNFA {
         int first = -1;
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("doDash", spec.m_lexeme, spec.m_current_token);
+            CUtility.enter("doDash", spec.lexeme, spec.currentToken);
         }
 
         while (
-            LexGen.EOS != spec.m_current_token &&
-            LexGen.CCL_END != spec.m_current_token
+            LexGen.EOS != spec.currentToken &&
+            LexGen.CCL_END != spec.currentToken
         ) {
             // DASH loses its special meaning if it is first in class.
 
-            if (LexGen.DASH == spec.m_current_token && -1 != first) {
+            if (LexGen.DASH == spec.currentToken && -1 != first) {
                 lexGen.advance();
 
                 // DASH loses its special meaning if it is last in class.
-                if (spec.m_current_token == LexGen.CCL_END) {
+                if (spec.currentToken == LexGen.CCL_END) {
                     // 'first' already in set.
 
                     set.add('-');
                     break;
                 }
 
-                for (; first <= spec.m_lexeme; ++first) {
-                    if (spec.m_ignorecase) {
+                for (; first <= spec.lexeme; ++first) {
+                    if (spec.ignoreCase) {
                         set.addNCase((char) first);
                     } else {
                         set.add(first);
                     }
                 }
             } else {
-                first = spec.m_lexeme;
+                first = spec.lexeme;
 
-                if (spec.m_ignorecase) {
-                    set.addNCase(spec.m_lexeme);
+                if (spec.ignoreCase) {
+                    set.addNCase(spec.lexeme);
                 } else {
-                    set.add(spec.m_lexeme);
+                    set.add(spec.lexeme);
                 }
             }
 
@@ -511,7 +511,7 @@ class MakeNFA {
         }
 
         if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("doDash", spec.m_lexeme, spec.m_current_token);
+            CUtility.leave("doDash", spec.lexeme, spec.currentToken);
         }
     }
 }
