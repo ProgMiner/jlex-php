@@ -38,13 +38,13 @@ class CSpec {
     /**
      * Start state of NFA machine.
      */
-    CNfa m_nfa_start;
+    NFA m_NFA_start;
     
     /**
      * Vector of states, with index
      * corresponding to label.
      */
-    Vector <CNfa> m_nfa_states;
+    Vector <NFA> m_NFA_states;
     
     // Accept States and Corresponding Anchors.
     
@@ -55,7 +55,7 @@ class CSpec {
      * The contents of the ithVector are the indices of the NFA start
      * states that can be matched while in he ith lexical state.
      */
-    Vector <CNfa> m_state_rules[];
+    Vector <NFA> m_state_rules[];
     
     int m_state_dtrans[];
     
@@ -65,14 +65,14 @@ class CSpec {
      * Vector of states, with index
      * corresponding to label.
      */
-    Vector <Dfa> m_dfa_states;
+    Vector <DFA> m_DFA_states;
     
     /**
      * Hashtable taking set of NFA states
      * to corresponding DFA state,
      * if the latter exists.
      */
-    Hashtable <SparseBitSet, Dfa> m_dfa_sets;
+    Hashtable <SparseBitSet, DFA> m_dfa_sets;
     
     Vector<Accept> m_accept_vector;
     int m_anchor_array[];
@@ -173,11 +173,11 @@ class CSpec {
         // Initialize variables for JLex runtime options.
         m_verbose = true;
         
-        m_nfa_start = null;
-        m_nfa_states = new Vector<CNfa>();
+        m_NFA_start = null;
+        m_NFA_states = new Vector<NFA>();
         
-        m_dfa_states = new Vector <Dfa> ();
-        m_dfa_sets = new Hashtable <SparseBitSet, Dfa> ();
+        m_DFA_states = new Vector <DFA> ();
+        m_dfa_sets = new Hashtable <SparseBitSet, DFA> ();
         
         m_dtrans_vector = new Vector<DTrans>();
         m_dtrans_ncols = CUtility.MAX_SEVEN_BIT + 1;

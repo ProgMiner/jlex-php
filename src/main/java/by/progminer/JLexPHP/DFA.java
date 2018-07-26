@@ -2,7 +2,7 @@ package by.progminer.JLexPHP;
 
 import java.util.Vector;
 
-class Dfa {
+class DFA {
     
     int group;
     boolean mark;
@@ -15,7 +15,7 @@ class Dfa {
     
     int label;
     
-    Dfa(int label) {
+    DFA(int label) {
         group = 0;
         mark = false;
         

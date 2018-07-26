@@ -1,12 +1,12 @@
 package by.progminer.JLexPHP;
 
-class CNfa {
+class NFA {
     
     static final int NO_LABEL = -1;
     
     /**
      * Edge transitions on one specific character
-     * are labelled with the character Ascii (Unicode)
+     * are labelled with the character ASCII (Unicode)
      * codes. So none of the constants below should
      * overlap with the natural character codes.
      */
@@ -23,17 +23,17 @@ class CNfa {
      *      EMPTY,
      *      EPSILON.
      */
-    int m_edge;
+    int edge;
     
     /**
      * Set to store character classes.
      */
-    CSet m_set;
+    CSet set;
     
     /**
      * Next state (or null if none).
      */
-    CNfa m_next;
+    NFA next;
     
     /**
      * Another state with type == EPSILON
@@ -42,59 +42,59 @@ class CNfa {
      * The NFA construction should result in two
      * outgoing edges only if both are EPSILON edges.
      */
-    CNfa m_next2;
+    NFA next2;
     
     /**
      * Set to null if nonaccepting state.
      */
-    Accept m_accept;
+    Accept accept;
     
     /**
      * Says if and where pattern is anchored.
      */
-    int m_anchor;
+    int anchor;
     
-    int m_label;
+    int label;
     
-    SparseBitSet m_states;
+    SparseBitSet states;
     
-    CNfa() {
-        m_edge = EMPTY;
-        m_set = null;
-        m_next = null;
-        m_next2 = null;
-        m_accept = null;
-        m_anchor = CSpec.NONE;
-        m_label = NO_LABEL;
-        m_states = null;
+    NFA() {
+        edge = EMPTY;
+        set = null;
+        next = null;
+        next2 = null;
+        accept = null;
+        anchor = CSpec.NONE;
+        label = NO_LABEL;
+        states = null;
     }
     
     /**
      * Converts this NFA state into a copy of
      * the input one.
      */
-    void mimic(CNfa nfa) {
-        m_edge = nfa.m_edge;
+    void mimic(NFA nfa) {
+        edge = nfa.edge;
         
-        if (null != nfa.m_set) {
-            if (null == m_set) {
-                m_set = new CSet();
+        if (null != nfa.set) {
+            if (null == set) {
+                set = new CSet();
             }
             
-            m_set.mimic(nfa.m_set);
+            set.mimic(nfa.set);
         } else {
-            m_set = null;
+            set = null;
         }
         
-        m_next = nfa.m_next;
-        m_next2 = nfa.m_next2;
-        m_accept = nfa.m_accept;
-        m_anchor = nfa.m_anchor;
+        next = nfa.next;
+        next2 = nfa.next2;
+        accept = nfa.accept;
+        anchor = nfa.anchor;
         
-        if (null != nfa.m_states) {
-            m_states = (SparseBitSet) nfa.m_states.clone();
+        if (null != nfa.states) {
+            states = (SparseBitSet) nfa.states.clone();
         } else {
-            m_states = null;
+            states = null;
         }
     }
 }

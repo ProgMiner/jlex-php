@@ -29,26 +29,26 @@ class CSimplifyNfa {
         computeClasses(m_spec); // initialize fields.
         
         // now rewrite the NFA using our character class mapping.
-        for (Enumeration <CNfa> e = m_spec.m_nfa_states.elements(); e.hasMoreElements(); ) {
-            CNfa nfa = e.nextElement();
+        for (Enumeration <NFA> e = m_spec.m_NFA_states.elements(); e.hasMoreElements(); ) {
+            NFA nfa = e.nextElement();
             
-            if (nfa.m_edge == CNfa.EMPTY || nfa.m_edge == CNfa.EPSILON) {
+            if (nfa.edge == nfa.EMPTY || nfa.edge == nfa.EPSILON) {
                 continue; // no change.
             }
             
-            if (nfa.m_edge == CNfa.CCL) {
+            if (nfa.edge == nfa.CCL) {
                 CSet ncset = new CSet();
                 
-                ncset.map(nfa.m_set, ccls); // map it.
-                nfa.m_set = ncset;
+                ncset.map(nfa.set, ccls); // map it.
+                nfa.set = ncset;
             } else {
                 // single character
                 
-                nfa.m_edge = ccls[nfa.m_edge]; // map it.
+                nfa.edge = ccls[nfa.edge]; // map it.
             }
         }
         
-        // now update m_spec with the mapping.
+        // now update spec with the mapping.
         m_spec.m_ccls_map = ccls;
         m_spec.m_dtrans_ncols = mapped_charset_size;
     }
@@ -70,10 +70,10 @@ class CSimplifyNfa {
         
         System.out.print("Working on character classes.");
         
-        for (Enumeration <CNfa> e = m_spec.m_nfa_states.elements(); e.hasMoreElements(); ) {
-            CNfa nfa = e.nextElement();
+        for (Enumeration <NFA> e = m_spec.m_NFA_states.elements(); e.hasMoreElements(); ) {
+            NFA nfa = e.nextElement();
             
-            if (nfa.m_edge == CNfa.EMPTY || nfa.m_edge == CNfa.EPSILON) {
+            if (nfa.edge == nfa.EMPTY || nfa.edge == nfa.EPSILON) {
                 continue; // no discriminatory information.
             }
             
@@ -82,8 +82,8 @@ class CSimplifyNfa {
             
             for (int i = 0; i < ccls.length; i++) {
                 if (
-                    nfa.m_edge == i || // edge labeled with a character
-                    (nfa.m_edge == CNfa.CCL && nfa.m_set.contains(i)) // set of characters
+                    nfa.edge == i || // edge labeled with a character
+                    (nfa.edge == nfa.CCL && nfa.set.contains(i)) // set of characters
                 ) {
                     clsA.set(ccls[i]);
                 } else {
@@ -106,7 +106,7 @@ class CSimplifyNfa {
             h.clear(); // h will map old to new class name
             for (int i = 0; i < ccls.length; i++) {
                 if (clsA.get(ccls[i])) { // a split class
-                    if (nfa.m_edge == i || (nfa.m_edge == CNfa.CCL && nfa.m_set.contains(i))) {
+                    if (nfa.edge == i || (nfa.edge == nfa.CCL && nfa.set.contains(i))) {
                         // on A side
                         
                         int split = ccls[i];

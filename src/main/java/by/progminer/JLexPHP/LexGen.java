@@ -80,18 +80,18 @@ class LexGen {
     /**
      * NFA machine generator module.
      */
-    private CMakeNfa makeNFA;
+    private MakeNFA makeNFA;
     
     /**
      * NFA to DFA machine (transition table)
      * conversion module.
      */
-    private CNfa2Dfa nfa2DFA;
+    private Nfa2DFA nfa2DFA;
     
     /**
      * Transition table compressor.
      */
-    private CMinimize minimize;
+    private Minimize minimize;
     
     /**
      * NFA simplifier using char classes.
@@ -194,10 +194,10 @@ class LexGen {
         // Initialize spec structure
         spec = new CSpec(this);
         
-        // Nfa to dfa converter
-        nfa2DFA = new CNfa2Dfa();
-        minimize = new CMinimize();
-        makeNFA = new CMakeNfa();
+        // NFA to dfa converter
+        nfa2DFA = new Nfa2DFA();
+        minimize = new Minimize();
+        makeNFA = new MakeNFA();
         simplifyNFA = new CSimplifyNfa();
         
         emit = new Emit();
@@ -783,7 +783,7 @@ class LexGen {
             System.out.println("Creating NFA machine representation.");
         }
         
-        makeNFA.allocate_BOL_EOF(spec);
+        makeNFA.allocateBolEof(spec);
         makeNFA.thompson(this, spec, input);
         
         simplifyNFA.simplify(spec);
@@ -798,7 +798,7 @@ class LexGen {
             System.out.println("Creating DFA transition table.");
         }
         
-        nfa2DFA.make_dfa(this, spec);
+        nfa2DFA.makeDFA(this, spec);
         
         if (CUtility.FOODEBUG) {
             printHeader();
@@ -808,7 +808,7 @@ class LexGen {
             System.out.println("Minimizing DFA transition table.");
         }
         
-        minimize.min_dfa(spec);
+        minimize.minDFA(spec);
     }
     
     /**
@@ -827,12 +827,12 @@ class LexGen {
         System.out.print(']');
     }
     
-    private String stateLabel(CNfa state) {
+    private String stateLabel(NFA state) {
         if (null == state) {
             return ("--");
         }
         
-        return Integer.toString(spec.m_nfa_states.indexOf(state));
+        return Integer.toString(spec.m_NFA_states.indexOf(state));
     }
     
     private String interpretInt(int i) {
@@ -865,40 +865,40 @@ class LexGen {
     void printNFA() {
         System.out.println("--------------------- NFA -----------------------");
         
-        for (CNfa nfa: spec.m_nfa_states) {
-            System.out.print("Nfa state " + stateLabel(nfa) + ": ");
+        for (NFA nfa: spec.m_NFA_states) {
+            System.out.print("nfa state " + stateLabel(nfa) + ": ");
             
-            if (null == nfa.m_next) {
+            if (null == nfa.next) {
                 System.out.print("(TERMINAL)");
             } else {
-                System.out.print(" --> " + stateLabel(nfa.m_next));
-                System.out.print(" --> " + stateLabel(nfa.m_next2));
+                System.out.print(" --> " + stateLabel(nfa.next));
+                System.out.print(" --> " + stateLabel(nfa.next2));
                 
-                switch (nfa.m_edge) {
-                case CNfa.CCL:
-                    printCCl(nfa.m_set);
+                switch (nfa.edge) {
+                case NFA.CCL:
+                    printCCl(nfa.set);
                     break;
                 
-                case CNfa.EPSILON:
+                case NFA.EPSILON:
                     System.out.print(" EPSILON ");
                     break;
                 
                 default:
-                    System.out.print(" " + interpretInt(nfa.m_edge));
+                    System.out.print(" " + interpretInt(nfa.edge));
                     break;
                 }
             }
             
-            if (0 == spec.m_nfa_states.indexOf(nfa)) {
+            if (0 == spec.m_NFA_states.indexOf(nfa)) {
                 System.out.print(" (START STATE)");
             }
             
-            if (null != nfa.m_accept) {
+            if (null != nfa.accept) {
                 System.out.print(
                     " accepting " +
-                    ((0 != (nfa.m_anchor & CSpec.START))? "^": "") +
-                    "<" + new String(nfa.m_accept.action, 0, nfa.m_accept.actionLength) + ">" +
-                    ((0 != (nfa.m_anchor & CSpec.END))? "$": "")
+                    ((0 != (nfa.anchor & CSpec.START))? "^": "") +
+                    "<" + new String(nfa.accept.action, 0, nfa.accept.actionLength) + ">" +
+                    ((0 != (nfa.anchor & CSpec.END))? "$": "")
                 );
             }
             
@@ -912,8 +912,8 @@ class LexGen {
             System.out.println("State \"" + state + "\" has identifying index " + i + ".");
             System.out.print("\tStart states of matching rules: ");
     
-            for (CNfa nfa: spec.m_state_rules[i]) {
-                System.out.print(spec.m_nfa_states.indexOf(nfa) + " ");
+            for (NFA nfa: spec.m_state_rules[i]) {
+                System.out.print(spec.m_NFA_states.indexOf(nfa) + " ");
             }
     
             System.out.println();
@@ -1851,7 +1851,7 @@ class LexGen {
         }
         
         if (CUtility.FOODEBUG) {
-            if (null != spec.m_nfa_states && null != spec.m_nfa_start) {
+            if (null != spec.m_NFA_states && null != spec.m_NFA_start) {
                 System.out.println();
                 System.out.println("\t** NFA machine **");
                 
@@ -1867,16 +1867,16 @@ class LexGen {
         }
     }
     
-    void printSet(Vector <CNfa> nfaSet) {
+    void printSet(Vector <NFA> nfaSet) {
         int size = nfaSet.size();
         
         if (0 == size) {
             System.out.print("empty ");
         }
         
-        for (CNfa nfa: nfaSet) {
-            // System.out.print(spec.m_nfa_states.indexOf(nfa) + " ");
-            System.out.print(nfa.m_label + " ");
+        for (NFA nfa: nfaSet) {
+            // System.out.print(spec.m_NFA_states.indexOf(nfa) + " ");
+            System.out.print(nfa.label + " ");
         }
     }
     

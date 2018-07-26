@@ -5,12 +5,12 @@ import java.util.Vector;
 class Bunch {
     
     /**
-     * Vector of CNfa states in dfa state.
+     * Vector of NFA states in dfa state.
      */
-    Vector <CNfa> nfaSet;
+    Vector <NFA> nfaSet;
     
     /**
-     * BitSet representation of CNfa labels.
+     * BitSet representation of NFA labels.
      */
     SparseBitSet nfaBit;
     
@@ -25,7 +25,7 @@ class Bunch {
     int anchor;
     
     /**
-     * CNfa index corresponding to accepting actions.
+     * NFA index corresponding to accepting actions.
      */
     int acceptIndex;
     
