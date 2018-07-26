@@ -96,7 +96,7 @@ class LexGen {
     /**
      * NFA simplifier using char classes.
      */
-    private CSimplifyNfa simplifyNFA;
+    private SimplifyNFA simplifyNFA;
     
     /**
      * Cache for getStates().
@@ -198,7 +198,7 @@ class LexGen {
         nfa2DFA = new Nfa2DFA();
         minimize = new Minimize();
         makeNFA = new MakeNFA();
-        simplifyNFA = new CSimplifyNfa();
+        simplifyNFA = new SimplifyNFA();
         
         emit = new Emit();
         
