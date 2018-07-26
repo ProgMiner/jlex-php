@@ -1897,23 +1897,23 @@ class LexGen {
         }
         
         for (int i = 0; i < spec.m_dtrans_vector.size(); ++i) {
-            DTrans dtrans = spec.m_dtrans_vector.elementAt(i);
+            DTrans dTrans = spec.m_dtrans_vector.elementAt(i);
             
             if (null == spec.m_accept_vector && null == spec.m_anchor_array) {
-                if (null == dtrans.accept) {
+                if (null == dTrans.accept) {
                     System.out.print(" * State " + i + " [nonaccepting]");
                 } else {
                     System.out.print(
                         " * State " + i +
-                        " [accepting, line " + dtrans.accept.lineNumber +
-                        " <" + new String(dtrans.accept.action, 0, dtrans.accept.actionLength) + ">]"
+                        " [accepting, line " + dTrans.accept.lineNumber +
+                        " <" + new String(dTrans.accept.action, 0, dTrans.accept.actionLength) + ">]"
                     );
                     
-                    if (CSpec.NONE != dtrans.anchor) {
+                    if (CSpec.NONE != dTrans.anchor) {
                         System.out.print(
                             " Anchor: " +
-                            ((0 != (dtrans.anchor & CSpec.START))? "start ": "") +
-                            ((0 != (dtrans.anchor & CSpec.END))? "end ": "")
+                            ((0 != (dTrans.anchor & CSpec.START))? "start ": "") +
+                            ((0 != (dTrans.anchor & CSpec.END))? "end ": "")
                         );
                     }
                 }
@@ -1941,12 +1941,12 @@ class LexGen {
             
             int lastTransition = -1;
             for (int j = 0; j < spec.m_dtrans_ncols; ++j) {
-                if (DTrans.F != dtrans.dtrans[j]) {
+                if (DTrans.F != dTrans.dtrans[j]) {
                     int chars_printed = 0;
                     
-                    if (lastTransition != dtrans.dtrans[j]) {
+                    if (lastTransition != dTrans.dtrans[j]) {
                         System.out.println();
-                        System.out.print(" *    goto " + dtrans.dtrans[j] + " on ");
+                        System.out.print(" *    goto " + dTrans.dtrans[j] + " on ");
                     }
                     
                     String str = interpretInt(j);
@@ -1958,7 +1958,7 @@ class LexGen {
                         System.out.print(" *             ");
                     }
                     
-                    lastTransition = dtrans.dtrans[j];
+                    lastTransition = dTrans.dtrans[j];
                 }
             }
             

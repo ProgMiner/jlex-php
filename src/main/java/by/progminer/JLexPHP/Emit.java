@@ -76,10 +76,10 @@ class Emit {
                 );
             }
             
-            DTrans dtrans = spec.m_dtrans_vector.elementAt(spec.m_row_map[i]);
+            DTrans dTrans = spec.m_dtrans_vector.elementAt(spec.m_row_map[i]);
             
             boolean tr = false;
-            int state = dtrans.dtrans[spec.m_col_map[0]];
+            int state = dTrans.dtrans[spec.m_col_map[0]];
             
             if (DTrans.F != state) {
                 tr = true;
@@ -88,7 +88,7 @@ class Emit {
             }
             
             for (int j = 1; j < spec.m_dtrans_ncols; ++j) {
-                int next = dtrans.dtrans[spec.m_col_map[j]];
+                int next = dTrans.dtrans[spec.m_col_map[j]];
                 
                 if (state == next) {
                     if (DTrans.F != state) {
@@ -346,11 +346,11 @@ class Emit {
         size = spec.m_dtrans_vector.size();
         int[][] yy_nxt = new int[size][];
         for (int elem = 0; elem < size; elem++) {
-            DTrans dtrans = spec.m_dtrans_vector.elementAt(elem);
+            DTrans dTrans = spec.m_dtrans_vector.elementAt(elem);
             
-            CUtility.ASSERT(dtrans.dtrans.length == spec.m_dtrans_ncols);
+            CUtility.ASSERT(dTrans.dtrans.length == spec.m_dtrans_ncols);
             
-            yy_nxt[elem] = dtrans.dtrans;
+            yy_nxt[elem] = dTrans.dtrans;
         }
         
         outstream.print("\t\tstatic $yy_nxt = ");

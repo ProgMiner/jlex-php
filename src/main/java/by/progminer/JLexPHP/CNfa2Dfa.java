@@ -53,7 +53,7 @@ class CNfa2Dfa {
         int i;
         int nextstate;
         int size;
-        DTrans dtrans;
+        DTrans dTrans;
         CNfa nfa;
         int istate;
         int nstates;
@@ -116,9 +116,9 @@ class CNfa2Dfa {
                 dfa.mark = true;
                 
                 /* Allocate new DTrans, then initialize fields. */
-                dtrans = new DTrans(m_spec.m_dtrans_vector.size(), m_spec);
-                dtrans.accept = dfa.accept;
-                dtrans.anchor = dfa.anchor;
+                dTrans = new DTrans(m_spec.m_dtrans_vector.size(), m_spec);
+                dTrans.accept = dfa.accept;
+                dTrans.anchor = dfa.anchor;
                 
                 /* Set DTrans array for each character transition. */
                 for (i = 0; i < m_spec.m_dtrans_ncols; ++i) {
@@ -155,14 +155,14 @@ class CNfa2Dfa {
                         CUtility.ASSERT(nextstate < m_spec.m_dfa_states.size());
                     }
                     
-                    dtrans.dtrans[i] = nextstate;
+                    dTrans.dtrans[i] = nextstate;
                 }
                 
                 if (CUtility.DEBUG) {
                     CUtility.ASSERT(m_spec.m_dtrans_vector.size() == dfa.label);
                 }
                 
-                m_spec.m_dtrans_vector.addElement(dtrans);
+                m_spec.m_dtrans_vector.addElement(dTrans);
             }
         }
         
