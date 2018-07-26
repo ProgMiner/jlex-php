@@ -1,4 +1,4 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Math;
 
 /*
  * SparseBitSet 25-Jul-1999.
@@ -7,6 +7,8 @@ package by.progminer.JLexPHP;
  * Re-implementation of the standard java.util.BitSet to support sparse
  * sets, which we need to efficiently support unicode character classes.
  */
+
+import by.progminer.JLexPHP.Utility.Utility;
 
 import java.util.Enumeration;
 import java.util.Random;
@@ -50,32 +52,32 @@ public final class SparseBitSet implements Cloneable {
     /**
      * Sorted array of bit-block offsets.
      */
-    int offs[];
+    public int offs[];
     
     /**
      * Array of bit-blocks; each holding BITS bits.
      */
-    long bits[];
+    public long bits[];
     
     /**
      * Number of blocks currently in use.
      */
-    int size;
+    public int size;
     
     /**
      * log base 2 of BITS, for the identity: x/BITS == x >> LG_BITS
      */
-    static final private int LG_BITS = 6;
+    private static final int LG_BITS = 6;
     
     /**
      * Number of bits in a block.
      */
-    static final private int BITS = 1 << LG_BITS;
+    private static final int BITS = 1 << LG_BITS;
     
     /**
      * BITS-1, using the identity: x % BITS == x & (BITS-1)
      */
-    static final private int BITS_M1 = BITS - 1;
+    private static final int BITS_M1 = BITS - 1;
     
     /**
      * Creates an empty set.

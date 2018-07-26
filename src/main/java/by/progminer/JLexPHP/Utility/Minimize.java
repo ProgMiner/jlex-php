@@ -1,14 +1,19 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
+
+import by.progminer.JLexPHP.Math.Accept;
+import by.progminer.JLexPHP.Math.DTrans;
+import by.progminer.JLexPHP.Math.SparseBitSet;
+import by.progminer.JLexPHP.Spec;
 
 import java.util.Vector;
 
-class Minimize {
+public class Minimize {
 
     Spec spec;
     Vector <Vector <DTrans> > group;
     int inGroup[];
-
-    Minimize() {
+    
+    public Minimize() {
         reset();
     }
 
@@ -37,7 +42,7 @@ class Minimize {
     /**
      * High-level access function to module.
      */
-    void minDFA(Spec spec) {
+    public void minDFA(Spec spec) {
         set(spec);
 
         // Remove redundant states.

@@ -1,8 +1,13 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
 
-class Alloc {
+import by.progminer.JLexPHP.*;
+import by.progminer.JLexPHP.Math.DFA;
+import by.progminer.JLexPHP.Math.NFA;
+import by.progminer.JLexPHP.Math.NFAPair;
+
+public class Alloc {
     
-    static DFA newDFA(Spec spec) {
+    public static DFA newDFA(Spec spec) {
         DFA dfa;
         
         dfa = new DFA(spec.dfaStates.size());
@@ -11,7 +16,7 @@ class Alloc {
         return dfa;
     }
     
-    static NFAPair newNFAPair() {
+    public static NFAPair newNFAPair() {
         return new NFAPair();
     }
     
@@ -20,7 +25,7 @@ class Alloc {
      *
      * @return a new NFAPair that matches a new line: (\r\n?|[\n\uu2028\uu2029])
      */
-    static NFAPair newNLPair(Spec spec) {
+    public static NFAPair newNLPair(Spec spec) {
         NFAPair pair = newNFAPair();
         
         pair.end = newNFA(spec); // newline accepting state
@@ -53,7 +58,7 @@ class Alloc {
         return pair;
     }
     
-    static NFA newNFA(Spec spec) {
+    public static NFA newNFA(Spec spec) {
         NFA p;
         
         // UNDONE: Buffer this?

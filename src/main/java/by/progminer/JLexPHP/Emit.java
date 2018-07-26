@@ -1,9 +1,13 @@
 package by.progminer.JLexPHP;
 
+import by.progminer.JLexPHP.Math.Accept;
+import by.progminer.JLexPHP.Math.DTrans;
+import by.progminer.JLexPHP.Utility.Utility;
+
 import java.io.PrintWriter;
 import java.util.Map;
 
-class Emit {
+public class Emit {
     
     @SuppressWarnings("FieldCanBeLocal")
     private final boolean NOT_EDBG = false;
@@ -11,7 +15,7 @@ class Emit {
     private Spec spec;
     private PrintWriter outstream;
     
-    Emit() {
+    public Emit() {
         reset();
     }
     
@@ -41,7 +45,7 @@ class Emit {
      * generated source file.
      */
     /*
-    void emit_imports(Spec spec, PrintWriter outstream) throws IOException {
+    public void emit_imports(Spec spec, PrintWriter outstream) throws IOException {
         set(spec, outstream);
 
         if (Utility.DEBUG) {
@@ -122,7 +126,7 @@ class Emit {
     /**
      * High-level access function to module.
      */
-    void all(Spec spec, PrintWriter outstream) {
+    public void all(Spec spec, PrintWriter outstream) {
         set(spec, outstream);
         
         if (Utility.DEBUG) {

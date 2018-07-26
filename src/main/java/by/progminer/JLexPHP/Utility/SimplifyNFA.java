@@ -1,4 +1,8 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
+
+import by.progminer.JLexPHP.Math.NFA;
+import by.progminer.JLexPHP.Math.SparseBitSet;
+import by.progminer.JLexPHP.Spec;
 
 import java.util.Hashtable;
 
@@ -7,7 +11,7 @@ import java.util.Hashtable;
  *
  * @author C. Scott Ananian 25-Jul-1999
  */
-class SimplifyNFA {
+public class SimplifyNFA {
     
     /**
      * Character class mapping.
@@ -24,7 +28,7 @@ class SimplifyNFA {
      */
     private int mappedCharsetSize;
     
-    void simplify(Spec spec) {
+    public void simplify(Spec spec) {
         computeClasses(spec); // initialize fields
         
         for (NFA nfa: spec.nfaStates) {

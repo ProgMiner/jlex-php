@@ -1,51 +1,54 @@
 package by.progminer.JLexPHP;
 
+import by.progminer.JLexPHP.Math.*;
+import by.progminer.JLexPHP.Utility.Utility;
+
 import java.util.Hashtable;
 import java.util.Vector;
 
-class Spec {
+public class Spec {
     
     /**
      * Lexical States
      */
-    static final int NUM_PSEUDO = 2;
+    public static final int NUM_PSEUDO = 2;
     
     // Regular Expression Macros
     
     /**
      * Constants
      */
-    static final int NONE = 0;
+    public static final int NONE = 0;
     
     // NFA Machine
-    static final int START = 1;
-    static final int END   = 2;
+    public static final int START = 1;
+    public static final int END   = 2;
     
     /**
      * Hashtable taking state indices (Integer)
      * to state name (String).
      */
-    Hashtable <String, Integer> states;
+    public Hashtable <String, Integer> states;
     
     /**
      * Hashtable taking macro name (String)
      * to corresponding char buffer that
      * holds macro definition.
      */
-    Hashtable <String, String> macros;
+    public Hashtable <String, String> macros;
     
     // DFA Machine
     
     /**
      * Start state of NFA machine.
      */
-    NFA nfaStart;
+    public NFA nfaStart;
     
     /**
      * Vector of states, with index
      * corresponding to label.
      */
-    Vector <NFA> nfaStates;
+    public Vector <NFA> nfaStates;
     
     // Accept States and Corresponding Anchors
     
@@ -56,9 +59,9 @@ class Spec {
      * The contents of the ithVector are the indices of the NFA start
      * states that can be matched while in he ith lexical state.
      */
-    Vector <NFA> stateRules[];
+    public Vector <NFA> stateRules[];
     
-    int stateDTrans[];
+    public int stateDTrans[];
     
     // Transition Table
     
@@ -66,92 +69,92 @@ class Spec {
      * Vector of states, with index
      * corresponding to label.
      */
-    Vector <DFA> dfaStates;
+    public Vector <DFA> dfaStates;
     
     /**
      * Hashtable taking set of NFA states
      * to corresponding DFA state,
      * if the latter exists.
      */
-    Hashtable <SparseBitSet, DFA> dfaSets;
+    public Hashtable <SparseBitSet, DFA> dfaSets;
     
-    Vector<Accept> acceptVector;
-    int anchorArray[];
+    public Vector<Accept> acceptVector;
+    public int anchorArray[];
     
     // Special pseudo-characters for beginning-of-line and end-of-file
     
-    Vector<DTrans> dTransVector;
-    int dTransNCols;
-    int rowMap[];
-    int colMap[];
+    public Vector<DTrans> dTransVector;
+    public int dTransNCols;
+    public int rowMap[];
+    public int colMap[];
     
     // Regular expression token variables
     
-    int BOL; // beginning-of-line
-    int EOF; // end-of-line
+    public int BOL; // beginning-of-line
+    public int EOF; // end-of-line
     
     /**
      * NFA character class minimization map.
      */
-    int cClsMap[];
+    public int cClsMap[];
     
-    int currentToken;
-    char lexeme;
+    public int currentToken;
+    public char lexeme;
     
     // JLex directives flags
     
-    boolean inQuote;
-    boolean inCCl;
+    public boolean inQuote;
+    public boolean inCCl;
     
     /**
      * Verbose execution flag.
      */
-    boolean verbose;
+    public boolean verbose;
     
-    boolean integerType;
-    boolean intWrapType;
-    boolean yyeof;
-    boolean countChars;
-    boolean countLines;
-    boolean cupCompatible;
-    boolean unix;
-    boolean public_;
-    boolean ignoreCase;
+    public boolean integerType;
+    public boolean intWrapType;
+    public boolean yyeof;
+    public boolean countChars;
+    public boolean countLines;
+    public boolean cupCompatible;
+    public boolean unix;
+    public boolean public_;
+    public boolean ignoreCase;
     
-    char initCode[];
-    int initLength;
+    public char initCode[];
+    public int initLength;
     
-    char initThrowCode[];
-    int initThrowLength;
+    public char initThrowCode[];
+    public int initThrowLength;
     
-    char classCode[];
-    int classLength;
+    public char classCode[];
+    public int classLength;
     
-    char eofCode[];
-    int eofLength;
+    public char eofCode[];
+    public int eofLength;
     
-    char eofValueCode[];
-    int eofValueLength;
+    public char eofValueCode[];
+    public int eofValueLength;
     
-    char eofThrowCode[];
-    int eofThrowLength;
+    public char eofThrowCode[];
+    public int eofThrowLength;
     
-    char yylexThrowCode[];
-    int yylexThrowLength;
+    public char yylexThrowCode[];
+    public int yylexThrowLength;
     
     // Class, function, type names
     
-    char className[]      = {'Y', 'y', 'l', 'e', 'x'};
-    char implementsName[] = {};
-    char functionName[]   = {'y', 'y', 'l', 'e', 'x'};
-    char typeName[]       = {'Y', 'y', 't', 'o', 'k', 'e', 'n'};
+    public char className[]      = {'Y', 'y', 'l', 'e', 'x'};
+    public char implementsName[] = {};
+    public char functionName[]   = {'y', 'y', 'l', 'e', 'x'};
+    public char typeName[]       = {'Y', 'y', 't', 'o', 'k', 'e', 'n'};
     
     /**
      * Lexical Generator.
      */
     private LexGen lexGen;
     
-    Spec(LexGen lexGen) {
+    public Spec(LexGen lexGen) {
         this.lexGen = lexGen;
         
         // Initialize regular expression token variables

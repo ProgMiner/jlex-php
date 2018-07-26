@@ -1,28 +1,32 @@
 package by.progminer.JLexPHP;
 
+import by.progminer.JLexPHP.Math.*;
+import by.progminer.JLexPHP.Utility.*;
+import by.progminer.JLexPHP.Utility.Error;
+import by.progminer.JLexPHP.Utility.Set;
 
 import java.io.*;
 import java.util.*;
 
-class LexGen {
+public class LexGen {
     
-    static final int EOS          = 1;
-    static final int ANY          = 2;
-    static final int AT_BOL       = 3;
-    static final int AT_EOL       = 4;
-    static final int CCL_END      = 5;
-    static final int CCL_START    = 6;
-    static final int CLOSE_CURLY  = 7;
-    static final int CLOSE_PAREN  = 8;
-    static final int CLOSURE      = 9;
-    static final int DASH         = 10;
-    static final int END_OF_INPUT = 11;
-    static final int L            = 12;
-    static final int OPEN_CURLY   = 13;
-    static final int OPEN_PAREN   = 14;
-    static final int OPTIONAL     = 15;
-    static final int OR           = 16;
-    static final int PLUS_CLOSE   = 17;
+    public static final int EOS          = 1;
+    public static final int ANY          = 2;
+    public static final int AT_BOL       = 3;
+    public static final int AT_EOL       = 4;
+    public static final int CCL_END      = 5;
+    public static final int CCL_START    = 6;
+    public static final int CLOSE_CURLY  = 7;
+    public static final int CLOSE_PAREN  = 8;
+    public static final int CLOSURE      = 9;
+    public static final int DASH         = 10;
+    public static final int END_OF_INPUT = 11;
+    public static final int L            = 12;
+    public static final int OPEN_CURLY   = 13;
+    public static final int OPEN_PAREN   = 14;
+    public static final int OPTIONAL     = 15;
+    public static final int OR           = 16;
+    public static final int PLUS_CLOSE   = 17;
     
     /**
      * Return values for expandMacro().
@@ -149,7 +153,7 @@ class LexGen {
     private boolean advanceStop = false;
     
     // TODO IOStreams receiving
-    LexGen(String filename) throws IOException {
+    public LexGen(String filename) throws IOException {
         // Successful initialization flag
         initFlag = false;
         
@@ -206,7 +210,7 @@ class LexGen {
         initFlag = true;
     }
     
-    void generate() throws IOException {
+    public void generate() throws IOException {
         if (!initFlag) {
             Error.parseError(Error.E_INIT, 0);
         }
@@ -862,7 +866,7 @@ class LexGen {
         }
     }
     
-    void printNFA() {
+    public void printNFA() {
         System.out.println("--------------------- NFA -----------------------");
         
         for (NFA nfa: spec.nfaStates) {
@@ -935,7 +939,7 @@ class LexGen {
      * Special Notes: This function treats commas as optional
      * and permits states to be spread over multiple line.
      */
-    SparseBitSet getStates() throws IOException {
+    public SparseBitSet getStates() throws IOException {
         if (Utility.DEBUG) {
             Utility.ASSERT(null != out);
             Utility.ASSERT(null != input);
@@ -1486,7 +1490,7 @@ class LexGen {
      * Packages and returns Accept
      * for action next in input stream.
      */
-    Accept packAccept() throws IOException {
+    public Accept packAccept() throws IOException {
         if (Utility.DEBUG) {
             Utility.ASSERT(null != out);
             Utility.ASSERT(null != input);
@@ -1634,7 +1638,7 @@ class LexGen {
     /**
      * Returns code for next token.
      */
-    int advance() throws java.io.IOException {
+    public int advance() throws java.io.IOException {
         if (input.isEOFReached) {
 	        // EOF has already been reached,
 	        // so return appropriate code.
@@ -1867,7 +1871,7 @@ class LexGen {
         }
     }
     
-    void printSet(Vector <NFA> nfaSet) {
+    public void printSet(Vector <NFA> nfaSet) {
         int size = nfaSet.size();
         
         if (0 == size) {

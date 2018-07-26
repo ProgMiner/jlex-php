@@ -1,51 +1,51 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
 
-class Utility {
+public class Utility {
     
     // static final boolean DEBUG = false;
-    static final boolean DEBUG = true;
+    public static final boolean DEBUG = true;
     
     // static final boolean SLOW_DEBUG = false;
-    static final boolean SLOW_DEBUG = true;
+    public static final boolean SLOW_DEBUG = true;
     
-    static final boolean DESCENT_DEBUG = false;
-    static final boolean OLD_DEBUG = false;
-    static final boolean OLD_DUMP_DEBUG = false;
-    static final boolean FOODEBUG = false;
-    static final boolean DO_DEBUG = false;
+    public static final boolean DESCENT_DEBUG = false;
+    public static final boolean OLD_DEBUG = false;
+    public static final boolean OLD_DUMP_DEBUG = false;
+    public static final boolean FOODEBUG = false;
+    public static final boolean DO_DEBUG = false;
     
     /**
      * Integer Bounds
      */
-    static final int INT_MAX = 2147483647;
+    public static final int INT_MAX = 2147483647;
     
-    static final int MAX_SEVEN_BIT   = 127;
-    static final int MAX_EIGHT_BIT   = 255;
-    static final int MAX_SIXTEEN_BIT = 65535;
+    public static final int MAX_SEVEN_BIT   = 127;
+    public static final int MAX_EIGHT_BIT   = 255;
+    public static final int MAX_SIXTEEN_BIT = 65535;
     
     /**
      * Debugging routine.
      */
-    static void enter(String descent, char lexeme, int token) {
+    public static void enter(String descent, char lexeme, int token) {
         System.out.println("Entering " + descent + " [lexeme: " + lexeme + "] [token: " + token + "]");
     }
     
     /**
      * Debugging routine.
      */
-    static void leave(String descent, char lexeme, int token) {
+    public static void leave(String descent, char lexeme, int token) {
         System.out.println("Leaving " + descent + " [lexeme:" + lexeme + "] [token:" + token + "]");
     }
     
     /**
      * Debugging routine.
      */
-    static void ASSERT(boolean expr) {
+    public static void ASSERT(boolean expr) {
         // noinspection ConstantConditions
         assert !DEBUG || expr;
     }
     
-    static char[] doubleSize(char oldBuffer[]) {
+    public static char[] doubleSize(char oldBuffer[]) {
         char newBuffer[] = new char[2 * oldBuffer.length];
         int elem;
         
@@ -56,7 +56,7 @@ class Utility {
         return newBuffer;
     }
     
-    static byte[] doubleSize(byte oldBuffer[]) {
+    public static byte[] doubleSize(byte oldBuffer[]) {
         byte newBuffer[] = new byte[2 * oldBuffer.length];
         int elem;
         
@@ -67,7 +67,7 @@ class Utility {
         return newBuffer;
     }
     
-    static char hex2bin(char c) {
+    public static char hex2bin(char c) {
         if ('0' <= c && '9' >= c) {
             return (char) (c - '0');
         } else if ('a' <= c && 'f' >= c) {
@@ -80,13 +80,13 @@ class Utility {
         return 0;
     }
     
-    static boolean isHexDigit(char c) {
+    public static boolean isHexDigit(char c) {
         return ('0' <= c && '9' >= c) ||
                ('a' <= c && 'f' >= c) ||
                ('A' <= c && 'F' >= c);
     }
     
-    static char oct2bin(char c) {
+    public static char oct2bin(char c) {
         if ('0' <= c && '7' >= c) {
             return (char) (c - '0');
         }
@@ -95,11 +95,11 @@ class Utility {
         return 0;
     }
     
-    static boolean isOctDigit(char c) {
+    public static boolean isOctDigit(char c) {
         return '0' <= c && '7' >= c;
     }
     
-    static boolean isSpace(char c) {
+    public static boolean isSpace(char c) {
         return '\b' == c ||
                '\t' == c ||
                '\n' == c ||
@@ -108,7 +108,7 @@ class Utility {
                ' ' == c;
     }
     
-    static boolean isNewLine(char c) {
+    public static boolean isNewLine(char c) {
         return '\n' == c || '\r' == c;
     }
     
@@ -126,7 +126,7 @@ class Utility {
      * or up to and including the first n bytes,
      * whichever comes first.
      */
-    static int bytesCmp(byte a[], int a_first, byte b[], int b_first, int n) {
+    public static int bytesCmp(byte a[], int a_first, byte b[], int b_first, int n) {
         int elem;
         
         for (elem = 0; elem < n; ++elem) {
@@ -153,7 +153,7 @@ class Utility {
         return 0;
     }
     
-    static int charsCmp(char a[], int a_first, char b[], int b_first, int n) {
+    public static int charsCmp(char a[], int a_first, char b[], int b_first, int n) {
         int elem;
         
         for (elem = 0; elem < n; ++elem) {

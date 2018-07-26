@@ -1,10 +1,12 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
+
+import by.progminer.JLexPHP.Utility.Utility;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-class Input {
+public class Input {
     
     /**
      * Return values for getLine().
@@ -15,39 +17,39 @@ class Input {
     /**
      * Whether EOF has been encountered.
      */
-    boolean isEOFReached;
+    public boolean isEOFReached;
     
     /**
      * Pushback current line?
      */
-    boolean pushbackLine;
+    public boolean pushbackLine;
     
     /**
      * Line buffer.
      */
-    char line[];
+    public char line[];
     
     /**
      * Number of bytes read into line buffer.
      */
-    int lineLength;
+    public int lineLength;
     
     /**
      * Current index into line buffer.
      */
-    int lineIndex;
+    public int lineIndex;
     
     /**
      * Current line number.
      */
-    int lineNumber;
+    public int lineNumber;
     
     /**
      * JLex specification file.
      */
     private BufferedReader m_input;
     
-    Input(Reader input) {
+    public Input(Reader input) {
         if (Utility.DEBUG) {
             Utility.ASSERT(null != input);
         }
@@ -72,7 +74,7 @@ class Input {
      *
      * @return true on EOF, false otherwise.
      */
-    boolean getLine() throws IOException {
+    public boolean getLine() throws IOException {
         // Has EOF already been reached?
         if (isEOFReached) {
             return EOF;

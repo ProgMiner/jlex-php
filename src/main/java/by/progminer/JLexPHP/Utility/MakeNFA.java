@@ -1,14 +1,21 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
+
+import by.progminer.JLexPHP.*;
+import by.progminer.JLexPHP.Math.Accept;
+import by.progminer.JLexPHP.Math.NFA;
+import by.progminer.JLexPHP.Math.NFAPair;
+import by.progminer.JLexPHP.Math.SparseBitSet;
 
 import java.io.IOException;
 import java.util.Vector;
 
-class MakeNFA {
+public class MakeNFA {
 
     private Spec spec;
     private LexGen lexGen;
     private Input input;
-    MakeNFA() {
+    
+    public MakeNFA() {
         reset();
     }
 
@@ -41,7 +48,7 @@ class MakeNFA {
      * EOF characters. Puts numeric index of these characters in
      * input Spec.
      */
-    void allocateBolEof(Spec spec) {
+    public void allocateBolEof(Spec spec) {
         //noinspection ConstantConditions
         Utility.ASSERT(Spec.NUM_PSEUDO == 2);
 
@@ -53,7 +60,7 @@ class MakeNFA {
      * High level access function to module.
      * Deposits result in input Spec.
      */
-    void thompson(LexGen lexGen, Spec spec, Input input) throws IOException {
+    public void thompson(LexGen lexGen, Spec spec, Input input) throws IOException {
         // Set member variables
         reset();
         set(lexGen, spec, input);
@@ -227,7 +234,7 @@ class MakeNFA {
             Error.parseError(Error.E_ZERO, input.lineNumber);
 
             // For IDE
-            throw new java.lang.Error();
+            throw new Error();
         }
 
         // Handle end of regular expression. See page 103

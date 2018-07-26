@@ -1,12 +1,12 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Math;
 
-class Accept {
+public class Accept {
     
-    char action[];
-    int actionLength;
-    int lineNumber;
+    public char action[];
+    public int actionLength;
+    public int lineNumber;
     
-    Accept(char action[], int actionLength, int lineNumber) {
+    public Accept(char action[], int actionLength, int lineNumber) {
         this.actionLength = actionLength;
         
         this.action = new char[actionLength];
@@ -15,11 +15,11 @@ class Accept {
         this.lineNumber = lineNumber;
     }
     
-    Accept(Accept accept) {
+    public Accept(Accept accept) {
         this(accept.action, accept.actionLength, accept.lineNumber);
     }
     
-    void mimic(Accept accept) {
+    public void mimic(Accept accept) {
         actionLength = accept.actionLength;
         
         action = new char[actionLength];

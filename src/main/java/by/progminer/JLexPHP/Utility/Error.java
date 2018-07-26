@@ -1,31 +1,31 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
 
-class Error extends java.lang.Error {
+public class Error extends java.lang.Error {
     
     /**
      * Error codes for parseError().
      */
-    static final int E_BADEXPR  = 0;
-    static final int E_PAREN    = 1;
-    static final int E_LENGTH   = 2;
-    static final int E_BRACKET  = 3;
-    static final int E_BOL      = 4;
-    static final int E_CLOSE    = 5;
-    static final int E_NEWLINE  = 6;
-    static final int E_BADMAC   = 7;
-    static final int E_NOMAC    = 8;
-    static final int E_MACDEPTH = 9;
-    static final int E_INIT     = 10;
-    static final int E_EOF      = 11;
-    static final int E_DIRECT   = 12;
-    static final int E_INTERNAL = 13;
-    static final int E_STATE    = 14;
-    static final int E_MACDEF   = 15;
-    static final int E_SYNTAX   = 16;
-    static final int E_BRACE    = 17;
-    static final int E_DASH     = 18;
-    static final int E_ZERO     = 19;
-    static final int E_BADCTRL  = 20;
+    public static final int E_BADEXPR  = 0;
+    public static final int E_PAREN    = 1;
+    public static final int E_LENGTH   = 2;
+    public static final int E_BRACKET  = 3;
+    public static final int E_BOL      = 4;
+    public static final int E_CLOSE    = 5;
+    public static final int E_NEWLINE  = 6;
+    public static final int E_BADMAC   = 7;
+    public static final int E_NOMAC    = 8;
+    public static final int E_MACDEPTH = 9;
+    public static final int E_INIT     = 10;
+    public static final int E_EOF      = 11;
+    public static final int E_DIRECT   = 12;
+    public static final int E_INTERNAL = 13;
+    public static final int E_STATE    = 14;
+    public static final int E_MACDEF   = 15;
+    public static final int E_SYNTAX   = 16;
+    public static final int E_BRACE    = 17;
+    public static final int E_DASH     = 18;
+    public static final int E_ZERO     = 19;
+    public static final int E_BADCTRL  = 20;
     
     /**
      * String messages for parseError();
@@ -54,7 +54,7 @@ class Error extends java.lang.Error {
         /* E_BADCTRL  */ "Illegal \\^C-style escape sequence (character following caret must be alphabetic)."
     };
     
-    Error() {
+    public Error() {
         super();
     }
     
@@ -62,11 +62,11 @@ class Error extends java.lang.Error {
         super(msg);
     }
     
-    static void msg(String message) {
+    public static void msg(String message) {
         System.out.println("JLex Error: " + message);
     }
     
-    static void parseError(int errorCode, int lineNumber) {
+    public static void parseError(int errorCode, int lineNumber) {
         System.out.println("Parse error at line " + lineNumber + ".");
         System.out.println("Description: " + ERRMSGS[errorCode]);
         

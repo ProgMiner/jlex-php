@@ -1,35 +1,37 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Math;
+
+import by.progminer.JLexPHP.Spec;
 
 import java.util.Vector;
 
-class Bunch {
+public class Bunch {
     
     /**
      * Vector of NFA states in dfa state.
      */
-    Vector <NFA> nfaSet;
+    public Vector <NFA> nfaSet;
     
     /**
      * BitSet representation of NFA labels.
      */
-    SparseBitSet nfaBit;
+    public SparseBitSet nfaBit;
     
     /**
      * Accepting actions, or null if nonaccepting state.
      */
-    Accept accept;
+    public Accept accept;
     
     /**
      * Anchors on regular expression.
      */
-    int anchor;
+    public int anchor;
     
     /**
      * NFA index corresponding to accepting actions.
      */
-    int acceptIndex;
+    public int acceptIndex;
     
-    Bunch() {
+    public Bunch() {
         nfaSet = null;
         nfaBit = null;
         accept = null;

@@ -1,29 +1,31 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
+
+import by.progminer.JLexPHP.Math.SparseBitSet;
 
 import java.util.Enumeration;
 
-class Set {
+public class Set {
     
     private SparseBitSet set;
     private boolean complement;
     
-    Set() {
+    public Set() {
         set = new SparseBitSet();
         complement = false;
     }
     
-    void complement() {
+    public void complement() {
         complement = true;
     }
     
-    void add(int i) {
+    public void add(int i) {
         set.set(i);
     }
     
     /**
      * Add ignoring case.
      */
-    void addNCase(char c) {
+    public void addNCase(char c) {
         // Do this in a Unicode-friendly way.
         // (note that duplicate adds have no effect)
         
@@ -33,7 +35,7 @@ class Set {
         add(Character.toUpperCase(c));
     }
     
-    boolean contains(int i) {
+    public boolean contains(int i) {
         boolean result = set.get(i);
         
         if (complement) {
@@ -43,7 +45,7 @@ class Set {
         return result;
     }
     
-    void mimic(Set set) {
+    public void mimic(Set set) {
         complement = set.complement;
         this.set = (SparseBitSet) set.set.clone();
     }
@@ -51,7 +53,7 @@ class Set {
     /**
      * Map set using character classes [CSA]
      */
-    void map(Set set, int[] mapping) {
+    public void map(Set set, int[] mapping) {
         complement = set.complement;
         this.set.clearAll();
         

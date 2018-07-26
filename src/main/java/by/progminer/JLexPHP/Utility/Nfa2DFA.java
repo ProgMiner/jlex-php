@@ -1,17 +1,25 @@
-package by.progminer.JLexPHP;
+package by.progminer.JLexPHP.Utility;
+
+import by.progminer.JLexPHP.LexGen;
+import by.progminer.JLexPHP.Math.Bunch;
+import by.progminer.JLexPHP.Math.DFA;
+import by.progminer.JLexPHP.Math.DTrans;
+import by.progminer.JLexPHP.Math.NFA;
+import by.progminer.JLexPHP.Math.SparseBitSet;
+import by.progminer.JLexPHP.Spec;
 
 import java.util.Stack;
 import java.util.Vector;
 
-class Nfa2DFA {
+public class Nfa2DFA {
 
     private static final int NOT_IN_DSTATES = -1;
 
     private Spec spec;
     private int unmarkedDFA;
     private LexGen lexGen;
-
-    Nfa2DFA() {
+    
+    public Nfa2DFA() {
         reset();
     }
 
@@ -30,7 +38,7 @@ class Nfa2DFA {
     /**
      * High-level access function to module.
      */
-    void makeDFA(LexGen lexGen, Spec spec) {
+    public void makeDFA(LexGen lexGen, Spec spec) {
         reset();
         set(lexGen, spec);
 
@@ -179,7 +187,7 @@ class Nfa2DFA {
             Utility.ASSERT(null != bunch);
 
             // For IDE
-            if (null == bunch) { throw new Error(); }
+            if (null == bunch) { throw new java.lang.Error(); }
 
             Utility.ASSERT(null != bunch.nfaSet);
             Utility.ASSERT(null != bunch.nfaBit);
@@ -272,7 +280,7 @@ class Nfa2DFA {
     /**
      * Returns null if resulting NFA set is empty.
      */
-    void move(Vector <NFA> nfaSet, int b, Bunch bunch) {
+    public void move(Vector <NFA> nfaSet, int b, Bunch bunch) {
         bunch.nfaSet = null;
         bunch.nfaBit = null;
 
@@ -437,5 +445,4 @@ class Nfa2DFA {
 
         return NOT_IN_DSTATES;
     }
-
 }
