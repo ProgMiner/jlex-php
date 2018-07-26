@@ -47,7 +47,7 @@ class CNfa {
     /**
      * Set to null if nonaccepting state.
      */
-    CAccept m_accept;
+    Accept m_accept;
     
     /**
      * Says if and where pattern is anchored.

@@ -44,7 +44,7 @@ class CSpec {
      * Vector of states, with index
      * corresponding to label.
      */
-    Vector<CNfa> m_nfa_states;
+    Vector <CNfa> m_nfa_states;
     
     // Accept States and Corresponding Anchors.
     
@@ -65,21 +65,21 @@ class CSpec {
      * Vector of states, with index
      * corresponding to label.
      */
-    Vector <CDfa> m_dfa_states;
+    Vector <Dfa> m_dfa_states;
     
     /**
      * Hashtable taking set of NFA states
      * to corresponding DFA state,
      * if the latter exists.
      */
-    Hashtable <SparseBitSet, CDfa> m_dfa_sets;
+    Hashtable <SparseBitSet, Dfa> m_dfa_sets;
     
-    Vector<CAccept> m_accept_vector;
+    Vector<Accept> m_accept_vector;
     int m_anchor_array[];
     
     // Special pseudo-characters for beginning-of-line and end-of-file.
     
-    Vector<CDTrans> m_dtrans_vector;
+    Vector<DTrans> m_dtrans_vector;
     int m_dtrans_ncols;
     int m_row_map[];
     int m_col_map[];
@@ -141,13 +141,13 @@ class CSpec {
     /**
      * Lexical Generator.
      */
-    private CLexGen m_lexGen;
+    private LexGen m_lexGen;
     
-    CSpec(CLexGen lexGen) {
+    CSpec(LexGen lexGen) {
         m_lexGen = lexGen;
         
         // Initialize regular expression token variables.
-        m_current_token = CLexGen.EOS;
+        m_current_token = LexGen.EOS;
         m_lexeme = '\0';
         m_in_quote = false;
         m_in_ccl = false;
@@ -176,10 +176,10 @@ class CSpec {
         m_nfa_start = null;
         m_nfa_states = new Vector<CNfa>();
         
-        m_dfa_states = new Vector <CDfa> ();
-        m_dfa_sets = new Hashtable <SparseBitSet, CDfa> ();
+        m_dfa_states = new Vector <Dfa> ();
+        m_dfa_sets = new Hashtable <SparseBitSet, Dfa> ();
         
-        m_dtrans_vector = new Vector<CDTrans>();
+        m_dtrans_vector = new Vector<DTrans>();
         m_dtrans_ncols = CUtility.MAX_SEVEN_BIT + 1;
         m_row_map = null;
         m_col_map = null;

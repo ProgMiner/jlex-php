@@ -1,18 +1,17 @@
 package by.progminer.JLexPHP;
 
-
-class CAlloc {
+class Alloc {
     
-    static CDfa newCDfa(CSpec spec) {
-        CDfa dfa;
+    static Dfa newDfa(CSpec spec) {
+        Dfa dfa;
         
-        dfa = new CDfa(spec.m_dfa_states.size());
+        dfa = new Dfa(spec.m_dfa_states.size());
         spec.m_dfa_states.addElement(dfa);
         
         return dfa;
     }
     
-    static CNfaPair newCNfaPair() {
+    static CNfaPair newNfaPair() {
         return new CNfaPair();
     }
     
@@ -23,13 +22,13 @@ class CAlloc {
      * Added by CSA 8-Aug-1999, updated 10-Aug-1999
      */
     static CNfaPair newNLPair(CSpec spec) {
-        CNfaPair pair = newCNfaPair();
+        CNfaPair pair = newNfaPair();
         
-        pair.m_end = newCNfa(spec); // newline accepting state
+        pair.m_end = newNfa(spec); // newline accepting state
         
-        pair.m_start = newCNfa(spec); // new state with two epsilon edges
+        pair.m_start = newNfa(spec); // new state with two epsilon edges
         
-        pair.m_start.m_next = newCNfa(spec);
+        pair.m_start.m_next = newNfa(spec);
         pair.m_start.m_next.m_edge = CNfa.CCL;
         
         pair.m_start.m_next.m_set = new CSet();
@@ -42,20 +41,20 @@ class CAlloc {
         
         pair.m_start.m_next.m_next = pair.m_end; // accept '\n', U+2028, or U+2029
         
-        pair.m_start.m_next2 = newCNfa(spec);
+        pair.m_start.m_next2 = newNfa(spec);
         pair.m_start.m_next2.m_edge = '\r';
         
-        pair.m_start.m_next2.m_next = newCNfa(spec);
+        pair.m_start.m_next2.m_next = newNfa(spec);
         pair.m_start.m_next2.m_next.m_next = pair.m_end; // accept '\r';
         
-        pair.m_start.m_next2.m_next.m_next2 = newCNfa(spec);
+        pair.m_start.m_next2.m_next.m_next2 = newNfa(spec);
         pair.m_start.m_next2.m_next.m_next2.m_edge = '\n';
         pair.m_start.m_next2.m_next.m_next2.m_next = pair.m_end; // accept '\r\n';
         
         return pair;
     }
     
-    static CNfa newCNfa(CSpec spec) {
+    static CNfa newNfa(CSpec spec) {
         CNfa p;
         
         // UNDONE: Buffer this?

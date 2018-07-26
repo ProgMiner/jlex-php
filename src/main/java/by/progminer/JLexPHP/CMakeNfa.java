@@ -6,8 +6,8 @@ import java.util.Vector;
 class CMakeNfa {
     
     private CSpec m_spec;
-    private CLexGen m_lexGen;
-    private CInput m_input;
+    private LexGen m_lexGen;
+    private Input m_input;
     
     CMakeNfa() {
         reset();
@@ -25,7 +25,7 @@ class CMakeNfa {
     /**
      * Sets CMakeNfa member variables.
      */
-    private void set(CLexGen lexGen, CSpec spec, CInput input) {
+    private void set(LexGen lexGen, CSpec spec, Input input) {
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != input);
             CUtility.ASSERT(null != lexGen);
@@ -54,7 +54,7 @@ class CMakeNfa {
      * High level access function to module.
      * Deposits result in input CSpec.
      */
-    void thompson(CLexGen lexGen, CSpec spec, CInput input) throws IOException {
+    void thompson(LexGen lexGen, CSpec spec, Input input) throws IOException {
         // Set member variables.
         
         reset();
@@ -79,7 +79,7 @@ class CMakeNfa {
         
         // Debugging output.
         if (CUtility.DO_DEBUG) {
-            m_lexGen.print_nfa();
+            m_lexGen.printNFA();
         }
         
         if (m_spec.m_verbose) {
@@ -115,37 +115,37 @@ class CMakeNfa {
             CUtility.enter("machine", m_spec.m_lexeme, m_spec.m_current_token);
         }
         
-        CNfa start = CAlloc.newCNfa(m_spec);
+        CNfa start = Alloc.newNfa(m_spec);
         CNfa p = start;
         
         SparseBitSet states = m_lexGen.getStates();
         
         // Begin: Added for states.
-        m_spec.m_current_token = CLexGen.EOS;
+        m_spec.m_current_token = LexGen.EOS;
         m_lexGen.advance();
         
         // End: Added for states.
         
-        if (CLexGen.END_OF_INPUT != m_spec.m_current_token) {
+        if (LexGen.END_OF_INPUT != m_spec.m_current_token) {
             // CSA fix.
             
             p.m_next = rule();
             processStates(states, p.m_next);
         }
         
-        while (CLexGen.END_OF_INPUT != m_spec.m_current_token) {
+        while (LexGen.END_OF_INPUT != m_spec.m_current_token) {
             // Make state changes HERE.
             
             states = m_lexGen.getStates();
             
             // Begin: Added for states.
             m_lexGen.advance();
-            if (CLexGen.END_OF_INPUT == m_spec.m_current_token) {
+            if (LexGen.END_OF_INPUT == m_spec.m_current_token) {
                 break;
             }
             // End: Added for states.
             
-            p.m_next2 = CAlloc.newCNfa(m_spec);
+            p.m_next2 = Alloc.newNfa(m_spec);
             p = p.m_next2;
             p.m_next = rule();
             
@@ -158,20 +158,20 @@ class CMakeNfa {
             all_states.set(i);
         }
         
-        p.m_next2 = CAlloc.newCNfa(m_spec);
+        p.m_next2 = Alloc.newNfa(m_spec);
         p = p.m_next2;
         
-        p.m_next = CAlloc.newCNfa(m_spec);
+        p.m_next = Alloc.newNfa(m_spec);
         
         p.m_next.m_edge = CNfa.CCL;
-        p.m_next.m_next = CAlloc.newCNfa(m_spec);
+        p.m_next.m_next = Alloc.newNfa(m_spec);
         
         p.m_next.m_set = new CSet();
         p.m_next.m_set.add(m_spec.BOL);
         p.m_next.m_set.add(m_spec.EOF);
         
         // do-nothing accept rule
-        p.m_next.m_next.m_accept = new CAccept(new char[0], 0, m_input.m_line_number + 1);
+        p.m_next.m_next.m_accept = new Accept(new char[0], 0, m_input.lineNumber + 1);
         processStates(all_states, p.m_next);
         // CSA: done.
         
@@ -193,15 +193,15 @@ class CMakeNfa {
             CUtility.enter("rule", m_spec.m_lexeme, m_spec.m_current_token);
         }
         
-        CNfaPair pair = CAlloc.newCNfaPair();
-        if (CLexGen.AT_BOL == m_spec.m_current_token) {
+        CNfaPair pair = Alloc.newNfaPair();
+        if (LexGen.AT_BOL == m_spec.m_current_token) {
             anchor = anchor | CSpec.START;
             m_lexGen.advance();
             expr(pair);
             
             // CSA: fixed beginning-of-line operator. 8-aug-1999
             
-            start = CAlloc.newCNfa(m_spec);
+            start = Alloc.newNfa(m_spec);
             start.m_edge = m_spec.BOL;
             start.m_next = pair.m_start;
             
@@ -212,17 +212,17 @@ class CMakeNfa {
             end = pair.m_end;
         }
         
-        if (CLexGen.AT_EOL == m_spec.m_current_token) {
+        if (LexGen.AT_EOL == m_spec.m_current_token) {
             m_lexGen.advance();
             
             // CSA: fixed end-of-line operator. 8-aug-1999
             
-            CNfaPair nlpair = CAlloc.newNLPair(m_spec);
+            CNfaPair nlpair = Alloc.newNLPair(m_spec);
             
-            end.m_next = CAlloc.newCNfa(m_spec);
+            end.m_next = Alloc.newNfa(m_spec);
             end.m_next.m_next = nlpair.m_start;
             
-            end.m_next.m_next2 = CAlloc.newCNfa(m_spec);
+            end.m_next.m_next2 = Alloc.newNfa(m_spec);
             end.m_next.m_next2.m_edge = m_spec.EOF;
             end.m_next.m_next2.m_next = nlpair.m_end;
             
@@ -233,10 +233,10 @@ class CMakeNfa {
         
         // Check for null rules. Charles Fischer found this bug. [CSA]
         if (end == null) {
-            CError.parse_error(CError.E_ZERO, m_input.m_line_number);
+            Error.parseError(Error.E_ZERO, m_input.lineNumber);
             
             // For IDE detecting
-            throw new Error();
+            throw new java.lang.Error();
         }
     
         // Handle end of regular expression.  See page 103.
@@ -262,20 +262,20 @@ class CMakeNfa {
             CUtility.ASSERT(null != pair);
         }
         
-        CNfaPair e2_pair = CAlloc.newCNfaPair();
+        CNfaPair e2_pair = Alloc.newNfaPair();
         
         cat_expr(pair);
         
-        while (CLexGen.OR == m_spec.m_current_token) {
+        while (LexGen.OR == m_spec.m_current_token) {
             m_lexGen.advance();
             cat_expr(e2_pair);
             
-            CNfa p = CAlloc.newCNfa(m_spec);
+            CNfa p = Alloc.newNfa(m_spec);
             p.m_next2 = e2_pair.m_start;
             p.m_next = pair.m_start;
             pair.m_start = p;
             
-            p = CAlloc.newCNfa(m_spec);
+            p = Alloc.newNfa(m_spec);
             pair.m_end.m_next = p;
             e2_pair.m_end.m_next = p;
             pair.m_end = p;
@@ -298,7 +298,7 @@ class CMakeNfa {
             CUtility.ASSERT(null != pair);
         }
         
-        CNfaPair e2_pair = CAlloc.newCNfaPair();
+        CNfaPair e2_pair = Alloc.newNfaPair();
         
         if (first_in_cat(m_spec.m_current_token)) {
             factor(pair);
@@ -324,24 +324,24 @@ class CMakeNfa {
      */
     private boolean first_in_cat(int token) {
         switch (token) {
-        case CLexGen.CLOSE_PAREN:
-        case CLexGen.AT_EOL:
-        case CLexGen.OR:
-        case CLexGen.EOS:
+        case LexGen.CLOSE_PAREN:
+        case LexGen.AT_EOL:
+        case LexGen.OR:
+        case LexGen.EOS:
             return false;
         
-        case CLexGen.CLOSURE:
-        case CLexGen.PLUS_CLOSE:
-        case CLexGen.OPTIONAL:
-            CError.parse_error(CError.E_CLOSE, m_input.m_line_number);
+        case LexGen.CLOSURE:
+        case LexGen.PLUS_CLOSE:
+        case LexGen.OPTIONAL:
+            Error.parseError(Error.E_CLOSE, m_input.lineNumber);
             return false;
         
-        case CLexGen.CCL_END:
-            CError.parse_error(CError.E_BRACKET, m_input.m_line_number);
+        case LexGen.CCL_END:
+            Error.parseError(Error.E_BRACKET, m_input.lineNumber);
             return false;
         
-        case CLexGen.AT_BOL:
-            CError.parse_error(CError.E_BOL, m_input.m_line_number);
+        case LexGen.AT_BOL:
+            Error.parseError(Error.E_BOL, m_input.lineNumber);
             return false;
         
         default:
@@ -362,26 +362,26 @@ class CMakeNfa {
         term(pair);
         
         if (
-            CLexGen.CLOSURE == m_spec.m_current_token ||
-            CLexGen.PLUS_CLOSE == m_spec.m_current_token ||
-            CLexGen.OPTIONAL == m_spec.m_current_token
+            LexGen.CLOSURE == m_spec.m_current_token ||
+            LexGen.PLUS_CLOSE == m_spec.m_current_token ||
+            LexGen.OPTIONAL == m_spec.m_current_token
         ) {
-            CNfa start = CAlloc.newCNfa(m_spec),
-                 end = CAlloc.newCNfa(m_spec);
+            CNfa start = Alloc.newNfa(m_spec),
+                 end = Alloc.newNfa(m_spec);
             
             start.m_next = pair.m_start;
             pair.m_end.m_next = end;
             
             if (
-                CLexGen.CLOSURE == m_spec.m_current_token ||
-                CLexGen.OPTIONAL == m_spec.m_current_token
+                LexGen.CLOSURE == m_spec.m_current_token ||
+                LexGen.OPTIONAL == m_spec.m_current_token
             ) {
                 start.m_next2 = end;
             }
             
             if (
-                CLexGen.CLOSURE == m_spec.m_current_token ||
-                CLexGen.PLUS_CLOSE == m_spec.m_current_token
+                LexGen.CLOSURE == m_spec.m_current_token ||
+                LexGen.PLUS_CLOSE == m_spec.m_current_token
             ) {
                 pair.m_end.m_next2 = pair.m_start;
             }
@@ -404,26 +404,26 @@ class CMakeNfa {
             CUtility.enter("term", m_spec.m_lexeme, m_spec.m_current_token);
         }
         
-        if (CLexGen.OPEN_PAREN == m_spec.m_current_token) {
+        if (LexGen.OPEN_PAREN == m_spec.m_current_token) {
             m_lexGen.advance();
             expr(pair);
             
-            if (CLexGen.CLOSE_PAREN == m_spec.m_current_token) {
+            if (LexGen.CLOSE_PAREN == m_spec.m_current_token) {
                 m_lexGen.advance();
             } else {
-                CError.parse_error(CError.E_SYNTAX, m_input.m_line_number);
+                Error.parseError(Error.E_SYNTAX, m_input.lineNumber);
             }
         } else {
-            CNfa start = CAlloc.newCNfa(m_spec);
+            CNfa start = Alloc.newNfa(m_spec);
             pair.m_start = start;
             
-            start.m_next = CAlloc.newCNfa(m_spec);
+            start.m_next = Alloc.newNfa(m_spec);
             pair.m_end = start.m_next;
             
-            boolean isAlphaL = (CLexGen.L == m_spec.m_current_token && Character.isLetter(m_spec.m_lexeme));
+            boolean isAlphaL = (LexGen.L == m_spec.m_current_token && Character.isLetter(m_spec.m_lexeme));
             if (
-                CLexGen.ANY != m_spec.m_current_token &&
-                CLexGen.CCL_START != m_spec.m_current_token &&
+                LexGen.ANY != m_spec.m_current_token &&
+                LexGen.CCL_START != m_spec.m_current_token &&
                 (!m_spec.m_ignorecase || !isAlphaL)
             ) {
                 start.m_edge = m_spec.m_lexeme;
@@ -439,7 +439,7 @@ class CMakeNfa {
                 }
                 
                 // Match dot (.) using character class.
-                else if (CLexGen.ANY == m_spec.m_current_token) {
+                else if (LexGen.ANY == m_spec.m_current_token) {
                     start.m_set.add('\n');
                     start.m_set.add('\r');
                     
@@ -450,7 +450,7 @@ class CMakeNfa {
                 } else {
                     m_lexGen.advance();
                     
-                    if (CLexGen.AT_BOL == m_spec.m_current_token) {
+                    if (LexGen.AT_BOL == m_spec.m_current_token) {
                         m_lexGen.advance();
                         
                         // CSA: exclude BOL and EOF from character classes
@@ -459,7 +459,7 @@ class CMakeNfa {
                         start.m_set.complement();
                     }
                     
-                    if (CLexGen.CCL_END != m_spec.m_current_token) {
+                    if (LexGen.CCL_END != m_spec.m_current_token) {
                         dodash(start.m_set);
                     }
                 }
@@ -484,16 +484,16 @@ class CMakeNfa {
         }
         
         while (
-            CLexGen.EOS != m_spec.m_current_token &&
-            CLexGen.CCL_END != m_spec.m_current_token
+            LexGen.EOS != m_spec.m_current_token &&
+            LexGen.CCL_END != m_spec.m_current_token
         ) {
             // DASH loses its special meaning if it is first in class.
             
-            if (CLexGen.DASH == m_spec.m_current_token && -1 != first) {
+            if (LexGen.DASH == m_spec.m_current_token && -1 != first) {
                 m_lexGen.advance();
                 
                 // DASH loses its special meaning if it is last in class.
-                if (m_spec.m_current_token == CLexGen.CCL_END) {
+                if (m_spec.m_current_token == LexGen.CCL_END) {
                     // 'first' already in set.
                     
                     set.add('-');

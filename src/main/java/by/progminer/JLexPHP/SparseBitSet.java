@@ -359,12 +359,14 @@ public final class SparseBitSet implements Cloneable {
      */
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        
         sb.append('{');
         for (Enumeration e = elements(); e.hasMoreElements(); ) {
             if (sb.length() > 1) sb.append(", ");
             sb.append(e.nextElement());
         }
         sb.append('}');
+        
         return sb.toString();
     }
     

@@ -47,7 +47,7 @@ class CUtility {
         if (DEBUG && !expr) {
             System.out.println("Assertion Failed");
             
-            throw new Error("Assertion Failed.");
+            throw new java.lang.Error("Assertion Failed.");
         }
     }
     
@@ -82,7 +82,7 @@ class CUtility {
             return (char) (c - 'A' + 10);
         }
         
-        CError.impos("Bad hexidecimal digit" + c);
+        Error.msg("Bad hexidecimal digit" + c);
         return 0;
     }
     
@@ -97,7 +97,7 @@ class CUtility {
             return (char) (c - '0');
         }
         
-        CError.impos("Bad octal digit " + c);
+        Error.msg("Bad octal digit " + c);
         return 0;
     }
     

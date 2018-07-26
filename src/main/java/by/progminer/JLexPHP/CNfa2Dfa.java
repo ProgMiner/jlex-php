@@ -9,13 +9,13 @@ class CNfa2Dfa {
     
     private CSpec m_spec;
     private int m_unmarked_dfa;
-    private CLexGen m_lexGen;
+    private LexGen m_lexGen;
     
     CNfa2Dfa() {
         reset();
     }
     
-    private void set(CLexGen lexGen, CSpec spec) {
+    private void set(LexGen lexGen, CSpec spec) {
         m_lexGen = lexGen;
         m_spec = spec;
         m_unmarked_dfa = 0;
@@ -30,7 +30,7 @@ class CNfa2Dfa {
     /**
      * High-level access function to module.
      */
-    void make_dfa(CLexGen lexGen, CSpec spec) {
+    void make_dfa(LexGen lexGen, CSpec spec) {
         reset();
         set(lexGen, spec);
         
@@ -45,15 +45,15 @@ class CNfa2Dfa {
     }
     
     /**
-     * Creates uncompressed CDTrans transition table.
+     * Creates uncompressed DTrans transition table.
      */
     private void make_dtrans() {
-        CDfa dfa;
-        CBunch bunch;
+        Dfa dfa;
+        Bunch bunch;
         int i;
         int nextstate;
         int size;
-        CDTrans dtrans;
+        DTrans dtrans;
         CNfa nfa;
         int istate;
         int nstates;
@@ -61,7 +61,7 @@ class CNfa2Dfa {
         System.out.print("Working on DFA states.");
         
         /* Reference passing type and initializations. */
-        bunch = new CBunch();
+        bunch = new Bunch();
         m_unmarked_dfa = 0;
         
         /* Allocate mapping array. */
@@ -76,51 +76,51 @@ class CNfa2Dfa {
                
             if (0 == m_spec.m_state_rules[istate].size())
               {
-            m_spec.m_state_dtrans[istate] = CDTrans.F;
+            m_spec.m_state_dtrans[istate] = DTrans.F;
             continue;
               }
             */
             
             /* Create start state and initialize fields. */
-            bunch.m_nfa_set = (Vector <CNfa>) m_spec.m_state_rules[istate].clone();
-            sortStates(bunch.m_nfa_set);
+            bunch.nfaSet = (Vector <CNfa>) m_spec.m_state_rules[istate].clone();
+            sortStates(bunch.nfaSet);
             
-            bunch.m_nfa_bit = new SparseBitSet();
+            bunch.nfaBit = new SparseBitSet();
             
             /* Initialize bit set. */
-            size = bunch.m_nfa_set.size();
+            size = bunch.nfaSet.size();
             for (i = 0; size > i; ++i) {
-                nfa = bunch.m_nfa_set.elementAt(i);
-                bunch.m_nfa_bit.set(nfa.m_label);
+                nfa = bunch.nfaSet.elementAt(i);
+                bunch.nfaBit.set(nfa.m_label);
             }
             
-            bunch.m_accept = null;
-            bunch.m_anchor = CSpec.NONE;
-            bunch.m_accept_index = CUtility.INT_MAX;
+            bunch.accept = null;
+            bunch.anchor = CSpec.NONE;
+            bunch.acceptIndex = CUtility.INT_MAX;
             
             e_closure(bunch);
             add_to_dstates(bunch);
             
             m_spec.m_state_dtrans[istate] = m_spec.m_dtrans_vector.size();
             
-            /* Main loop of CDTrans creation. */
+            /* Main loop of DTrans creation. */
             while (null != (dfa = get_unmarked())) {
                 System.out.print(".");
                 System.out.flush();
                 
                 if (CUtility.DEBUG) {
-                    CUtility.ASSERT(!dfa.m_mark);
+                    CUtility.ASSERT(!dfa.mark);
                 }
                 
                 /* Get first unmarked node, then mark it. */
-                dfa.m_mark = true;
+                dfa.mark = true;
                 
-                /* Allocate new CDTrans, then initialize fields. */
-                dtrans = new CDTrans(m_spec.m_dtrans_vector.size(), m_spec);
-                dtrans.m_accept = dfa.m_accept;
-                dtrans.m_anchor = dfa.m_anchor;
+                /* Allocate new DTrans, then initialize fields. */
+                dtrans = new DTrans(m_spec.m_dtrans_vector.size(), m_spec);
+                dtrans.accept = dfa.accept;
+                dtrans.anchor = dfa.anchor;
                 
-                /* Set CDTrans array for each character transition. */
+                /* Set DTrans array for each character transition. */
                 for (i = 0; i < m_spec.m_dtrans_ncols; ++i) {
                     if (CUtility.DEBUG) {
                         CUtility.ASSERT(0 <= i);
@@ -128,21 +128,21 @@ class CNfa2Dfa {
                     }
                     
                     /* Create new dfa set by attempting character transition. */
-                    move(dfa.m_nfa_set, i, bunch);
-                    if (null != bunch.m_nfa_set) {
+                    move(dfa.nfaSet, i, bunch);
+                    if (null != bunch.nfaSet) {
                         e_closure(bunch);
                     }
                     
                     if (CUtility.DEBUG) {
-                        CUtility.ASSERT((null == bunch.m_nfa_set
-                                             && null == bunch.m_nfa_bit)
-                                            || (null != bunch.m_nfa_set
-                                                    && null != bunch.m_nfa_bit));
+                        CUtility.ASSERT((null == bunch.nfaSet
+                                             && null == bunch.nfaBit)
+                                            || (null != bunch.nfaSet
+                                                    && null != bunch.nfaBit));
                     }
                     
                     /* Create new state or set state to empty. */
-                    if (null == bunch.m_nfa_set) {
-                        nextstate = CDTrans.F;
+                    if (null == bunch.nfaSet) {
+                        nextstate = DTrans.F;
                     } else {
                         nextstate = in_dstates(bunch);
                         
@@ -155,11 +155,11 @@ class CNfa2Dfa {
                         CUtility.ASSERT(nextstate < m_spec.m_dfa_states.size());
                     }
                     
-                    dtrans.m_dtrans[i] = nextstate;
+                    dtrans.dtrans[i] = nextstate;
                 }
                 
                 if (CUtility.DEBUG) {
-                    CUtility.ASSERT(m_spec.m_dtrans_vector.size() == dfa.m_label);
+                    CUtility.ASSERT(m_spec.m_dtrans_vector.size() == dfa.label);
                 }
                 
                 m_spec.m_dtrans_vector.addElement(dtrans);
@@ -199,7 +199,7 @@ class CNfa2Dfa {
      **************************************************************/
     private void e_closure
     (
-        CBunch bunch
+        Bunch bunch
     ) {
         Stack <CNfa> nfa_stack;
         int size;
@@ -209,22 +209,22 @@ class CNfa2Dfa {
         /* Debug checks. */
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != bunch);
-            CUtility.ASSERT(null != bunch.m_nfa_set);
-            CUtility.ASSERT(null != bunch.m_nfa_bit);
+            CUtility.ASSERT(null != bunch.nfaSet);
+            CUtility.ASSERT(null != bunch.nfaBit);
         }
         
-        bunch.m_accept = null;
-        bunch.m_anchor = CSpec.NONE;
-        bunch.m_accept_index = CUtility.INT_MAX;
+        bunch.accept = null;
+        bunch.anchor = CSpec.NONE;
+        bunch.acceptIndex = CUtility.INT_MAX;
         
         /* Create initial stack. */
         nfa_stack = new Stack <CNfa> ();
-        size = bunch.m_nfa_set.size();
+        size = bunch.nfaSet.size();
         for (i = 0; i < size; ++i) {
-            state = bunch.m_nfa_set.elementAt(i);
+            state = bunch.nfaSet.elementAt(i);
             
             if (CUtility.DEBUG) {
-                CUtility.ASSERT(bunch.m_nfa_bit.get(state.m_label));
+                CUtility.ASSERT(bunch.nfaBit.get(state.m_label));
             }
             
             nfa_stack.push(state);
@@ -238,60 +238,62 @@ class CNfa2Dfa {
                 if (null != state.m_accept) {
                     System.out.println(
                         "Looking at accepting state " + state.m_label +
-                        " with <" + new String(state.m_accept.m_action, 0, state.m_accept.m_action_read) + ">"
+                        " with <" + new String(state.m_accept.action, 0, state.m_accept.actionLength) + ">"
                     );
                 }
             }
             
-            if (null != state.m_accept && state.m_label < bunch.m_accept_index) {
-                bunch.m_accept_index = state.m_label;
-                bunch.m_accept = state.m_accept;
-                bunch.m_anchor = state.m_anchor;
+            if (null != state.m_accept && state.m_label < bunch.acceptIndex) {
+                bunch.acceptIndex = state.m_label;
+                bunch.accept = state.m_accept;
+                bunch.anchor = state.m_anchor;
                 
                 if (CUtility.OLD_DUMP_DEBUG) {
                     System.out.println(
                         "Found accepting state " + state.m_label +
-                        " with <" + new String(state.m_accept.m_action, 0, state.m_accept.m_action_read) + ">"
+                        " with <" + new String(state.m_accept.action, 0, state.m_accept.actionLength) + ">"
                     );
                 }
                 
                 if (CUtility.DEBUG) {
-                    CUtility.ASSERT(null != bunch.m_accept);
-                    CUtility.ASSERT(CSpec.NONE == bunch.m_anchor
-                                        || 0 != (bunch.m_anchor & CSpec.END)
-                                        || 0 != (bunch.m_anchor & CSpec.START));
+                    CUtility.ASSERT(null != bunch.accept);
+                    CUtility.ASSERT(
+                        CSpec.NONE == bunch.anchor ||
+                        0 != (bunch.anchor & CSpec.END) ||
+                        0 != (bunch.anchor & CSpec.START)
+                    );
                 }
             }
             
             if (CNfa.EPSILON == state.m_edge) {
                 if (null != state.m_next) {
-                    if (!bunch.m_nfa_set.contains(state.m_next)) {
+                    if (!bunch.nfaSet.contains(state.m_next)) {
                         if (CUtility.DEBUG) {
-                            CUtility.ASSERT(!bunch.m_nfa_bit.get(state.m_next.m_label));
+                            CUtility.ASSERT(!bunch.nfaBit.get(state.m_next.m_label));
                         }
                         
-                        bunch.m_nfa_bit.set(state.m_next.m_label);
-                        bunch.m_nfa_set.addElement(state.m_next);
+                        bunch.nfaBit.set(state.m_next.m_label);
+                        bunch.nfaSet.addElement(state.m_next);
                         nfa_stack.push(state.m_next);
                     }
                 }
                 
                 if (null != state.m_next2) {
-                    if (!bunch.m_nfa_set.contains(state.m_next2)) {
+                    if (!bunch.nfaSet.contains(state.m_next2)) {
                         if (CUtility.DEBUG) {
-                            CUtility.ASSERT(!bunch.m_nfa_bit.get(state.m_next2.m_label));
+                            CUtility.ASSERT(!bunch.nfaBit.get(state.m_next2.m_label));
                         }
                         
-                        bunch.m_nfa_bit.set(state.m_next2.m_label);
-                        bunch.m_nfa_set.addElement(state.m_next2);
+                        bunch.nfaBit.set(state.m_next2.m_label);
+                        bunch.nfaSet.addElement(state.m_next2);
                         nfa_stack.push(state.m_next2);
                     }
                 }
             }
         }
         
-        if (null != bunch.m_nfa_set) {
-            sortStates(bunch.m_nfa_set);
+        if (null != bunch.nfaSet) {
+            sortStates(bunch.nfaSet);
         }
     }
     
@@ -299,46 +301,46 @@ class CNfa2Dfa {
      Function: move
      Description: Returns null if resulting NFA set is empty.
      **************************************************************/
-    void move(Vector nfa_set, int b, CBunch bunch) {
+    void move(Vector nfa_set, int b, Bunch bunch) {
         int size;
         int index;
         CNfa state;
         
-        bunch.m_nfa_set = null;
-        bunch.m_nfa_bit = null;
+        bunch.nfaSet = null;
+        bunch.nfaBit = null;
         
         size = nfa_set.size();
         for (index = 0; index < size; ++index) {
             state = (CNfa) nfa_set.elementAt(index);
             
             if (b == state.m_edge || (CNfa.CCL == state.m_edge && state.m_set.contains(b))) {
-                if (null == bunch.m_nfa_set) {
+                if (null == bunch.nfaSet) {
                     if (CUtility.DEBUG) {
-                        CUtility.ASSERT(null == bunch.m_nfa_bit);
+                        CUtility.ASSERT(null == bunch.nfaBit);
                     }
                     
-                    bunch.m_nfa_set = new Vector <CNfa> ();
+                    bunch.nfaSet = new Vector <CNfa> ();
                     
-                    // bunch.m_nfa_bit = new SparseBitSet(m_spec.m_nfa_states.size());
-                    bunch.m_nfa_bit = new SparseBitSet();
+                    // bunch.nfaBit = new SparseBitSet(m_spec.m_nfa_states.size());
+                    bunch.nfaBit = new SparseBitSet();
                 }
                 
-                bunch.m_nfa_set.addElement(state.m_next);
+                bunch.nfaSet.addElement(state.m_next);
                 
-                // System.out.println("Size of bitset: " + bunch.m_nfa_bit.size());
-                // System.out.println("Reference index: " + state.m_next.m_label);
+                // System.out.println("Size of bitset: " + bunch.nfaBit.size());
+                // System.out.println("Reference index: " + state.m_next.label);
                 // System.out.flush();
                 
-                bunch.m_nfa_bit.set(state.m_next.m_label);
+                bunch.nfaBit.set(state.m_next.m_label);
             }
         }
         
-        if (null != bunch.m_nfa_set) {
+        if (null != bunch.nfaSet) {
             if (CUtility.DEBUG) {
-                CUtility.ASSERT(null != bunch.m_nfa_bit);
+                CUtility.ASSERT(null != bunch.nfaBit);
             }
             
-            sortStates(bunch.m_nfa_set);
+            sortStates(bunch.nfaSet);
         }
     }
     
@@ -392,15 +394,15 @@ class CNfa2Dfa {
      Function: get_unmarked
      Description: Returns next unmarked DFA state.
      **************************************************************/
-    private CDfa get_unmarked() {
+    private Dfa get_unmarked() {
         int size;
-        CDfa dfa;
+        Dfa dfa;
         
         size = m_spec.m_dfa_states.size();
         while (m_unmarked_dfa < size) {
             dfa = m_spec.m_dfa_states.elementAt(m_unmarked_dfa);
             
-            if (!dfa.m_mark) {
+            if (!dfa.mark) {
                 if (CUtility.OLD_DUMP_DEBUG) {
                     System.out.print("*");
                     System.out.flush();
@@ -411,7 +413,7 @@ class CNfa2Dfa {
                     System.out.print("working on DFA state "
                                          + m_unmarked_dfa
                                          + " = NFA states: ");
-                    m_lexGen.print_set(dfa.m_nfa_set);
+                    m_lexGen.printSet(dfa.nfaSet);
                     System.out.println();
                 }
                 
@@ -426,48 +428,48 @@ class CNfa2Dfa {
     
     /***************************************************************
      function: add_to_dstates
-     Description: Takes as input a CBunch with details of
+     Description: Takes as input a Bunch with details of
      a dfa state that needs to be created.
      1) Allocates a new dfa state and saves it in
      the appropriate CSpec vector.
      2) Initializes the fields of the dfa state
-     with the information in the CBunch.
+     with the information in the Bunch.
      3) Returns index of new dfa.
      **************************************************************/
     private int add_to_dstates
     (
-        CBunch bunch
+        Bunch bunch
     ) {
-        CDfa dfa;
+        Dfa dfa;
         
         if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != bunch.m_nfa_set);
-            CUtility.ASSERT(null != bunch.m_nfa_bit);
-            CUtility.ASSERT(null != bunch.m_accept
-                                || CSpec.NONE == bunch.m_anchor);
+            CUtility.ASSERT(null != bunch.nfaSet);
+            CUtility.ASSERT(null != bunch.nfaBit);
+            CUtility.ASSERT(null != bunch.accept
+                                || CSpec.NONE == bunch.anchor);
         }
         
         /* Allocate, passing CSpec so dfa label can be set. */
-        dfa = CAlloc.newCDfa(m_spec);
+        dfa = Alloc.newDfa(m_spec);
         
         /* Initialize fields, including the mark field. */
-        dfa.m_nfa_set = (Vector) bunch.m_nfa_set.clone();
-        dfa.m_nfa_bit = (SparseBitSet) bunch.m_nfa_bit.clone();
-        dfa.m_accept = bunch.m_accept;
-        dfa.m_anchor = bunch.m_anchor;
-        dfa.m_mark = false;
+        dfa.nfaSet = (Vector) bunch.nfaSet.clone();
+        dfa.nfaBit = (SparseBitSet) bunch.nfaBit.clone();
+        dfa.accept = bunch.accept;
+        dfa.anchor = bunch.anchor;
+        dfa.mark = false;
         
         /* Register dfa state using BitSet in CSpec Hashtable. */
-        m_spec.m_dfa_sets.put(dfa.m_nfa_bit, dfa);
+        m_spec.m_dfa_sets.put(dfa.nfaBit, dfa);
         // registerCDfa(dfa);
         
         if (CUtility.OLD_DUMP_DEBUG) {
             System.out.print("Registering set : ");
-            m_lexGen.print_set(dfa.m_nfa_set);
+            m_lexGen.printSet(dfa.nfaSet);
             System.out.println();
         }
         
-        return dfa.m_label;
+        return dfa.label;
     }
     
     /***************************************************************
@@ -475,23 +477,23 @@ class CNfa2Dfa {
      **************************************************************/
     private int in_dstates
     (
-        CBunch bunch
+        Bunch bunch
     ) {
-        CDfa dfa;
+        Dfa dfa;
         
         if (CUtility.OLD_DEBUG) {
             System.out.print("Looking for set : ");
-            m_lexGen.print_set(bunch.m_nfa_set);
+            m_lexGen.printSet(bunch.nfaSet);
         }
         
-        dfa = m_spec.m_dfa_sets.get(bunch.m_nfa_bit);
+        dfa = m_spec.m_dfa_sets.get(bunch.nfaBit);
         
         if (null != dfa) {
             if (CUtility.OLD_DUMP_DEBUG) {
                 System.out.println(" FOUND!");
             }
             
-            return dfa.m_label;
+            return dfa.label;
         }
         
         if (CUtility.OLD_DUMP_DEBUG) {

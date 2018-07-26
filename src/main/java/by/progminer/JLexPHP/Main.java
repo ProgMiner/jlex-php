@@ -7,7 +7,7 @@ package by.progminer.JLexPHP;
 public class Main {
     
     public static void main(String args[]) throws java.io.IOException {
-        CLexGen lg;
+        LexGen lg;
         
         if (args.length < 1) {
             System.out.println("Usage: JLexPHP.Main <filename>");
@@ -19,7 +19,7 @@ public class Main {
            This gives more information. */
         
         try {
-            lg = new CLexGen(args[0]);
+            lg = new LexGen(args[0]);
             lg.generate();
         } catch (Error e) {
             System.out.println(e.getMessage());

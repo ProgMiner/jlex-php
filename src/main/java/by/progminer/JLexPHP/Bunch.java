@@ -2,38 +2,38 @@ package by.progminer.JLexPHP;
 
 import java.util.Vector;
 
-class CBunch {
+class Bunch {
     
     /**
      * Vector of CNfa states in dfa state.
      */
-    Vector <CNfa> m_nfa_set;
+    Vector <CNfa> nfaSet;
     
     /**
      * BitSet representation of CNfa labels.
      */
-    SparseBitSet m_nfa_bit;
+    SparseBitSet nfaBit;
     
     /**
      * Accepting actions, or null if nonaccepting state.
      */
-    CAccept m_accept;
+    Accept accept;
     
     /**
      * Anchors on regular expression.
      */
-    int m_anchor;
+    int anchor;
     
     /**
      * CNfa index corresponding to accepting actions.
      */
-    int m_accept_index;
+    int acceptIndex;
     
-    CBunch() {
-        m_nfa_set = null;
-        m_nfa_bit = null;
-        m_accept = null;
-        m_anchor = CSpec.NONE;
-        m_accept_index = -1;
+    Bunch() {
+        nfaSet = null;
+        nfaBit = null;
+        accept = null;
+        anchor = CSpec.NONE;
+        acceptIndex = -1;
     }
 }

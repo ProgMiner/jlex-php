@@ -5,7 +5,7 @@ import java.util.Vector;
 class CMinimize {
     
     CSpec m_spec;
-    Vector <Vector <CDTrans> > m_group;
+    Vector <Vector <DTrans> > m_group;
     int m_ingroup[];
     
     CMinimize() {
@@ -57,8 +57,8 @@ class CMinimize {
         int n = m_spec.m_dtrans_vector.size();
         
         for (int i = 0; i < n; ++i) {
-            CDTrans dtrans = m_spec.m_dtrans_vector.elementAt(i);
-            dtrans.m_dtrans[dest] = dtrans.m_dtrans[src];
+            DTrans dtrans = m_spec.m_dtrans_vector.elementAt(i);
+            dtrans.dtrans[dest] = dtrans.dtrans[src];
         }
     }
     
@@ -69,11 +69,11 @@ class CMinimize {
         int n = m_spec.m_dtrans_vector.size();
         
         for (int i = 0; i < n; ++i) {
-            CDTrans dtrans = m_spec.m_dtrans_vector.elementAt(i);
+            DTrans dtrans = m_spec.m_dtrans_vector.elementAt(i);
             int[] ndtrans = new int[m_spec.m_dtrans_ncols];
             
-            System.arraycopy(dtrans.m_dtrans, 0, ndtrans, 0, ndtrans.length);
-            dtrans.m_dtrans = ndtrans;
+            System.arraycopy(dtrans.dtrans, 0, ndtrans, 0, ndtrans.length);
+            dtrans.dtrans = ndtrans;
         }
     }
     
@@ -81,7 +81,7 @@ class CMinimize {
      * Copies source row into destination row.
      */
     private void row_copy(int dest, int src) {
-        CDTrans dtrans = m_spec.m_dtrans_vector.elementAt(src);
+        DTrans dtrans = m_spec.m_dtrans_vector.elementAt(src);
         
         m_spec.m_dtrans_vector.setElementAt(dtrans, dest);
     }
@@ -90,9 +90,9 @@ class CMinimize {
         int n = m_spec.m_dtrans_vector.size();
         
         for (int i = 0; i < n; ++i) {
-            CDTrans dtrans = m_spec.m_dtrans_vector.elementAt(i);
+            DTrans dtrans = m_spec.m_dtrans_vector.elementAt(i);
             
-            if (dtrans.m_dtrans[col1] != dtrans.m_dtrans[col2]) {
+            if (dtrans.dtrans[col1] != dtrans.dtrans[col2]) {
                 return false;
             }
         }
@@ -101,11 +101,11 @@ class CMinimize {
     }
     
     private boolean row_equiv(int row1, int row2) {
-        CDTrans dtrans1 = m_spec.m_dtrans_vector.elementAt(row1),
+        DTrans dtrans1 = m_spec.m_dtrans_vector.elementAt(row1),
             dtrans2 = m_spec.m_dtrans_vector.elementAt(row2);
         
         for (int i = 0; i < m_spec.m_dtrans_ncols; ++i) {
-            if (dtrans1.m_dtrans[i] != dtrans2.m_dtrans[i]) {
+            if (dtrans1.dtrans[i] != dtrans2.dtrans[i]) {
                 return false;
             }
         }
@@ -123,7 +123,7 @@ class CMinimize {
         int reduced_ncols;
         int reduced_nrows;
         SparseBitSet set;
-        CDTrans dtrans;
+        DTrans dtrans;
         int size;
         
         set = new SparseBitSet();
@@ -132,15 +132,15 @@ class CMinimize {
         size = m_spec.m_dtrans_vector.size();
         
         m_spec.m_anchor_array = new int[size];
-        m_spec.m_accept_vector = new Vector <CAccept> ();
+        m_spec.m_accept_vector = new Vector <Accept> ();
         
         for (i = 0; i < size; ++i) {
             dtrans = m_spec.m_dtrans_vector.elementAt(i);
             
-            m_spec.m_accept_vector.addElement(dtrans.m_accept);
-            m_spec.m_anchor_array[i] = dtrans.m_anchor;
+            m_spec.m_accept_vector.addElement(dtrans.accept);
+            m_spec.m_anchor_array[i] = dtrans.anchor;
             
-            dtrans.m_accept = null;
+            dtrans.accept = null;
         }
         
         /* Allocate column map. */
@@ -206,7 +206,7 @@ class CMinimize {
             }
         }
         m_spec.m_dtrans_ncols = reduced_ncols;
-        /* truncate m_dtrans at proper length (freeing extra) */
+        /* truncate dtrans at proper length (freeing extra) */
         trunc_col();
         
         if (CUtility.DEBUG) {
@@ -287,28 +287,28 @@ class CMinimize {
     
     /***************************************************************
      Function: fix_dtrans
-     Description: Updates CDTrans table after minimization
+     Description: Updates DTrans table after minimization
      using groups, removing redundant transition table states.
      **************************************************************/
     private void fix_dtrans() {
-        Vector <CDTrans> new_vector = new Vector <CDTrans> ();
+        Vector <DTrans> new_vector = new Vector <DTrans> ();
     
         int size = m_spec.m_state_dtrans.length;
         for (int i = 0; i < size; ++i) {
-            if (CDTrans.F != m_spec.m_state_dtrans[i]) {
+            if (DTrans.F != m_spec.m_state_dtrans[i]) {
                 m_spec.m_state_dtrans[i] = m_ingroup[m_spec.m_state_dtrans[i]];
             }
         }
         
         size = m_group.size();
         for (int i = 0; i < size; ++i) {
-            Vector <CDTrans> dtrans_group = m_group.elementAt(i);
-            CDTrans first = dtrans_group.elementAt(0);
+            Vector <DTrans> dtrans_group = m_group.elementAt(i);
+            DTrans first = dtrans_group.elementAt(0);
             new_vector.addElement(first);
             
             for (int c = 0; c < m_spec.m_dtrans_ncols; ++c) {
-                if (CDTrans.F != first.m_dtrans[c]) {
-                    first.m_dtrans[c] = m_ingroup[first.m_dtrans[c]];
+                if (DTrans.F != first.dtrans[c]) {
+                    first.dtrans[c] = m_ingroup[first.dtrans[c]];
                 }
             }
         }
@@ -335,29 +335,29 @@ class CMinimize {
             }
             
             for (int i = 0; i < group_count; ++i) {
-                Vector <CDTrans> dtrans_group = m_group.elementAt(i);
+                Vector <DTrans> dtrans_group = m_group.elementAt(i);
     
                 int group_size = dtrans_group.size();
                 if (group_size <= 1) {
                     continue;
                 }
     
-                Vector <CDTrans> new_group = new Vector <CDTrans> ();
+                Vector <DTrans> new_group = new Vector <DTrans> ();
                 boolean added = false;
     
-                CDTrans first = dtrans_group.elementAt(0);
+                DTrans first = dtrans_group.elementAt(0);
                 for (int j = 1; j < group_size; ++j) {
-                    CDTrans next = dtrans_group.elementAt(j);
+                    DTrans next = dtrans_group.elementAt(j);
                     
                     for (int c = 0; c < m_spec.m_dtrans_ncols; ++c) {
-                        int goto_first = first.m_dtrans[c];
-                        int goto_next = next.m_dtrans[c];
+                        int goto_first = first.dtrans[c];
+                        int goto_next = next.dtrans[c];
                         
                         if (
                             goto_first != goto_next &&
                             (
-                                goto_first == CDTrans.F ||
-                                goto_next == CDTrans.F ||
+                                goto_first == DTrans.F ||
+                                goto_next == DTrans.F ||
                                 m_ingroup[goto_next] != m_ingroup[goto_first]
                             )
                         ) {
@@ -378,7 +378,7 @@ class CMinimize {
                                 m_group.addElement(new_group);
                             }
                             
-                            m_ingroup[next.m_label] = m_group.size() - 1;
+                            m_ingroup[next.label] = m_group.size() - 1;
                             
                             if (CUtility.DEBUG) {
                                 CUtility.ASSERT(m_group.contains(new_group));
@@ -388,8 +388,8 @@ class CMinimize {
                                 CUtility.ASSERT(!new_group.contains(first));
                                 CUtility.ASSERT(new_group.contains(next));
                                 CUtility.ASSERT(dtrans_group.size() == group_size);
-                                CUtility.ASSERT(i == m_ingroup[first.m_label]);
-                                CUtility.ASSERT((m_group.size() - 1) == m_ingroup[next.m_label]);
+                                CUtility.ASSERT(i == m_ingroup[first.label]);
+                                CUtility.ASSERT((m_group.size() - 1) == m_ingroup[next.label]);
                             }
                             
                             break;
@@ -420,12 +420,12 @@ class CMinimize {
         int j;
         int group_count;
         int size;
-        CDTrans dtrans;
-        Vector <CDTrans> dtrans_group;
-        CDTrans first;
+        DTrans dtrans;
+        Vector <DTrans> dtrans_group;
+        DTrans first;
         boolean group_found;
         
-        m_group = new Vector <Vector <CDTrans> > ();
+        m_group = new Vector <Vector <DTrans> > ();
         group_count = 0;
         
         size = m_spec.m_dtrans_vector.size();
@@ -436,7 +436,7 @@ class CMinimize {
             dtrans = m_spec.m_dtrans_vector.elementAt(i);
             
             if (CUtility.DEBUG) {
-                CUtility.ASSERT(i == dtrans.m_label);
+                CUtility.ASSERT(i == dtrans.label);
                 CUtility.ASSERT(group_count == m_group.size());
             }
             
@@ -450,7 +450,7 @@ class CMinimize {
                 first = dtrans_group.elementAt(0);
                 
                 if (CUtility.SLOW_DEBUG) {
-                    CDTrans check;
+                    DTrans check;
                     int k;
                     int s;
                     
@@ -459,17 +459,17 @@ class CMinimize {
                     
                     for (k = 1; k < s; ++k) {
                         check = dtrans_group.elementAt(k);
-                        CUtility.ASSERT(check.m_accept == first.m_accept);
+                        CUtility.ASSERT(check.accept == first.accept);
                     }
                 }
                 
-                if (first.m_accept == dtrans.m_accept) {
+                if (first.accept == dtrans.accept) {
                     dtrans_group.addElement(dtrans);
                     m_ingroup[i] = j;
                     group_found = true;
                     
                     if (CUtility.DEBUG) {
-                        CUtility.ASSERT(j == m_ingroup[dtrans.m_label]);
+                        CUtility.ASSERT(j == m_ingroup[dtrans.label]);
                     }
                     
                     break;
@@ -477,7 +477,7 @@ class CMinimize {
             }
             
             if (!group_found) {
-                dtrans_group = new Vector <CDTrans> ();
+                dtrans_group = new Vector <DTrans> ();
                 dtrans_group.addElement(dtrans);
                 
                 m_ingroup[i] = m_group.size();
@@ -500,12 +500,12 @@ class CMinimize {
     private void pset(Vector dtrans_group) {
         int i;
         int size;
-        CDTrans dtrans;
+        DTrans dtrans;
         
         size = dtrans_group.size();
         for (i = 0; i < size; ++i) {
-            dtrans = (CDTrans) dtrans_group.elementAt(i);
-            System.out.print(dtrans.m_label + " ");
+            dtrans = (DTrans) dtrans_group.elementAt(i);
+            System.out.print(dtrans.label + " ");
         }
     }
     

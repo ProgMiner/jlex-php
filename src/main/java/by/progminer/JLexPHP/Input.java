@@ -4,59 +4,66 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-class CInput {
+class Input {
     
-    static final boolean EOF = true;
-    static final boolean NOT_EOF = false;
+    /**
+     * Return values for getLine().
+     */
+    private static final boolean EOF = true;
+    private static final boolean NOT_EOF = false;
     
     /**
      * Whether EOF has been encountered.
      */
-    boolean m_eof_reached;
-    boolean m_pushback_line;
+    boolean isEOFReached;
+    
+    /**
+     * Pushback current line?
+     */
+    boolean pushbackLine;
     
     /**
      * Line buffer.
      */
-    char m_line[];
+    char line[];
     
     /**
      * Number of bytes read into line buffer.
      */
-    int m_line_read;
+    int lineLength;
     
     /**
      * Current index into line buffer.
      */
-    int m_line_index;
+    int lineIndex;
     
     /**
      * Current line number.
      */
-    int m_line_number;
+    int lineNumber;
     
     /**
      * JLex specification file.
      */
     private BufferedReader m_input;
     
-    CInput(Reader input) {
+    Input(Reader input) {
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != input);
         }
         
         // Initialize input stream.
-        m_input = new java.io.BufferedReader(input);
+        m_input = new BufferedReader(input);
         
         // Initialize buffers and index counters.
-        m_line = null;
-        m_line_read = 0;
-        m_line_index = 0;
+        line = null;
+        lineLength = 0;
+        lineIndex = 0;
         
         // Initialize state variables.
-        m_eof_reached = false;
-        m_line_number = 0;
-        m_pushback_line = false;
+        isEOFReached = false;
+        pushbackLine = false;
+        lineNumber = 0;
     }
     
     /**
@@ -66,62 +73,59 @@ class CInput {
      * @return true on EOF, false otherwise.
      */
     boolean getLine() throws IOException {
-        int elem;
-        
         // Has EOF already been reached?
-        if (m_eof_reached) {
+        if (isEOFReached) {
             return EOF;
         }
         
+        lineIndex = 0;
+        
         // Pushback current line?
-        if (m_pushback_line) {
-            m_pushback_line = false;
+        if (pushbackLine) {
+            pushbackLine = false;
             
             // Check for empty line.
-            for (elem = 0; elem < m_line_read; ++elem) {
-                if (!CUtility.isspace(m_line[elem])) {
+            boolean empty = true;
+            
+            for (int elem = 0; elem < lineLength; ++elem) {
+                if (!CUtility.isspace(line[elem])) {
+                    empty = false;
+                    
                     break;
                 }
             }
             
-            // Nonempty?
-            if (elem < m_line_read) {
-                m_line_index = 0;
-                
+            // Not empty?
+            if (!empty) {
                 return NOT_EOF;
             }
         }
     
+        boolean empty = true;
         do {
             String lineStr;
         
             if (null == (lineStr = m_input.readLine())) {
-                m_eof_reached = true;
-                m_line_index = 0;
-                
+                isEOFReached = true;
                 return EOF;
             }
             
-            // TODO Replace Unicode chars to \uXX sequences
+            // TODO Replace Unicode chars to \\uXXXX sequences
 
-            m_line = (lineStr + "\n").toCharArray();
-            m_line_read = m_line.length;
+            line = (lineStr + "\n").toCharArray();
+            lineLength = line.length;
             
-            ++m_line_number;
+            ++lineNumber;
         
-            // Check for empty lines and discard them.
-            
-            elem = 0;
-            while (CUtility.isspace(m_line[elem])) {
-                ++elem;
-                
-                if (elem == m_line_read) {
+            // Check for empty line and discard them.
+            for (char c: line) {
+                if (!CUtility.isspace(c)) {
+                    empty = false;
                     break;
                 }
             }
-        } while (elem >= m_line_read);
+        } while (empty);
         
-        m_line_index = 0;
         return NOT_EOF;
     }
 }
