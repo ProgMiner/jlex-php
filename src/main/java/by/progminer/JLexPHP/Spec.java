@@ -188,7 +188,7 @@ class Spec {
         dfaSets = new Hashtable <SparseBitSet, DFA> ();
         
         dTransVector = new Vector<DTrans>();
-        dTransNCols = CUtility.MAX_SEVEN_BIT + 1;
+        dTransNCols = Utility.MAX_SEVEN_BIT + 1;
         rowMap = null;
         colMap = null;
         

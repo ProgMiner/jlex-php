@@ -1,15 +1,12 @@
 package by.progminer.JLexPHP;
 
-class CUtility {
+class Utility {
     
     // static final boolean DEBUG = false;
     static final boolean DEBUG = true;
     
     // static final boolean SLOW_DEBUG = false;
     static final boolean SLOW_DEBUG = true;
-    
-    // static final boolean DUMP_DEBUG = false;
-    static final boolean DUMP_DEBUG = true;
     
     static final boolean DESCENT_DEBUG = false;
     static final boolean OLD_DEBUG = false;
@@ -22,8 +19,8 @@ class CUtility {
      */
     static final int INT_MAX = 2147483647;
     
-    static final int MAX_SEVEN_BIT = 127;
-    static final int MAX_EIGHT_BIT = 255;
+    static final int MAX_SEVEN_BIT   = 127;
+    static final int MAX_EIGHT_BIT   = 255;
     static final int MAX_SIXTEEN_BIT = 65535;
     
     /**
@@ -44,11 +41,8 @@ class CUtility {
      * Debugging routine.
      */
     static void ASSERT(boolean expr) {
-        if (DEBUG && !expr) {
-            System.out.println("Assertion Failed");
-            
-            throw new java.lang.Error("Assertion Failed.");
-        }
+        // noinspection ConstantConditions
+        assert !DEBUG || expr;
     }
     
     static char[] doubleSize(char oldBuffer[]) {
@@ -86,7 +80,7 @@ class CUtility {
         return 0;
     }
     
-    static boolean ishexdigit(char c) {
+    static boolean isHexDigit(char c) {
         return ('0' <= c && '9' >= c) ||
                ('a' <= c && 'f' >= c) ||
                ('A' <= c && 'F' >= c);
@@ -101,11 +95,11 @@ class CUtility {
         return 0;
     }
     
-    static boolean isoctdigit(char c) {
+    static boolean isOctDigit(char c) {
         return '0' <= c && '7' >= c;
     }
     
-    static boolean isspace(char c) {
+    static boolean isSpace(char c) {
         return '\b' == c ||
                '\t' == c ||
                '\n' == c ||
@@ -114,7 +108,7 @@ class CUtility {
                ' ' == c;
     }
     
-    static boolean isnewline(char c) {
+    static boolean isNewLine(char c) {
         return '\n' == c || '\r' == c;
     }
     
@@ -132,7 +126,7 @@ class CUtility {
      * or up to and including the first n bytes,
      * whichever comes first.
      */
-    static int bytencmp(byte a[], int a_first, byte b[], int b_first, int n) {
+    static int bytesCmp(byte a[], int a_first, byte b[], int b_first, int n) {
         int elem;
         
         for (elem = 0; elem < n; ++elem) {
@@ -159,7 +153,7 @@ class CUtility {
         return 0;
     }
     
-    static int charncmp(char a[], int a_first, char b[], int b_first, int n) {
+    static int charsCmp(char a[], int a_first, char b[], int b_first, int n) {
         int elem;
         
         for (elem = 0; elem < n; ++elem) {

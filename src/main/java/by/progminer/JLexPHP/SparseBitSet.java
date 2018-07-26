@@ -78,13 +78,13 @@ public final class SparseBitSet implements Cloneable {
             bits = nbits;
             offs = noffs;
         }
-        CUtility.ASSERT(size < bits.length);
+        Utility.ASSERT(size < bits.length);
         insert_block(idx, bnum);
     }
     
     private void insert_block(int idx, int bnum) {
-        CUtility.ASSERT(idx <= size);
-        CUtility.ASSERT(idx == size || offs[idx] != bnum);
+        Utility.ASSERT(idx <= size);
+        Utility.ASSERT(idx == size || offs[idx] != bnum);
         System.arraycopy(bits, idx, bits, idx + 1, size - idx);
         System.arraycopy(offs, idx, offs, idx + 1, size - idx);
         offs[idx] = bnum;
@@ -100,7 +100,7 @@ public final class SparseBitSet implements Cloneable {
             else if (bnum > offs[p]) l = p + 1;
             else return p;
         }
-        CUtility.ASSERT(l == r);
+        Utility.ASSERT(l == r);
         return l; // index at which the bnum *should* be, if it's not.
     }
     
@@ -390,14 +390,14 @@ public final class SparseBitSet implements Cloneable {
         final int ITER = 500;
         final int RANGE = 65536;
         SparseBitSet a = new SparseBitSet();
-        CUtility.ASSERT(!a.get(0) && !a.get(1));
-        CUtility.ASSERT(!a.get(123329));
+        Utility.ASSERT(!a.get(0) && !a.get(1));
+        Utility.ASSERT(!a.get(123329));
         a.set(0);
-        CUtility.ASSERT(a.get(0) && !a.get(1));
+        Utility.ASSERT(a.get(0) && !a.get(1));
         a.set(1);
-        CUtility.ASSERT(a.get(0) && a.get(1));
+        Utility.ASSERT(a.get(0) && a.get(1));
         a.clearAll();
-        CUtility.ASSERT(!a.get(0) && !a.get(1));
+        Utility.ASSERT(!a.get(0) && !a.get(1));
         Random r = new java.util.Random();
         Vector<Integer> v = new Vector <Integer> ();
         for (int n = 0; n < ITER; n++) {
@@ -405,39 +405,39 @@ public final class SparseBitSet implements Cloneable {
             a.set(rr);
             v.addElement(rr);
             // check that all the numbers are there.
-            CUtility.ASSERT(a.get(rr) && !a.get(rr + 1) && !a.get(rr - 1));
+            Utility.ASSERT(a.get(rr) && !a.get(rr + 1) && !a.get(rr - 1));
             for (int i = 0; i < v.size(); i++)
-                CUtility.ASSERT(a.get(v.elementAt(i)));
+                Utility.ASSERT(a.get(v.elementAt(i)));
         }
         SparseBitSet b = (SparseBitSet) a.clone();
-        CUtility.ASSERT(a.equals(b) && b.equals(a));
+        Utility.ASSERT(a.equals(b) && b.equals(a));
         for (int n = 0; n < ITER / 2; n++) {
             int rr = (r.nextInt() >>> 1) % v.size();
             int m = v.elementAt(rr);
             b.clear(m);
             v.removeElementAt(rr);
             // check that numbers are removed properly.
-            CUtility.ASSERT(!b.get(m));
+            Utility.ASSERT(!b.get(m));
         }
-        CUtility.ASSERT(!a.equals(b));
+        Utility.ASSERT(!a.equals(b));
         SparseBitSet c = (SparseBitSet) a.clone();
         SparseBitSet d = (SparseBitSet) a.clone();
         c.and(a);
-        CUtility.ASSERT(c.equals(a) && a.equals(c));
+        Utility.ASSERT(c.equals(a) && a.equals(c));
         c.xor(a);
-        CUtility.ASSERT(!c.equals(a) && c.size() == 0);
+        Utility.ASSERT(!c.equals(a) && c.size() == 0);
         d.or(b);
-        CUtility.ASSERT(d.equals(a) && !b.equals(d));
+        Utility.ASSERT(d.equals(a) && !b.equals(d));
         d.and(b);
-        CUtility.ASSERT(!d.equals(a) && b.equals(d));
+        Utility.ASSERT(!d.equals(a) && b.equals(d));
         d.xor(a);
-        CUtility.ASSERT(!d.equals(a) && !b.equals(d));
+        Utility.ASSERT(!d.equals(a) && !b.equals(d));
         c.or(d);
         c.or(b);
-        CUtility.ASSERT(c.equals(a) && a.equals(c));
+        Utility.ASSERT(c.equals(a) && a.equals(c));
         c = (SparseBitSet) d.clone();
         c.and(b);
-        CUtility.ASSERT(c.size() == 0);
+        Utility.ASSERT(c.size() == 0);
         System.out.println("Success.");
     }
 }

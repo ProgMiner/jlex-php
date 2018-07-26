@@ -25,10 +25,10 @@ class MakeNFA {
      * Sets MakeNFA member variables.
      */
     private void set(LexGen lexGen, Spec spec, Input input) {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != lexGen);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != lexGen);
+            Utility.ASSERT(null != spec);
         }
 
         this.input = input;
@@ -43,7 +43,7 @@ class MakeNFA {
      */
     void allocateBolEof(Spec spec) {
         //noinspection ConstantConditions
-        CUtility.ASSERT(Spec.NUM_PSEUDO == 2);
+        Utility.ASSERT(Spec.NUM_PSEUDO == 2);
 
         spec.BOL = spec.dTransNCols++;
         spec.EOF = spec.dTransNCols++;
@@ -75,7 +75,7 @@ class MakeNFA {
         }
 
         // Debugging output
-        if (CUtility.DO_DEBUG) {
+        if (Utility.DO_DEBUG) {
             this.lexGen.printNFA();
         }
 
@@ -104,8 +104,8 @@ class MakeNFA {
      * Recursive descent regular expression parser.
      */
     private NFA machine() throws IOException {
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("machine", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.enter("machine", spec.lexeme, spec.currentToken);
         }
 
         NFA start = Alloc.newNFA(spec);
@@ -166,8 +166,8 @@ class MakeNFA {
         processStates(all_states, p.next);
         // CSA: done
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("machine", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.leave("machine", spec.lexeme, spec.currentToken);
         }
 
         return start;
@@ -177,8 +177,8 @@ class MakeNFA {
      * Recursive descent regular expression parser.
      */
     private NFA rule() throws IOException {
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("rule", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.enter("rule", spec.lexeme, spec.currentToken);
         }
 
         int anchor = Spec.NONE;
@@ -234,8 +234,8 @@ class MakeNFA {
         end.accept = lexGen.packAccept();
         end.anchor = anchor;
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("rule", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.leave("rule", spec.lexeme, spec.currentToken);
         }
 
         return start;
@@ -245,12 +245,12 @@ class MakeNFA {
      * Recursive descent regular expression parser.
      */
     private void expr(NFAPair pair) throws IOException {
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("expr", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.enter("expr", spec.lexeme, spec.currentToken);
         }
 
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != pair);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != pair);
         }
 
         NFAPair e2Pair = Alloc.newNFAPair();
@@ -271,8 +271,8 @@ class MakeNFA {
             pair.end = p;
         }
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("expr", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.leave("expr", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -280,12 +280,12 @@ class MakeNFA {
      * Recursive descent regular expression parser.
      */
     private void catExpr(NFAPair pair) throws IOException {
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("catExpr", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.enter("catExpr", spec.lexeme, spec.currentToken);
         }
 
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != pair);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != pair);
         }
 
         NFAPair e2Pair = Alloc.newNFAPair();
@@ -304,8 +304,8 @@ class MakeNFA {
             pair.end = e2Pair.end;
         }
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("catExpr", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.leave("catExpr", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -345,8 +345,8 @@ class MakeNFA {
      * Recursive descent regular expression parser.
      */
     private void factor(NFAPair pair) throws IOException {
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("factor", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.enter("factor", spec.lexeme, spec.currentToken);
         }
 
         term(pair);
@@ -381,8 +381,8 @@ class MakeNFA {
             lexGen.advance();
         }
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("factor", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.leave("factor", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -390,8 +390,8 @@ class MakeNFA {
      * Recursive descent regular expression parser.
      */
     private void term(NFAPair pair) throws IOException {
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("term", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.enter("term", spec.lexeme, spec.currentToken);
         }
 
         if (LexGen.OPEN_PAREN == spec.currentToken) {
@@ -458,8 +458,8 @@ class MakeNFA {
             }
         }
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("term", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.leave("term", spec.lexeme, spec.currentToken);
         }
     }
 
@@ -469,8 +469,8 @@ class MakeNFA {
     private void doDash(Set set) throws IOException {
         int first = -1;
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.enter("doDash", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.enter("doDash", spec.lexeme, spec.currentToken);
         }
 
         while (
@@ -510,8 +510,8 @@ class MakeNFA {
             lexGen.advance();
         }
 
-        if (CUtility.DESCENT_DEBUG) {
-            CUtility.leave("doDash", spec.lexeme, spec.currentToken);
+        if (Utility.DESCENT_DEBUG) {
+            Utility.leave("doDash", spec.lexeme, spec.currentToken);
         }
     }
 }

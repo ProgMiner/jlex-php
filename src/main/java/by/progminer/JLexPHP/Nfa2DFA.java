@@ -37,7 +37,7 @@ class Nfa2DFA {
         makeDTrans();
         freeNFAStates();
 
-        if (this.spec.verbose && CUtility.OLD_DUMP_DEBUG) {
+        if (this.spec.verbose && Utility.OLD_DUMP_DEBUG) {
             System.out.println(this.spec.dfaStates.size() + " DFA states in original machine.");
         }
 
@@ -82,7 +82,7 @@ class Nfa2DFA {
 
             bunch.accept = null;
             bunch.anchor = Spec.NONE;
-            bunch.acceptIndex = CUtility.INT_MAX;
+            bunch.acceptIndex = Utility.INT_MAX;
 
             eClosure(bunch);
             addToDStates(bunch);
@@ -95,8 +95,8 @@ class Nfa2DFA {
                 System.out.print(".");
                 System.out.flush();
 
-                if (CUtility.DEBUG) {
-                    CUtility.ASSERT(!dfa.mark);
+                if (Utility.DEBUG) {
+                    Utility.ASSERT(!dfa.mark);
                 }
 
                 // Get first unmarked node, then mark it
@@ -109,8 +109,8 @@ class Nfa2DFA {
 
                 // Set DTrans array for each character transition
                 for (int j = 0; j < spec.dTransNCols; ++j) {
-                    if (CUtility.DEBUG) {
-                        CUtility.ASSERT(spec.dTransNCols > j);
+                    if (Utility.DEBUG) {
+                        Utility.ASSERT(spec.dTransNCols > j);
                     }
 
                     // Create new dfa set by attempting character transition
@@ -119,8 +119,8 @@ class Nfa2DFA {
                         eClosure(bunch);
                     }
 
-                    if (CUtility.DEBUG) {
-                        CUtility.ASSERT(
+                    if (Utility.DEBUG) {
+                        Utility.ASSERT(
                             (null == bunch.nfaSet && null == bunch.nfaBit) ||
                             (null != bunch.nfaSet && null != bunch.nfaBit)
                         );
@@ -138,15 +138,15 @@ class Nfa2DFA {
                         }
                     }
 
-                    if (CUtility.DEBUG) {
-                        CUtility.ASSERT(nextState < spec.dfaStates.size());
+                    if (Utility.DEBUG) {
+                        Utility.ASSERT(nextState < spec.dfaStates.size());
                     }
 
                     dTrans.dtrans[j] = nextState;
                 }
 
-                if (CUtility.DEBUG) {
-                    CUtility.ASSERT(spec.dTransVector.size() == dfa.label);
+                if (Utility.DEBUG) {
+                    Utility.ASSERT(spec.dTransVector.size() == dfa.label);
                 }
 
                 spec.dTransVector.addElement(dTrans);
@@ -175,19 +175,19 @@ class Nfa2DFA {
      */
     private void eClosure(Bunch bunch) {
         // Debug checks
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != bunch);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != bunch);
 
             // For IDE
             if (null == bunch) { throw new Error(); }
 
-            CUtility.ASSERT(null != bunch.nfaSet);
-            CUtility.ASSERT(null != bunch.nfaBit);
+            Utility.ASSERT(null != bunch.nfaSet);
+            Utility.ASSERT(null != bunch.nfaBit);
         }
 
         bunch.accept = null;
         bunch.anchor = Spec.NONE;
-        bunch.acceptIndex = CUtility.INT_MAX;
+        bunch.acceptIndex = Utility.INT_MAX;
 
         // Create initial stack
         Stack <NFA> NFAStack = new Stack <NFA> ();
@@ -195,8 +195,8 @@ class Nfa2DFA {
         for (int i = 0; i < size; ++i) {
             NFA state = bunch.nfaSet.elementAt(i);
 
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(bunch.nfaBit.get(state.label));
+            if (Utility.DEBUG) {
+                Utility.ASSERT(bunch.nfaBit.get(state.label));
             }
 
             NFAStack.push(state);
@@ -206,7 +206,7 @@ class Nfa2DFA {
         while (!NFAStack.empty()) {
             NFA state = NFAStack.pop();
 
-            if (CUtility.OLD_DUMP_DEBUG) {
+            if (Utility.OLD_DUMP_DEBUG) {
                 if (null != state.accept) {
                     System.out.println(
                         "Looking at accepting state " + state.label +
@@ -220,16 +220,16 @@ class Nfa2DFA {
                 bunch.accept = state.accept;
                 bunch.anchor = state.anchor;
 
-                if (CUtility.OLD_DUMP_DEBUG) {
+                if (Utility.OLD_DUMP_DEBUG) {
                     System.out.println(
                         "Found accepting state " + state.label +
                         " with <" + new String(state.accept.action, 0, state.accept.actionLength) + ">"
                     );
                 }
 
-                if (CUtility.DEBUG) {
-                    CUtility.ASSERT(null != bunch.accept);
-                    CUtility.ASSERT(
+                if (Utility.DEBUG) {
+                    Utility.ASSERT(null != bunch.accept);
+                    Utility.ASSERT(
                         Spec.NONE == bunch.anchor ||
                         0 != (bunch.anchor & Spec.END) ||
                         0 != (bunch.anchor & Spec.START)
@@ -240,8 +240,8 @@ class Nfa2DFA {
             if (NFA.EPSILON == state.edge) {
                 if (null != state.next) {
                     if (!bunch.nfaSet.contains(state.next)) {
-                        if (CUtility.DEBUG) {
-                            CUtility.ASSERT(!bunch.nfaBit.get(state.next.label));
+                        if (Utility.DEBUG) {
+                            Utility.ASSERT(!bunch.nfaBit.get(state.next.label));
                         }
 
                         bunch.nfaBit.set(state.next.label);
@@ -252,8 +252,8 @@ class Nfa2DFA {
 
                 if (null != state.next2) {
                     if (!bunch.nfaSet.contains(state.next2)) {
-                        if (CUtility.DEBUG) {
-                            CUtility.ASSERT(!bunch.nfaBit.get(state.next2.label));
+                        if (Utility.DEBUG) {
+                            Utility.ASSERT(!bunch.nfaBit.get(state.next2.label));
                         }
 
                         bunch.nfaBit.set(state.next2.label);
@@ -281,8 +281,8 @@ class Nfa2DFA {
 
             if (b == state.edge || (NFA.CCL == state.edge && state.set.contains(b))) {
                 if (null == bunch.nfaSet) {
-                    if (CUtility.DEBUG) {
-                        CUtility.ASSERT(null == bunch.nfaBit);
+                    if (Utility.DEBUG) {
+                        Utility.ASSERT(null == bunch.nfaBit);
                     }
 
                     bunch.nfaSet = new Vector <NFA> ();
@@ -302,8 +302,8 @@ class Nfa2DFA {
         }
 
         if (null != bunch.nfaSet) {
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(null != bunch.nfaBit);
+            if (Utility.DEBUG) {
+                Utility.ASSERT(null != bunch.nfaBit);
             }
 
             sortStates(bunch.nfaSet);
@@ -331,7 +331,7 @@ class Nfa2DFA {
             NFASet.setElementAt(beginElem, smallestIndex);
         }
 
-        if (CUtility.OLD_DEBUG) {
+        if (Utility.OLD_DEBUG) {
             System.out.print("NFA vector indices: ");
 
             for (int index = 0; index < size; ++index) {
@@ -350,12 +350,12 @@ class Nfa2DFA {
             DFA dfa = spec.dfaStates.elementAt(unmarkedDFA);
 
             if (!dfa.mark) {
-                if (CUtility.OLD_DUMP_DEBUG) {
+                if (Utility.OLD_DUMP_DEBUG) {
                     System.out.print("*");
                     System.out.flush();
                 }
 
-                if (spec.verbose && CUtility.OLD_DUMP_DEBUG) {
+                if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
                     System.out.println("---------------");
                     System.out.print("working on DFA state " + unmarkedDFA + " = NFA states: ");
                     lexGen.printSet(dfa.nfaSet);
@@ -383,10 +383,10 @@ class Nfa2DFA {
      * @return index of new dfa.
      */
     private int addToDStates(Bunch bunch) {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != bunch.nfaSet);
-            CUtility.ASSERT(null != bunch.nfaBit);
-            CUtility.ASSERT(
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != bunch.nfaSet);
+            Utility.ASSERT(null != bunch.nfaBit);
+            Utility.ASSERT(
                 null != bunch.accept ||
                 Spec.NONE == bunch.anchor
             );
@@ -406,7 +406,7 @@ class Nfa2DFA {
         spec.dfaSets.put(dfa.nfaBit, dfa);
         // registerCDfa(DFA);
 
-        if (CUtility.OLD_DUMP_DEBUG) {
+        if (Utility.OLD_DUMP_DEBUG) {
             System.out.print("Registering set : ");
             lexGen.printSet(dfa.nfaSet);
             System.out.println();
@@ -416,7 +416,7 @@ class Nfa2DFA {
     }
 
     private int inDStates(Bunch bunch) {
-        if (CUtility.OLD_DEBUG) {
+        if (Utility.OLD_DEBUG) {
             System.out.print("Looking for set : ");
             lexGen.printSet(bunch.nfaSet);
         }
@@ -424,14 +424,14 @@ class Nfa2DFA {
         DFA dfa = spec.dfaSets.get(bunch.nfaBit);
 
         if (null != dfa) {
-            if (CUtility.OLD_DUMP_DEBUG) {
+            if (Utility.OLD_DUMP_DEBUG) {
                 System.out.println(" FOUND!");
             }
 
             return dfa.label;
         }
 
-        if (CUtility.OLD_DUMP_DEBUG) {
+        if (Utility.OLD_DUMP_DEBUG) {
             System.out.println(" NOT FOUND!");
         }
 

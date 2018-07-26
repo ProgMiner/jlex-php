@@ -48,8 +48,8 @@ class Input {
     private BufferedReader m_input;
     
     Input(Reader input) {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != input);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != input);
         }
         
         // Initialize input stream.
@@ -88,7 +88,7 @@ class Input {
             boolean empty = true;
             
             for (int elem = 0; elem < lineLength; ++elem) {
-                if (!CUtility.isspace(line[elem])) {
+                if (!Utility.isSpace(line[elem])) {
                     empty = false;
                     
                     break;
@@ -119,7 +119,7 @@ class Input {
         
             // Check for empty line and discard them.
             for (char c: line) {
-                if (!CUtility.isspace(c)) {
+                if (!Utility.isSpace(c)) {
                     empty = false;
                     break;
                 }

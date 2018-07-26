@@ -27,9 +27,9 @@ class Emit {
      * Initializes member variables.
      */
     private void set(Spec spec, PrintWriter outstream) {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
         
         this.spec = spec;
@@ -44,9 +44,9 @@ class Emit {
     void emit_imports(Spec spec, PrintWriter outstream) throws IOException {
         set(spec, outstream);
 
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
 
         outstream.println("import java.lang.String;");
@@ -125,12 +125,12 @@ class Emit {
     void all(Spec spec, PrintWriter outstream) {
         set(spec, outstream);
         
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != this.spec);
-            CUtility.ASSERT(null != this.outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != this.spec);
+            Utility.ASSERT(null != this.outstream);
         }
         
-        if (CUtility.OLD_DEBUG) {
+        if (Utility.OLD_DEBUG) {
             printDetails();
         }
         
@@ -147,9 +147,9 @@ class Emit {
      * Emits constructor, member variables, and constants.
      */
     private void constructor() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
         
         // Constants
@@ -232,9 +232,9 @@ class Emit {
      * error handling and input buffering.
      */
     private void helpers() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
         
         if (null != spec.eofCode) {
@@ -257,9 +257,9 @@ class Emit {
      * Emits class header.
      */
     private void header() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
         
         outstream.println();
@@ -284,9 +284,9 @@ class Emit {
      * Emits transition table.
      */
     private void table() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
         
         outstream.println("\tstatic $yy_acpt = [");
@@ -348,7 +348,7 @@ class Emit {
         for (int elem = 0; elem < size; elem++) {
             DTrans dTrans = spec.dTransVector.elementAt(elem);
             
-            CUtility.ASSERT(dTrans.dtrans.length == spec.dTransNCols);
+            Utility.ASSERT(dTrans.dtrans.length == spec.dTransNCols);
             
             yy_nxt[elem] = dTrans.dtrans;
         }
@@ -480,9 +480,9 @@ class Emit {
     }
     
     private void driver() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
         
         table();
@@ -623,8 +623,8 @@ class Emit {
     }
     
     private void actions(String tabs) {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(spec.acceptVector.size() == spec.anchorArray.length);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(spec.acceptVector.size() == spec.anchorArray.length);
         }
         
         int bogus_index = -2;
@@ -646,9 +646,9 @@ class Emit {
     }
     
     private void footer() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(null != outstream);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(null != outstream);
         }
         
         outstream.println("}");

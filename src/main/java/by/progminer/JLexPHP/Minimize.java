@@ -25,8 +25,8 @@ class Minimize {
      * Sets member variables.
      */
     private void set(Spec spec) {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != spec);
         }
 
         this.spec = spec;
@@ -139,9 +139,9 @@ class Minimize {
 
         // Process columns for reduction
         for (reducedNCols = 0; ; ++reducedNCols) {
-            if (CUtility.DEBUG) {
+            if (Utility.DEBUG) {
                 for (int i = 0; i < reducedNCols; ++i) {
-                    CUtility.ASSERT(-1 != spec.colMap[i]);
+                    Utility.ASSERT(-1 != spec.colMap[i]);
                 }
             }
 
@@ -156,9 +156,9 @@ class Minimize {
                 break;
             }
 
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(!set.get(i));
-                CUtility.ASSERT(-1 == spec.colMap[i]);
+            if (Utility.DEBUG) {
+                Utility.ASSERT(!set.get(i));
+                Utility.ASSERT(-1 == spec.colMap[i]);
             }
 
             set.set(i);
@@ -183,8 +183,8 @@ class Minimize {
 
                 int j = spec.colMap[i];
 
-                if (CUtility.DEBUG) {
-                    CUtility.ASSERT(j <= i);
+                if (Utility.DEBUG) {
+                    Utility.ASSERT(j <= i);
                 }
 
                 if (j == i) {
@@ -200,8 +200,8 @@ class Minimize {
         // truncate dTrans at proper length (freeing extra)
         truncCol();
 
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(k == reducedNCols);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(k == reducedNCols);
         }
 
         // Allocate row map
@@ -216,9 +216,9 @@ class Minimize {
 
         // Process rows to reduce
         for (reducedNRows = 0; ; ++reducedNRows) {
-            if (CUtility.DEBUG) {
+            if (Utility.DEBUG) {
                 for (int i = 0; i < reducedNRows; ++i) {
-                    CUtility.ASSERT(-1 != spec.rowMap[i]);
+                    Utility.ASSERT(-1 != spec.rowMap[i]);
                 }
             }
 
@@ -233,9 +233,9 @@ class Minimize {
                 break;
             }
 
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(!set.get(i));
-                CUtility.ASSERT(-1 == spec.rowMap[i]);
+            if (Utility.DEBUG) {
+                Utility.ASSERT(!set.get(i));
+                Utility.ASSERT(-1 == spec.rowMap[i]);
             }
 
             set.set(i);
@@ -260,8 +260,8 @@ class Minimize {
 
                 int j = spec.rowMap[i];
 
-                if (CUtility.DEBUG) {
-                    CUtility.ASSERT(j <= i);
+                if (Utility.DEBUG) {
+                    Utility.ASSERT(j <= i);
                 }
 
                 if (j == i) {
@@ -274,10 +274,10 @@ class Minimize {
 
         spec.dTransVector.setSize(reducedNRows);
 
-        if (CUtility.DEBUG) {
+        if (Utility.DEBUG) {
             // System.out.println("k = " + k + "\nreducedNRows = " + reducedNRows + "");
 
-            CUtility.ASSERT(k == reducedNRows);
+            Utility.ASSERT(k == reducedNRows);
         }
     }
 
@@ -325,8 +325,8 @@ class Minimize {
         while (oldGroupCount != groupCount) {
             oldGroupCount = groupCount;
 
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(group.size() == groupCount);
+            if (Utility.DEBUG) {
+                Utility.ASSERT(group.size() == groupCount);
             }
 
             for (int i = 0; i < groupCount; ++i) {
@@ -356,8 +356,8 @@ class Minimize {
                                 inGroup[goto_next] != inGroup[goto_first]
                             )
                         ) {
-                            if (CUtility.DEBUG) {
-                                CUtility.ASSERT(dTransGroup.elementAt(j) == next);
+                            if (Utility.DEBUG) {
+                                Utility.ASSERT(dTransGroup.elementAt(j) == next);
                             }
 
                             dTransGroup.removeElementAt(j);
@@ -375,16 +375,16 @@ class Minimize {
 
                             inGroup[next.label] = group.size() - 1;
 
-                            if (CUtility.DEBUG) {
-                                CUtility.ASSERT(group.contains(newGroup));
-                                CUtility.ASSERT(group.contains(dTransGroup));
-                                CUtility.ASSERT(dTransGroup.contains(first));
-                                CUtility.ASSERT(!dTransGroup.contains(next));
-                                CUtility.ASSERT(!newGroup.contains(first));
-                                CUtility.ASSERT(newGroup.contains(next));
-                                CUtility.ASSERT(dTransGroup.size() == group_size);
-                                CUtility.ASSERT(i == inGroup[first.label]);
-                                CUtility.ASSERT((group.size() - 1) == inGroup[next.label]);
+                            if (Utility.DEBUG) {
+                                Utility.ASSERT(group.contains(newGroup));
+                                Utility.ASSERT(group.contains(dTransGroup));
+                                Utility.ASSERT(dTransGroup.contains(first));
+                                Utility.ASSERT(!dTransGroup.contains(next));
+                                Utility.ASSERT(!newGroup.contains(first));
+                                Utility.ASSERT(newGroup.contains(next));
+                                Utility.ASSERT(dTransGroup.size() == group_size);
+                                Utility.ASSERT(i == inGroup[first.label]);
+                                Utility.ASSERT((group.size() - 1) == inGroup[next.label]);
                             }
 
                             break;
@@ -396,7 +396,7 @@ class Minimize {
 
         System.out.println(group.size() + " states after removal of redundant states.");
 
-        if (spec.verbose && CUtility.OLD_DUMP_DEBUG) {
+        if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
             System.out.println();
             System.out.println("States grouped as follows after minimization");
 
@@ -417,26 +417,26 @@ class Minimize {
             boolean isGroupFound = false;
             DTrans dTrans = spec.dTransVector.elementAt(i);
 
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(i == dTrans.label);
-                CUtility.ASSERT(groupCount == group.size());
+            if (Utility.DEBUG) {
+                Utility.ASSERT(i == dTrans.label);
+                Utility.ASSERT(groupCount == group.size());
             }
 
             for (int j = 0; j < groupCount; ++j) {
                 Vector <DTrans> dTransGroup = group.elementAt(j);
 
-                if (CUtility.DEBUG) {
-                    CUtility.ASSERT(0 < dTransGroup.size());
+                if (Utility.DEBUG) {
+                    Utility.ASSERT(0 < dTransGroup.size());
                 }
 
                 DTrans first = dTransGroup.elementAt(0);
 
-                if (CUtility.SLOW_DEBUG) {
+                if (Utility.SLOW_DEBUG) {
                     int s = dTransGroup.size();
-                    CUtility.ASSERT(0 < s);
+                    Utility.ASSERT(0 < s);
 
                     for (int k = 1; k < s; ++k) {
-                        CUtility.ASSERT(dTransGroup.elementAt(k).accept == first.accept);
+                        Utility.ASSERT(dTransGroup.elementAt(k).accept == first.accept);
                     }
                 }
 
@@ -445,8 +445,8 @@ class Minimize {
                     inGroup[i] = j;
                     isGroupFound = true;
 
-                    if (CUtility.DEBUG) {
-                        CUtility.ASSERT(j == inGroup[dTrans.label]);
+                    if (Utility.DEBUG) {
+                        Utility.ASSERT(j == inGroup[dTrans.label]);
                     }
 
                     break;
@@ -464,7 +464,7 @@ class Minimize {
             }
         }
 
-        if (spec.verbose && CUtility.OLD_DUMP_DEBUG) {
+        if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
             System.out.println("Initial grouping:");
             printGroups();
             System.out.println();

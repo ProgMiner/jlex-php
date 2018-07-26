@@ -211,12 +211,12 @@ class LexGen {
             Error.parseError(Error.E_INIT, 0);
         }
         
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
-            CUtility.ASSERT(initFlag);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
+            Utility.ASSERT(initFlag);
         }
         
         if (spec.verbose) {
@@ -245,7 +245,7 @@ class LexGen {
         
         userRules();
         
-        if (CUtility.DO_DEBUG) {
+        if (Utility.DO_DEBUG) {
             printHeader();
         }
         
@@ -255,7 +255,7 @@ class LexGen {
         
         emit.all(spec, out);
         
-        if (spec.verbose && CUtility.OLD_DUMP_DEBUG) {
+        if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
             details();
         }
         
@@ -271,11 +271,11 @@ class LexGen {
             Error.parseError(Error.E_INIT, 0);
         }
         
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
         
         if (input.isEOFReached) {
@@ -307,7 +307,7 @@ class LexGen {
         // Skip white space
         while (
             input.lineIndex < input.lineLength &&
-            CUtility.isspace(input.line[input.lineIndex])
+            Utility.isSpace(input.line[input.lineIndex])
         ) {
             ++input.lineIndex;
         }
@@ -321,7 +321,7 @@ class LexGen {
         int elem = input.lineIndex;
         while (
             elem < input.lineLength &&
-            !CUtility.isnewline(input.line[elem])
+            !Utility.isNewLine(input.line[elem])
         ) {
             ++elem;
         }
@@ -334,7 +334,7 @@ class LexGen {
         elem = 0;
         while (
             input.lineIndex < input.lineLength &&
-            !CUtility.isnewline(input.line[input.lineIndex])
+            !Utility.isNewLine(input.line[input.lineIndex])
         ) {
             buffer[elem] = input.line[input.lineIndex];
             
@@ -352,8 +352,8 @@ class LexGen {
         int prevCodeLength,
         int specified
     ) throws java.io.IOException {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(
+        if (Utility.DEBUG) {
+            Utility.ASSERT(
                 INIT_CODE == specified ||
                 CLASS_CODE == specified ||
                 EOF_CODE == specified ||
@@ -364,7 +364,7 @@ class LexGen {
             );
         }
         
-        if (0 != CUtility.charncmp(input.line, 0, startDir,0,startDir.length - 1)) {
+        if (0 != Utility.charsCmp(input.line, 0, startDir,0,startDir.length - 1)) {
             Error.parseError(Error.E_INTERNAL, 0);
         }
         
@@ -374,7 +374,7 @@ class LexGen {
         }
         
         if (prevCodeLength >= prevCode.length) {
-            prevCode = CUtility.doubleSize(prevCode);
+            prevCode = Utility.doubleSize(prevCode);
         }
         
         input.lineIndex = startDir.length - 1;
@@ -384,7 +384,7 @@ class LexGen {
                     Error.parseError(Error.E_EOF, input.lineNumber);
                 }
                 
-                if (0 == CUtility.charncmp(input.line, 0, endDir, 0, endDir.length - 1)) {
+                if (0 == Utility.charsCmp(input.line, 0, endDir, 0, endDir.length - 1)) {
                     input.lineIndex = endDir.length - 1;
                     
                     switch (specified) {
@@ -431,18 +431,18 @@ class LexGen {
                 ++input.lineIndex;
                 
                 if (prevCodeLength >= prevCode.length) {
-                    prevCode = CUtility.doubleSize(prevCode);
+                    prevCode = Utility.doubleSize(prevCode);
                 }
             }
         }
     }
     
     private void userDeclare() throws IOException {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
         
         if (input.isEOFReached) {
@@ -481,7 +481,7 @@ class LexGen {
                 
                 switch (input.line[1]) {
                 case '{':
-                    if (0 == CUtility.charncmp(input.line, 0, classCodeDir, 0, classCodeDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, classCodeDir, 0, classCodeDir.length - 1)) {
                         spec.classCode = packCode(
                             classCodeDir,
                             classCodeEndDir,
@@ -498,19 +498,19 @@ class LexGen {
                     break;
                 
                 case 'c':
-                    if (0 == CUtility.charncmp(input.line, 0, charDir, 0, charDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, charDir, 0, charDir.length - 1)) {
                         // Set line counting to ON
                         
                         input.lineIndex = charDir.length;
                         spec.countChars = true;
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, classDir, 0, classDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, classDir, 0, classDir.length - 1)) {
                         input.lineIndex = classDir.length;
                         spec.className = getName();
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, cupDir, 0, cupDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, cupDir, 0, cupDir.length - 1)) {
                         // Set Java CUP compatibility to ON
                         
                         input.lineIndex = cupDir.length;
@@ -529,7 +529,7 @@ class LexGen {
                     break;
                 
                 case 'e':
-                    if (0 == CUtility.charncmp(input.line, 0, eofCodeDir, 0, eofCodeDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, eofCodeDir, 0, eofCodeDir.length - 1)) {
                         spec.eofCode = packCode(
                             eofCodeDir,
                             eofCodeEndDir,
@@ -539,7 +539,7 @@ class LexGen {
                         );
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, eofValueCodeDir, 0, eofValueCodeDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, eofValueCodeDir, 0, eofValueCodeDir.length - 1)) {
                         spec.eofValueCode = packCode(
                             eofValueCodeDir,
                             eofValueCodeEndDir,
@@ -549,7 +549,7 @@ class LexGen {
                         );
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, eofThrowCodeDir, 0, eofThrowCodeDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, eofThrowCodeDir, 0, eofThrowCodeDir.length - 1)) {
                         spec.eofThrowCode = packCode(
                             eofThrowCodeDir,
                             eofThrowCodeEndDir,
@@ -566,16 +566,16 @@ class LexGen {
                     break;
                 
                 case 'f':
-                    if (0 == CUtility.charncmp(input.line, 0, functionDir, 0, functionDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, functionDir, 0, functionDir.length - 1)) {
                         // Set line counting to ON
                         
                         input.lineIndex = functionDir.length;
                         spec.functionName = getName();
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, fullDir, 0, fullDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, fullDir, 0, fullDir.length - 1)) {
                         input.lineIndex = fullDir.length;
-                        spec.dTransNCols = CUtility.MAX_EIGHT_BIT + 1;
+                        spec.dTransNCols = Utility.MAX_EIGHT_BIT + 1;
                         
                         break;
                     }
@@ -585,21 +585,21 @@ class LexGen {
                     break;
                 
                 case 'i':
-                    if (0 == CUtility.charncmp(input.line, 0, integerDir, 0, integerDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, integerDir, 0, integerDir.length - 1)) {
                         // Set line counting to ON
                         
                         input.lineIndex = integerDir.length;
                         spec.integerType = true;
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, intwrapDir, 0, intwrapDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, intwrapDir, 0, intwrapDir.length - 1)) {
                         // Set line counting to ON
                         
                         input.lineIndex = integerDir.length;
                         spec.intWrapType = true;
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, initCodeDir, 0, initCodeDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, initCodeDir, 0, initCodeDir.length - 1)) {
                         spec.initCode = packCode(
                             initCodeDir,
                             initCodeEndDir,
@@ -609,7 +609,7 @@ class LexGen {
                         );
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, initThrowCodeDir, 0, initThrowCodeDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, initThrowCodeDir, 0, initThrowCodeDir.length - 1)) {
                         spec.initThrowCode = packCode(
                             initThrowCodeDir,
                             initThrowCodeEndDir,
@@ -619,12 +619,12 @@ class LexGen {
                         );
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, implementsDir, 0, implementsDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, implementsDir, 0, implementsDir.length - 1)) {
                         input.lineIndex = implementsDir.length;
                         spec.implementsName = getName();
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, ignorecaseDir, 0, ignorecaseDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, ignorecaseDir, 0, ignorecaseDir.length - 1)) {
                         // Set ignoreCase to ON
                         
                         input.lineIndex = ignorecaseDir.length;
@@ -638,7 +638,7 @@ class LexGen {
                     break;
                 
                 case 'l':
-                    if (0 == CUtility.charncmp(input.line, 0, lineDir, 0, lineDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, lineDir, 0, lineDir.length - 1)) {
                         // Set line counting to ON
                         
                         input.lineIndex = lineDir.length;
@@ -652,7 +652,7 @@ class LexGen {
                     break;
                 
                 case 'n':
-                    if (0 == CUtility.charncmp(input.line, 0, notunixDir, 0, notunixDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, notunixDir, 0, notunixDir.length - 1)) {
                         // Set line counting to ON
                         
                         input.lineIndex = notunixDir.length;
@@ -666,7 +666,7 @@ class LexGen {
                     break;
                 
                 case 'p':
-                    if (0 == CUtility.charncmp(input.line, 0, publicDir, 0, publicDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, publicDir, 0, publicDir.length - 1)) {
                         // Set public flag
                         
                         input.lineIndex = publicDir.length;
@@ -680,7 +680,7 @@ class LexGen {
                     break;
                 
                 case 's':
-                    if (0 == CUtility.charncmp(input.line, 0, stateDir, 0, stateDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, stateDir, 0, stateDir.length - 1)) {
                         // Recognize state list
                         
                         input.lineIndex = stateDir.length;
@@ -694,7 +694,7 @@ class LexGen {
                     break;
                 
                 case 't':
-                    if (0 == CUtility.charncmp(input.line, 0, typeDir, 0, typeDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, typeDir, 0, typeDir.length - 1)) {
                         // Set Java CUP compatibility to ON
                         
                         input.lineIndex = typeDir.length;
@@ -708,9 +708,9 @@ class LexGen {
                     break;
                 
                 case 'u':
-                    if (0 == CUtility.charncmp(input.line, 0, unicodeDir, 0, unicodeDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, unicodeDir, 0, unicodeDir.length - 1)) {
                         input.lineIndex = unicodeDir.length;
-                        spec.dTransNCols = CUtility.MAX_SIXTEEN_BIT + 1;
+                        spec.dTransNCols = Utility.MAX_SIXTEEN_BIT + 1;
                         
                         break;
                     }
@@ -720,12 +720,12 @@ class LexGen {
                     break;
                 
                 case 'y':
-                    if (0 == CUtility.charncmp(input.line, 0, yyeofDir, 0, yyeofDir.length - 1)) {
+                    if (0 == Utility.charsCmp(input.line, 0, yyeofDir, 0, yyeofDir.length - 1)) {
                         input.lineIndex = yyeofDir.length;
                         spec.yyeof = true;
                         
                         break;
-                    } else if (0 == CUtility.charncmp(input.line, 0, yylexThrowCodeDir, 0, yylexThrowCodeDir.length - 1)) {
+                    } else if (0 == Utility.charsCmp(input.line, 0, yylexThrowCodeDir, 0, yylexThrowCodeDir.length - 1)) {
                         spec.yylexThrowCode = packCode(
                             yylexThrowCodeDir,
                             yylexThrowCodeEndDir,
@@ -754,7 +754,7 @@ class LexGen {
                 saveMacro();
             }
             
-            if (CUtility.OLD_DEBUG) {
+            if (Utility.OLD_DEBUG) {
                 System.out.println("Line number " + input.lineNumber + ":");
                 System.out.print(new String(input.line, 0, input.lineLength));
             }
@@ -770,11 +770,11 @@ class LexGen {
             Error.parseError(Error.E_INIT, 0);
         }
         
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
         
         // TODO: UNDONE: Need to handle states preceding rules
@@ -790,8 +790,8 @@ class LexGen {
         
         // printNFA();
         
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(END_OF_INPUT == spec.currentToken);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(END_OF_INPUT == spec.currentToken);
         }
         
         if (spec.verbose) {
@@ -800,7 +800,7 @@ class LexGen {
         
         nfa2DFA.makeDFA(this, spec);
         
-        if (CUtility.FOODEBUG) {
+        if (Utility.FOODEBUG) {
             printHeader();
         }
         
@@ -936,15 +936,15 @@ class LexGen {
      * and permits states to be spread over multiple line.
      */
     SparseBitSet getStates() throws IOException {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
         
         // Skip white space
-        while (CUtility.isspace(input.line[input.lineIndex])) {
+        while (Utility.isSpace(input.line[input.lineIndex])) {
             ++input.lineIndex;
             
             while (input.lineIndex >= input.lineLength) {
@@ -976,7 +976,7 @@ class LexGen {
                 
                 while (true) {
                     // Skip white space
-                    while (CUtility.isspace(input.line[input.lineIndex])) {
+                    while (Utility.isSpace(input.line[input.lineIndex])) {
                         ++input.lineIndex;
                         
                         while (input.lineIndex >= input.lineLength) {
@@ -1009,7 +1009,7 @@ class LexGen {
                 // Read in state name
                 int startState = input.lineIndex;
                 while (
-                    !CUtility.isspace(input.line[input.lineIndex]) &&
+                    !Utility.isSpace(input.line[input.lineIndex]) &&
                     ',' != input.line[input.lineIndex] &&
                     '>' != input.line[input.lineIndex]
                 ) {
@@ -1060,11 +1060,11 @@ class LexGen {
      * @return false on error, true otherwise.
      */
     private boolean expandMacro() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
         
         // Check for macro
@@ -1102,8 +1102,8 @@ class LexGen {
         }
         
         // Debug checks
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(0 < nameLength);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(0 < nameLength);
         }
         
         // Get macro definition
@@ -1118,7 +1118,7 @@ class LexGen {
             return ERROR;
         }
         
-        if (CUtility.OLD_DUMP_DEBUG) {
+        if (Utility.OLD_DUMP_DEBUG) {
             System.out.println("expanded escape: " + def);
         }
 		
@@ -1131,7 +1131,7 @@ class LexGen {
         int cursor = macroStart;
         for (int defElem = 0; defElem < def.length(); ++defElem, ++cursor) {
             if (cursor >= replace.length) {
-                replace = CUtility.doubleSize(replace);
+                replace = Utility.doubleSize(replace);
             }
             
             replace[cursor] = def.charAt(defElem);
@@ -1140,7 +1140,7 @@ class LexGen {
         // Copy last part of line
         for (elem = macroEnd + 1; elem < input.lineLength; ++elem, ++cursor) {
             if (cursor >= replace.length) {
-                replace = CUtility.doubleSize(replace);
+                replace = Utility.doubleSize(replace);
             }
             
             replace[cursor] = input.line[elem];
@@ -1150,7 +1150,7 @@ class LexGen {
         input.line = replace;
         input.lineLength = cursor;
         
-        if (CUtility.OLD_DEBUG) {
+        if (Utility.OLD_DEBUG) {
             System.out.println(new String(input.line, 0, input.lineLength));
         }
         
@@ -1162,18 +1162,18 @@ class LexGen {
      * macroName = macroDefinition
      */
     private void saveMacro() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
 
         // Macro declarations are of the following form:
         // macroName = macroDefinition
         
         // Skip white space preceding macro name
-        while (CUtility.isspace(input.line[input.lineIndex])) {
+        while (Utility.isSpace(input.line[input.lineIndex])) {
             ++input.lineIndex;
             
             if (input.lineIndex >= input.lineLength) {
@@ -1185,7 +1185,7 @@ class LexGen {
         
         // Read macro name
         int startName = input.lineIndex;
-        while (!CUtility.isspace(input.line[input.lineIndex]) && '=' != input.line[input.lineIndex]) {
+        while (!Utility.isSpace(input.line[input.lineIndex]) && '=' != input.line[input.lineIndex]) {
             ++input.lineIndex;
             
             if (input.lineIndex >= input.lineLength) {
@@ -1203,7 +1203,7 @@ class LexGen {
         }
         
         // Skip white space after name
-        while (CUtility.isspace(input.line[input.lineIndex])) {
+        while (Utility.isSpace(input.line[input.lineIndex])) {
             ++input.lineIndex;
             
             if (input.lineIndex >= input.lineLength) {
@@ -1225,7 +1225,7 @@ class LexGen {
         }
         
         // Skip white space before definition
-        while (CUtility.isspace(input.line[input.lineIndex])) {
+        while (Utility.isSpace(input.line[input.lineIndex])) {
             ++input.lineIndex;
             
             if (input.lineIndex >= input.lineLength) {
@@ -1240,7 +1240,7 @@ class LexGen {
         boolean inQuote   = false; // Between " and "
         boolean inCCl     = false; // Between [ and ]
         boolean isEscaped = false; // After \
-        while (!CUtility.isspace(input.line[input.lineIndex]) || inQuote || inCCl || isEscaped) {
+        while (!Utility.isSpace(input.line[input.lineIndex]) || inQuote || inCCl || isEscaped) {
             // If current char is " and it is not escaped trigger inQuote
             if ('"' == input.line[input.lineIndex] && !isEscaped) {
                 inQuote = !inQuote;
@@ -1280,13 +1280,13 @@ class LexGen {
         }
         
         // Debug checks
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(0 < defLength);
-            CUtility.ASSERT(0 < nameLength);
-            CUtility.ASSERT(null != spec.macros);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(0 < defLength);
+            Utility.ASSERT(0 < nameLength);
+            Utility.ASSERT(null != spec.macros);
         }
         
-        if (CUtility.OLD_DEBUG) {
+        if (Utility.OLD_DEBUG) {
             System.out.println("macro name \"" + new String(input.line, startName, nameLength) + "\".");
             System.out.println("macro definition \"" + new String(input.line, startDef, defLength) + "\".");
         }
@@ -1309,11 +1309,11 @@ class LexGen {
      * white space in between them.)
      */
     private void saveStates() {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
         
         // EOF found?
@@ -1322,12 +1322,12 @@ class LexGen {
         }
         
         // Debug checks
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT('%' == input.line[0]);
-            CUtility.ASSERT('s' == input.line[1]);
-            CUtility.ASSERT(input.lineIndex <= input.lineLength);
-            CUtility.ASSERT(0 <= input.lineIndex);
-            CUtility.ASSERT(0 <= input.lineLength);
+        if (Utility.DEBUG) {
+            Utility.ASSERT('%' == input.line[0]);
+            Utility.ASSERT('s' == input.line[1]);
+            Utility.ASSERT(input.lineIndex <= input.lineLength);
+            Utility.ASSERT(0 <= input.lineIndex);
+            Utility.ASSERT(0 <= input.lineLength);
         }
         
         // Blank line? No states?
@@ -1336,12 +1336,12 @@ class LexGen {
         }
         
         while (input.lineIndex < input.lineLength) {
-            if (CUtility.OLD_DEBUG) {
+            if (Utility.OLD_DEBUG) {
                 System.out.println("line read " + input.lineLength + "\tline index = " + input.lineIndex);
             }
             
             // Skip white space
-            while (CUtility.isspace(input.line[input.lineIndex])) {
+            while (Utility.isSpace(input.line[input.lineIndex])) {
                 ++input.lineIndex;
                 
                 if (input.lineIndex >= input.lineLength) {
@@ -1352,7 +1352,7 @@ class LexGen {
             
             // Look for state name
             int stateStart = input.lineIndex;
-            while (!CUtility.isspace(input.line[input.lineIndex]) && ',' != input.line[input.lineIndex]) {
+            while (!Utility.isSpace(input.line[input.lineIndex]) && ',' != input.line[input.lineIndex]) {
                 ++input.lineIndex;
                 
                 if (input.lineIndex >= input.lineLength) {
@@ -1363,7 +1363,7 @@ class LexGen {
             
             int stateLength = input.lineIndex - stateStart;
             
-            if (CUtility.OLD_DEBUG) {
+            if (Utility.OLD_DEBUG) {
                 System.out.println("State name \"" + new String(input.line, stateStart, stateLength) + "\".");
                 System.out.println("Integer index \"" + spec.states.size() + "\".");
             }
@@ -1389,10 +1389,10 @@ class LexGen {
      */
     private char expandEscape() {
         // Debug checks
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(input.lineIndex < input.lineLength);
-            CUtility.ASSERT(0 < input.lineLength);
-            CUtility.ASSERT(0 <= input.lineIndex);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(input.lineIndex < input.lineLength);
+            Utility.ASSERT(0 < input.lineLength);
+            Utility.ASSERT(0 <= input.lineIndex);
         }
         
         if ('\\' != input.line[input.lineIndex]) {
@@ -1446,9 +1446,9 @@ class LexGen {
                 
                 r = 0;
                 for (int i = 0; i < (unicodeEscape? 4: 2); i++) {
-                    if (CUtility.ishexdigit(input.line[input.lineIndex])) {
+                    if (Utility.isHexDigit(input.line[input.lineIndex])) {
                         r = (char) (r << 4);
-                        r = (char) (r | CUtility.hex2bin(input.line[input.lineIndex]));
+                        r = (char) (r | Utility.hex2bin(input.line[input.lineIndex]));
                         
                         ++input.lineIndex;
                     } else {
@@ -1459,16 +1459,16 @@ class LexGen {
                 return r;
             
             default:
-                if (!CUtility.isoctdigit(input.line[input.lineIndex])) {
+                if (!Utility.isOctDigit(input.line[input.lineIndex])) {
                     r = input.line[input.lineIndex];
                     ++input.lineIndex;
                 } else {
                     r = 0;
                     
                     for (int i = 0; i < 3; i++) {
-                        if (CUtility.isoctdigit(input.line[input.lineIndex])) {
+                        if (Utility.isOctDigit(input.line[input.lineIndex])) {
                             r = (char) (r << 3);
-                            r = (char) (r | CUtility.oct2bin(input.line[input.lineIndex]));
+                            r = (char) (r | Utility.oct2bin(input.line[input.lineIndex]));
                             
                             ++input.lineIndex;
                         } else {
@@ -1487,11 +1487,11 @@ class LexGen {
      * for action next in input stream.
      */
     Accept packAccept() throws IOException {
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != out);
-            CUtility.ASSERT(null != input);
-            CUtility.ASSERT(null != tokens);
-            CUtility.ASSERT(null != spec);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != out);
+            Utility.ASSERT(null != input);
+            Utility.ASSERT(null != tokens);
+            Utility.ASSERT(null != spec);
         }
         
         // Get a new line, if needed
@@ -1503,7 +1503,7 @@ class LexGen {
         }
         
         // Look for beginning of action
-        while (CUtility.isspace(input.line[input.lineIndex])) {
+        while (Utility.isSpace(input.line[input.lineIndex])) {
             ++input.lineIndex;
             
             // Get a new line, if needed
@@ -1535,7 +1535,7 @@ class LexGen {
         while (true) {
             // Double the buffer size, if needed
             if (actionIndex >= action.length) {
-                action = CUtility.doubleSize(action);
+                action = Utility.doubleSize(action);
             }
             
             action[actionIndex] = input.line[input.lineIndex];
@@ -1619,11 +1619,11 @@ class LexGen {
         
         Accept accept = new Accept(action, actionIndex, input.lineNumber);
         
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(null != accept);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(null != accept);
         }
         
-        if (CUtility.DESCENT_DEBUG) {
+        if (Utility.DESCENT_DEBUG) {
             System.out.print("Accepting action:");
             System.out.println(new String(accept.action, 0, accept.actionLength));
         }
@@ -1671,15 +1671,15 @@ class LexGen {
         
                 while (
                     input.lineIndex < input.lineLength &&
-                    CUtility.isspace(input.line[input.lineIndex])
+                    Utility.isSpace(input.line[input.lineIndex])
                 ) {
                     ++input.lineIndex;
                 }
             } while (input.lineIndex >= input.lineLength);
         }
         
-        if (CUtility.DEBUG) {
-            CUtility.ASSERT(input.lineIndex <= input.lineLength);
+        if (Utility.DEBUG) {
+            Utility.ASSERT(input.lineIndex <= input.lineLength);
         }
         
         while (true) {
@@ -1713,7 +1713,7 @@ class LexGen {
             System.out.println("input.lineIndex = " + input.lineIndex);
             System.out.println("input.lineLength = " + input.lineLength);
             
-            CUtility.ASSERT(input.lineIndex <= input.lineLength);
+            Utility.ASSERT(input.lineIndex <= input.lineLength);
         }
 
         /* Look for backslash, and corresponding
@@ -1721,7 +1721,7 @@ class LexGen {
         boolean saw_escape = ('\\' == input.line[input.lineIndex]);
         
         if (!spec.inQuote) {
-            if (!spec.inCCl && CUtility.isspace(input.line[input.lineIndex])) {
+            if (!spec.inCCl && Utility.isSpace(input.line[input.lineIndex])) {
                 /* White space means the end of
                    the current regular expression. */
                 
@@ -1771,7 +1771,7 @@ class LexGen {
             spec.inCCl = false;
         }
         
-        if (CUtility.FOODEBUG) {
+        if (Utility.FOODEBUG) {
             System.out.println(
                 "Lexeme: " + spec.lexeme +
                 "\tToken: " + spec.currentToken +
@@ -1793,8 +1793,8 @@ class LexGen {
             String name = entry.getKey();
             String def = entry.getValue();
     
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(null != def);
+            if (Utility.DEBUG) {
+                Utility.ASSERT(null != def);
             }
     
             System.out.println("Macro name \"" + name + "\" has definition \"" + def + "\".");
@@ -1813,8 +1813,8 @@ class LexGen {
         if (!spec.countChars) {
             System.out.println("Character counting is off.");
         } else {
-            if (CUtility.DEBUG) {
-                CUtility.ASSERT(spec.countLines);
+            if (Utility.DEBUG) {
+                Utility.ASSERT(spec.countLines);
             }
             
             System.out.println("Character counting is on.");
@@ -1850,7 +1850,7 @@ class LexGen {
             System.out.println("Not generating CUP compatible code.");
         }
         
-        if (CUtility.FOODEBUG) {
+        if (Utility.FOODEBUG) {
             if (null != spec.nfaStates && null != spec.nfaStart) {
                 System.out.println();
                 System.out.println("\t** NFA machine **");
