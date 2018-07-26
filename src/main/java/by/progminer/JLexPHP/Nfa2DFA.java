@@ -35,76 +35,63 @@ class Nfa2DFA {
         set(lexGen, spec);
 
         makeDTrans();
-        free_nfa_states();
+        freeNFAStates();
 
         if (this.spec.m_verbose && CUtility.OLD_DUMP_DEBUG) {
             System.out.println(this.spec.m_DFA_states.size() + " DFA states in original machine.");
         }
 
-        free_dfa_states();
+        freeDFAStates();
     }
 
     /**
      * Creates uncompressed DTrans transition table.
      */
     private void makeDTrans() {
-        DFA dfa;
-        Bunch bunch;
-        int i;
-        int nextstate;
-        int size;
-        DTrans dTrans;
-        NFA nfa;
-        int istate;
-        int nstates;
-
         System.out.print("Working on DFA states.");
 
-        /* Reference passing type and initializations. */
-        bunch = new Bunch();
+        // Reference passing type and initializations
+        Bunch bunch = new Bunch();
         unmarkedDFA = 0;
 
-        /* Allocate mapping array. */
-        nstates = spec.m_state_rules.length;
-        spec.m_state_dtrans = new int[nstates];
+        // Allocate mapping array
+        int nStates = spec.m_state_rules.length;
+        spec.m_state_dtrans = new int[nStates];
 
-        for (istate = 0; nstates > istate; ++istate) {
-            /* CSA bugfix: if we skip all zero size rules, then
-               an specification with no rules produces an illegal
-               lexer (0 states) instead of a lexer that rejects
-               everything (1 nonaccepting state). [27-Jul-1999]
+        for (int i = 0; nStates > i; ++i) {
+            // CSA bugfix: if we skip all zero size rules, then
+            // an specification with no rules produces an illegal
+            // lexer (0 states) instead of a lexer that rejects
+            // everything (1 nonaccepting state). [27-Jul-1999]
 
-            if (0 == spec.m_state_rules[istate].size())
-              {
-            spec.m_state_dtrans[istate] = DTrans.F;
-            continue;
-              }
-            */
+            // if (0 == spec.m_state_rules[i].size()) {
+            //     spec.m_state_dtrans[i] = DTrans.F;
+            //     continue;
+            // }
 
-            /* Create start state and initialize fields. */
-            bunch.nfaSet = (Vector <NFA>) spec.m_state_rules[istate].clone();
+            // Create start state and initialize fields
+            bunch.nfaSet = (Vector <NFA>) spec.m_state_rules[i].clone();
             sortStates(bunch.nfaSet);
 
             bunch.nfaBit = new SparseBitSet();
 
-            /* Initialize bit set. */
-            size = bunch.nfaSet.size();
-            for (i = 0; size > i; ++i) {
-                nfa = bunch.nfaSet.elementAt(i);
-                bunch.nfaBit.set(nfa.label);
+            // Initialize bit set
+            for (int j = 0; bunch.nfaSet.size() > j; ++j) {
+                bunch.nfaBit.set(bunch.nfaSet.elementAt(j).label);
             }
 
             bunch.accept = null;
             bunch.anchor = CSpec.NONE;
             bunch.acceptIndex = CUtility.INT_MAX;
 
-            e_closure(bunch);
-            add_to_dstates(bunch);
+            eClosure(bunch);
+            addToDStates(bunch);
 
-            spec.m_state_dtrans[istate] = spec.m_dtrans_vector.size();
+            spec.m_state_dtrans[i] = spec.m_dtrans_vector.size();
 
-            /* Main loop of DTrans creation. */
-            while (null != (dfa = get_unmarked())) {
+            // Main loop of DTrans creation
+            DFA dfa;
+            while (null != (dfa = getUnmarked())) {
                 System.out.print(".");
                 System.out.flush();
 
@@ -112,50 +99,50 @@ class Nfa2DFA {
                     CUtility.ASSERT(!dfa.mark);
                 }
 
-                /* Get first unmarked node, then mark it. */
+                // Get first unmarked node, then mark it
                 dfa.mark = true;
 
-                /* Allocate new DTrans, then initialize fields. */
-                dTrans = new DTrans(spec.m_dtrans_vector.size(), spec);
+                // Allocate new DTrans, then initialize fields
+                DTrans dTrans = new DTrans(spec.m_dtrans_vector.size(), spec);
                 dTrans.accept = dfa.accept;
                 dTrans.anchor = dfa.anchor;
 
-                /* Set DTrans array for each character transition. */
-                for (i = 0; i < spec.m_dtrans_ncols; ++i) {
+                // Set DTrans array for each character transition
+                for (int j = 0; j < spec.m_dtrans_ncols; ++j) {
                     if (CUtility.DEBUG) {
-                        CUtility.ASSERT(0 <= i);
-                        CUtility.ASSERT(spec.m_dtrans_ncols > i);
+                        CUtility.ASSERT(spec.m_dtrans_ncols > j);
                     }
 
-                    /* Create new dfa set by attempting character transition. */
-                    move(dfa.nfaSet, i, bunch);
+                    // Create new dfa set by attempting character transition
+                    move(dfa.nfaSet, j, bunch);
                     if (null != bunch.nfaSet) {
-                        e_closure(bunch);
+                        eClosure(bunch);
                     }
 
                     if (CUtility.DEBUG) {
-                        CUtility.ASSERT((null == bunch.nfaSet
-                                             && null == bunch.nfaBit)
-                                            || (null != bunch.nfaSet
-                                                    && null != bunch.nfaBit));
+                        CUtility.ASSERT(
+                            (null == bunch.nfaSet && null == bunch.nfaBit) ||
+                            (null != bunch.nfaSet && null != bunch.nfaBit)
+                        );
                     }
 
-                    /* Create new state or set state to empty. */
+                    // Create new state or set state to empty
+                    int nextState;
                     if (null == bunch.nfaSet) {
-                        nextstate = DTrans.F;
+                        nextState = DTrans.F;
                     } else {
-                        nextstate = in_dstates(bunch);
+                        nextState = inDStates(bunch);
 
-                        if (NOT_IN_DSTATES == nextstate) {
-                            nextstate = add_to_dstates(bunch);
+                        if (NOT_IN_DSTATES == nextState) {
+                            nextState = addToDStates(bunch);
                         }
                     }
 
                     if (CUtility.DEBUG) {
-                        CUtility.ASSERT(nextstate < spec.m_DFA_states.size());
+                        CUtility.ASSERT(nextState < spec.m_DFA_states.size());
                     }
 
-                    dTrans.dtrans[i] = nextstate;
+                    dTrans.dtrans[j] = nextState;
                 }
 
                 if (CUtility.DEBUG) {
@@ -169,46 +156,31 @@ class Nfa2DFA {
         System.out.println();
     }
 
-    /***************************************************************
-     Function: free_dfa_states
-     **************************************************************/
-    private void free_dfa_states
-    (
-    ) {
+    private void freeDFAStates() {
         spec.m_DFA_states = null;
         spec.m_dfa_sets = null;
     }
 
-    /***************************************************************
-     Function: free_nfa_states
-     **************************************************************/
-    private void free_nfa_states
-    (
-    ) {
-        /* UNDONE: Remove references to nfas from within dfas. */
-        /* UNDONE: Don't free CAccepts. */
+    private void freeNFAStates() {
+        // TODO: UNDONE: Remove references to NFAs from within DFAs
+        // TODO: UNDONE: Don't free CAccepts
 
         spec.m_NFA_states = null;
         spec.m_NFA_start = null;
         spec.m_state_rules = null;
     }
 
-    /***************************************************************
-     Function: e_closure
-     Description: Alters and returns input set.
-     **************************************************************/
-    private void e_closure
-    (
-        Bunch bunch
-    ) {
-        Stack <NFA> NFA_stack;
-        int size;
-        int i;
-        NFA state;
-
-        /* Debug checks. */
+    /**
+     * Alters and returns input set.
+     */
+    private void eClosure(Bunch bunch) {
+        // Debug checks
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != bunch);
+
+            // For IDE
+            if (null == bunch) { throw new Error(); }
+
             CUtility.ASSERT(null != bunch.nfaSet);
             CUtility.ASSERT(null != bunch.nfaBit);
         }
@@ -217,22 +189,22 @@ class Nfa2DFA {
         bunch.anchor = CSpec.NONE;
         bunch.acceptIndex = CUtility.INT_MAX;
 
-        /* Create initial stack. */
-        NFA_stack = new Stack <NFA> ();
-        size = bunch.nfaSet.size();
-        for (i = 0; i < size; ++i) {
-            state = bunch.nfaSet.elementAt(i);
+        // Create initial stack
+        Stack <NFA> NFAStack = new Stack <NFA> ();
+        int size = bunch.nfaSet.size();
+        for (int i = 0; i < size; ++i) {
+            NFA state = bunch.nfaSet.elementAt(i);
 
             if (CUtility.DEBUG) {
                 CUtility.ASSERT(bunch.nfaBit.get(state.label));
             }
 
-            NFA_stack.push(state);
+            NFAStack.push(state);
         }
 
-        /* Main loop. */
-        while (!NFA_stack.empty()) {
-            state = NFA_stack.pop();
+        // Main loop
+        while (!NFAStack.empty()) {
+            NFA state = NFAStack.pop();
 
             if (CUtility.OLD_DUMP_DEBUG) {
                 if (null != state.accept) {
@@ -274,7 +246,7 @@ class Nfa2DFA {
 
                         bunch.nfaBit.set(state.next.label);
                         bunch.nfaSet.addElement(state.next);
-                        NFA_stack.push(state.next);
+                        NFAStack.push(state.next);
                     }
                 }
 
@@ -286,7 +258,7 @@ class Nfa2DFA {
 
                         bunch.nfaBit.set(state.next2.label);
                         bunch.nfaSet.addElement(state.next2);
-                        NFA_stack.push(state.next2);
+                        NFAStack.push(state.next2);
                     }
                 }
             }
@@ -297,21 +269,15 @@ class Nfa2DFA {
         }
     }
 
-    /***************************************************************
-     Function: move
-     Description: Returns null if resulting NFA set is empty.
-     **************************************************************/
-    void move(Vector nfa_set, int b, Bunch bunch) {
-        int size;
-        int index;
-        NFA state;
-
+    /**
+     * Returns null if resulting NFA set is empty.
+     */
+    void move(Vector <NFA> nfaSet, int b, Bunch bunch) {
         bunch.nfaSet = null;
         bunch.nfaBit = null;
 
-        size = nfa_set.size();
-        for (index = 0; index < size; ++index) {
-            state = (NFA) nfa_set.elementAt(index);
+        for (int i = 0; i < nfaSet.size(); ++i) {
+            NFA state = nfaSet.elementAt(i);
 
             if (b == state.edge || (NFA.CCL == state.edge && state.set.contains(b))) {
                 if (null == bunch.nfaSet) {
@@ -344,63 +310,44 @@ class Nfa2DFA {
         }
     }
 
-    /***************************************************************
-     Function: sortStates
-     **************************************************************/
-    private void sortStates(Vector <NFA> NFA_set) {
-        NFA elem;
-        int begin;
-        int size;
-        int index;
-        int value;
-        int smallest_index;
-        int smallest_value;
-        NFA begin_elem;
+    private void sortStates(Vector <NFA> NFASet) {
+        int size = NFASet.size();
 
-        size = NFA_set.size();
-        for (begin = 0; begin < size; ++begin) {
-            elem = NFA_set.elementAt(begin);
-            smallest_value = elem.label;
-            smallest_index = begin;
+        for (int begin = 0; begin < size; ++begin) {
+            int smallestValue = NFASet.elementAt(begin).label;
+            int smallestIndex = begin;
 
-            for (index = begin + 1; index < size; ++index) {
-                elem = NFA_set.elementAt(index);
-                value = elem.label;
+            for (int index = begin + 1; index < size; ++index) {
+                int value = NFASet.elementAt(index).label;
 
-                if (value < smallest_value) {
-                    smallest_index = index;
-                    smallest_value = value;
+                if (value < smallestValue) {
+                    smallestIndex = index;
+                    smallestValue = value;
                 }
             }
 
-            begin_elem = NFA_set.elementAt(begin);
-            elem = NFA_set.elementAt(smallest_index);
-            NFA_set.setElementAt(elem, begin);
-            NFA_set.setElementAt(begin_elem, smallest_index);
+            NFA beginElem = NFASet.elementAt(begin);
+            NFASet.setElementAt(NFASet.elementAt(smallestIndex), begin);
+            NFASet.setElementAt(beginElem, smallestIndex);
         }
 
         if (CUtility.OLD_DEBUG) {
             System.out.print("NFA vector indices: ");
 
-            for (index = 0; index < size; ++index) {
-                elem = NFA_set.elementAt(index);
-                System.out.print(elem.label + " ");
+            for (int index = 0; index < size; ++index) {
+                System.out.print(NFASet.elementAt(index).label + " ");
             }
+
             System.out.println();
         }
     }
 
-    /***************************************************************
-     Function: get_unmarked
-     Description: Returns next unmarked DFA state.
-     **************************************************************/
-    private DFA get_unmarked() {
-        int size;
-        DFA dfa;
-
-        size = spec.m_DFA_states.size();
-        while (unmarkedDFA < size) {
-            dfa = spec.m_DFA_states.elementAt(unmarkedDFA);
+    /**
+     * Returns next unmarked DFA state.
+     */
+    private DFA getUnmarked() {
+        while (unmarkedDFA < spec.m_DFA_states.size()) {
+            DFA dfa = spec.m_DFA_states.elementAt(unmarkedDFA);
 
             if (!dfa.mark) {
                 if (CUtility.OLD_DUMP_DEBUG) {
@@ -410,9 +357,7 @@ class Nfa2DFA {
 
                 if (spec.m_verbose && CUtility.OLD_DUMP_DEBUG) {
                     System.out.println("---------------");
-                    System.out.print("working on DFA state "
-                                         + unmarkedDFA
-                                         + " = NFA states: ");
+                    System.out.print("working on DFA state " + unmarkedDFA + " = NFA states: ");
                     lexGen.printSet(dfa.nfaSet);
                     System.out.println();
                 }
@@ -426,40 +371,38 @@ class Nfa2DFA {
         return null;
     }
 
-    /***************************************************************
-     function: add_to_dstates
-     Description: Takes as input a Bunch with details of
-     a dfa state that needs to be created.
-     1) Allocates a new dfa state and saves it in
-     the appropriate CSpec vector.
-     2) Initializes the fields of the dfa state
-     with the information in the Bunch.
-     3) Returns index of new dfa.
-     **************************************************************/
-    private int add_to_dstates
-    (
-        Bunch bunch
-    ) {
-        DFA dfa;
-
+    /**
+     * @param bunch a Bunch with details of
+     *              a DFA state that needs to be created.
+     *
+     * 1) Allocates a new DFA state and saves it in
+     * the appropriate CSpec vector.
+     * 2) Initializes the fields of the DFA state
+     * with the information in the Bunch.
+     *
+     * @return index of new dfa.
+     */
+    private int addToDStates(Bunch bunch) {
         if (CUtility.DEBUG) {
             CUtility.ASSERT(null != bunch.nfaSet);
             CUtility.ASSERT(null != bunch.nfaBit);
-            CUtility.ASSERT(null != bunch.accept
-                                || CSpec.NONE == bunch.anchor);
+            CUtility.ASSERT(
+                null != bunch.accept ||
+                CSpec.NONE == bunch.anchor
+            );
         }
 
-        /* Allocate, passing CSpec so DFA label can be set. */
-        dfa = Alloc.newDFA(spec);
+        // Allocate, passing CSpec so DFA label can be set
+        DFA dfa = Alloc.newDFA(spec);
 
-        /* Initialize fields, including the mark field. */
-        dfa.nfaSet = (Vector) bunch.nfaSet.clone();
+        // Initialize fields, including the mark field
+        dfa.nfaSet = (Vector <NFA>) bunch.nfaSet.clone();
         dfa.nfaBit = (SparseBitSet) bunch.nfaBit.clone();
         dfa.accept = bunch.accept;
         dfa.anchor = bunch.anchor;
         dfa.mark = false;
 
-        /* Register DFA state using BitSet in CSpec Hashtable. */
+        // Register DFA state using BitSet in CSpec Hashtable
         spec.m_dfa_sets.put(dfa.nfaBit, dfa);
         // registerCDfa(DFA);
 
@@ -472,21 +415,13 @@ class Nfa2DFA {
         return dfa.label;
     }
 
-    /***************************************************************
-     Function: in_dstates
-     **************************************************************/
-    private int in_dstates
-    (
-        Bunch bunch
-    ) {
-        DFA dfa;
-
+    private int inDStates(Bunch bunch) {
         if (CUtility.OLD_DEBUG) {
             System.out.print("Looking for set : ");
             lexGen.printSet(bunch.nfaSet);
         }
 
-        dfa = spec.m_dfa_sets.get(bunch.nfaBit);
+        DFA dfa = spec.m_dfa_sets.get(bunch.nfaBit);
 
         if (null != dfa) {
             if (CUtility.OLD_DUMP_DEBUG) {
@@ -499,6 +434,7 @@ class Nfa2DFA {
         if (CUtility.OLD_DUMP_DEBUG) {
             System.out.println(" NOT FOUND!");
         }
+
         return NOT_IN_DSTATES;
     }
 

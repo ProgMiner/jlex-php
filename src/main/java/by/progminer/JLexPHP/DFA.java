@@ -10,7 +10,7 @@ class DFA {
     Accept accept;
     int anchor;
     
-    Vector nfaSet;
+    Vector <NFA> nfaSet;
     SparseBitSet nfaBit;
     
     int label;
