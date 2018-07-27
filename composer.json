@@ -1,0 +1,14 @@
+{
+    "name": "progminer/jlex-php",
+    "description": "A lexer generator for PHP written on Java",
+    "authors": [
+        {
+            "name": "Eridan Domoratskiy",
+            "email": "eridan200@mail.ru"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {}
+    "bin": ["dist/JLexPHP.jar"]
+}
