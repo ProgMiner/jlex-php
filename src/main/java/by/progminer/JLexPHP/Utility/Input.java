@@ -51,7 +51,7 @@ public class Input {
     
     public Input(Reader input) {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != input);
+            assert null != input;
         }
         
         // Initialize input stream.

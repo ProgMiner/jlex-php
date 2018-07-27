@@ -2,12 +2,8 @@ package by.progminer.JLexPHP.Utility;
 
 public class Utility {
     
-    // static final boolean DEBUG = false;
-    public static final boolean DEBUG = true;
-    
-    // static final boolean SLOW_DEBUG = false;
-    public static final boolean SLOW_DEBUG = true;
-    
+    public static final boolean DEBUG = false;
+    public static final boolean SLOW_DEBUG = false;
     public static final boolean DESCENT_DEBUG = false;
     public static final boolean OLD_DEBUG = false;
     public static final boolean OLD_DUMP_DEBUG = false;

@@ -104,7 +104,7 @@ public class Nfa2DFA {
                 System.err.flush();
 
                 if (Utility.DEBUG) {
-                    Utility.ASSERT(!dfa.mark);
+                    assert !dfa.mark;
                 }
 
                 // Get first unmarked node, then mark it
@@ -118,7 +118,7 @@ public class Nfa2DFA {
                 // Set DTrans array for each character transition
                 for (int j = 0; j < spec.dTransNCols; ++j) {
                     if (Utility.DEBUG) {
-                        Utility.ASSERT(spec.dTransNCols > j);
+                        assert spec.dTransNCols > j;
                     }
 
                     // Create new dfa set by attempting character transition
@@ -128,10 +128,10 @@ public class Nfa2DFA {
                     }
 
                     if (Utility.DEBUG) {
-                        Utility.ASSERT(
+                        assert
                             (null == bunch.nfaSet && null == bunch.nfaBit) ||
                             (null != bunch.nfaSet && null != bunch.nfaBit)
-                        );
+                        ;
                     }
 
                     // Create new state or set state to empty
@@ -147,14 +147,14 @@ public class Nfa2DFA {
                     }
 
                     if (Utility.DEBUG) {
-                        Utility.ASSERT(nextState < spec.dfaStates.size());
+                        assert nextState < spec.dfaStates.size();
                     }
 
                     dTrans.dtrans[j] = nextState;
                 }
 
                 if (Utility.DEBUG) {
-                    Utility.ASSERT(spec.dTransVector.size() == dfa.label);
+                    assert spec.dTransVector.size() == dfa.label;
                 }
 
                 spec.dTransVector.addElement(dTrans);
@@ -184,13 +184,13 @@ public class Nfa2DFA {
     private void eClosure(Bunch bunch) {
         // Debug checks
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != bunch);
+            assert null != bunch;
 
             // For IDE
             if (null == bunch) { throw new Error(); }
 
-            Utility.ASSERT(null != bunch.nfaSet);
-            Utility.ASSERT(null != bunch.nfaBit);
+            assert null != bunch.nfaSet;
+            assert null != bunch.nfaBit;
         }
 
         bunch.accept = null;
@@ -204,7 +204,7 @@ public class Nfa2DFA {
             NFA state = bunch.nfaSet.elementAt(i);
 
             if (Utility.DEBUG) {
-                Utility.ASSERT(bunch.nfaBit.get(state.label));
+                assert bunch.nfaBit.get(state.label);
             }
 
             NFAStack.push(state);
@@ -236,12 +236,12 @@ public class Nfa2DFA {
                 }
 
                 if (Utility.DEBUG) {
-                    Utility.ASSERT(null != bunch.accept);
-                    Utility.ASSERT(
+                    assert null != bunch.accept;
+                    assert
                         Spec.NONE == bunch.anchor ||
                         0 != (bunch.anchor & Spec.END) ||
                         0 != (bunch.anchor & Spec.START)
-                    );
+                    ;
                 }
             }
 
@@ -249,7 +249,7 @@ public class Nfa2DFA {
                 if (null != state.next) {
                     if (!bunch.nfaSet.contains(state.next)) {
                         if (Utility.DEBUG) {
-                            Utility.ASSERT(!bunch.nfaBit.get(state.next.label));
+                            assert !bunch.nfaBit.get(state.next.label);
                         }
 
                         bunch.nfaBit.set(state.next.label);
@@ -261,7 +261,7 @@ public class Nfa2DFA {
                 if (null != state.next2) {
                     if (!bunch.nfaSet.contains(state.next2)) {
                         if (Utility.DEBUG) {
-                            Utility.ASSERT(!bunch.nfaBit.get(state.next2.label));
+                            assert !bunch.nfaBit.get(state.next2.label);
                         }
 
                         bunch.nfaBit.set(state.next2.label);
@@ -290,7 +290,7 @@ public class Nfa2DFA {
             if (b == state.edge || (NFA.CCL == state.edge && state.set.contains(b))) {
                 if (null == bunch.nfaSet) {
                     if (Utility.DEBUG) {
-                        Utility.ASSERT(null == bunch.nfaBit);
+                        assert null == bunch.nfaBit;
                     }
 
                     bunch.nfaSet = new Vector <NFA> ();
@@ -311,7 +311,7 @@ public class Nfa2DFA {
 
         if (null != bunch.nfaSet) {
             if (Utility.DEBUG) {
-                Utility.ASSERT(null != bunch.nfaBit);
+                assert null != bunch.nfaBit;
             }
 
             sortStates(bunch.nfaSet);
@@ -392,12 +392,12 @@ public class Nfa2DFA {
      */
     private int addToDStates(Bunch bunch) {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != bunch.nfaSet);
-            Utility.ASSERT(null != bunch.nfaBit);
-            Utility.ASSERT(
+            assert null != bunch.nfaSet;
+            assert null != bunch.nfaBit;
+            assert
                 null != bunch.accept ||
                 Spec.NONE == bunch.anchor
-            );
+            ;
         }
 
         // Allocate, passing Spec so DFA label can be set

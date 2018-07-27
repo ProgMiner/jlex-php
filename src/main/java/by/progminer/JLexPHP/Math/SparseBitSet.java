@@ -109,13 +109,13 @@ public final class SparseBitSet implements Cloneable {
             offs = nOffs;
         }
         
-        Utility.ASSERT(size < bits.length);
+        assert size < bits.length;
         insertBlock(idx, bNum);
     }
     
     private void insertBlock(int idx, int bNum) {
-        Utility.ASSERT(idx <= size);
-        Utility.ASSERT(idx == size || offs[idx] != bNum);
+        assert idx <= size;
+        assert idx == size || offs[idx] != bNum;
         
         System.arraycopy(bits, idx, bits, idx + 1, size - idx);
         System.arraycopy(offs, idx, offs, idx + 1, size - idx);
@@ -144,7 +144,7 @@ public final class SparseBitSet implements Cloneable {
             }
         }
         
-        Utility.ASSERT(l == r);
+        assert l == r;
         
         return l; // index at which the bNum *should* be, if it's not
     }
@@ -452,17 +452,17 @@ public final class SparseBitSet implements Cloneable {
         final int RANGE = 65536;
         
         SparseBitSet a = new SparseBitSet();
-        Utility.ASSERT(!a.get(0) && !a.get(1));
-        Utility.ASSERT(!a.get(123329));
+        assert !a.get(0) && !a.get(1);
+        assert !a.get(123329);
         
         a.set(0);
-        Utility.ASSERT(a.get(0) && !a.get(1));
+        assert a.get(0) && !a.get(1);
         
         a.set(1);
-        Utility.ASSERT(a.get(0) && a.get(1));
+        assert a.get(0) && a.get(1);
         
         a.clearAll();
-        Utility.ASSERT(!a.get(0) && !a.get(1));
+        assert !a.get(0) && !a.get(1);
         
         Random r = new Random();
         Vector <Integer> v = new Vector <Integer> ();
@@ -473,14 +473,14 @@ public final class SparseBitSet implements Cloneable {
             v.addElement(rr);
             
             // check that all the numbers are there.
-            Utility.ASSERT(a.get(rr) && !a.get(rr + 1) && !a.get(rr - 1));
+            assert a.get(rr) && !a.get(rr + 1) && !a.get(rr - 1);
             for (int i = 0; i < v.size(); i++) {
-                Utility.ASSERT(a.get(v.elementAt(i)));
+                assert a.get(v.elementAt(i));
             }
         }
         
         SparseBitSet b = (SparseBitSet) a.clone();
-        Utility.ASSERT(a.equals(b) && b.equals(a));
+        assert a.equals(b) && b.equals(a);
         
         for (int n = 0; n < ITER / 2; n++) {
             int rr = (r.nextInt() >>> 1) % v.size();
@@ -490,36 +490,36 @@ public final class SparseBitSet implements Cloneable {
             v.removeElementAt(rr);
             
             // check that numbers are removed properly.
-            Utility.ASSERT(!b.get(m));
+            assert !b.get(m);
         }
         
-        Utility.ASSERT(!a.equals(b));
+        assert !a.equals(b);
         
         SparseBitSet c = (SparseBitSet) a.clone();
         SparseBitSet d = (SparseBitSet) a.clone();
         
         c.and(a);
-        Utility.ASSERT(c.equals(a) && a.equals(c));
+        assert c.equals(a) && a.equals(c);
         
         c.xor(a);
-        Utility.ASSERT(!c.equals(a) && c.size() == 0);
+        assert !c.equals(a) && c.size() == 0;
         
         d.or(b);
-        Utility.ASSERT(d.equals(a) && !b.equals(d));
+        assert d.equals(a) && !b.equals(d);
         
         d.and(b);
-        Utility.ASSERT(!d.equals(a) && b.equals(d));
+        assert !d.equals(a) && b.equals(d);
         
         d.xor(a);
-        Utility.ASSERT(!d.equals(a) && !b.equals(d));
+        assert !d.equals(a) && !b.equals(d);
         
         c.or(d);
         c.or(b);
-        Utility.ASSERT(c.equals(a) && a.equals(c));
+        assert c.equals(a) && a.equals(c);
         
         c = (SparseBitSet) d.clone();
         c.and(b);
-        Utility.ASSERT(c.size() == 0);
+        assert c.size() == 0;
         
         System.err.println("Success.");
     }

@@ -17,8 +17,8 @@ public class Emit {
 
     public Emit(Spec spec, PrintWriter out) {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(null != out);
+            assert null != spec;
+            assert null != out;
         }
 
         this.spec = spec;
@@ -92,8 +92,8 @@ public class Emit {
      */
     public void all() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != this.spec);
-            Utility.ASSERT(null != this.out);
+            assert null != this.spec;
+            assert null != this.out;
         }
 
         if (Utility.OLD_DEBUG) {
@@ -112,8 +112,8 @@ public class Emit {
      */
     private void constructor() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(null != out);
+            assert null != spec;
+            assert null != out;
         }
 
         // Constants
@@ -198,8 +198,8 @@ public class Emit {
      */
     private void helpers() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(null != out);
+            assert null != spec;
+            assert null != out;
         }
 
         if (null != spec.eofCode) {
@@ -223,8 +223,8 @@ public class Emit {
      */
     private void header() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(null != out);
+            assert null != spec;
+            assert null != out;
         }
 
         out.println();
@@ -250,8 +250,8 @@ public class Emit {
      */
     private void table() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(null != out);
+            assert null != spec;
+            assert null != out;
         }
 
         out.println("\tstatic $yy_acpt = [");
@@ -313,7 +313,7 @@ public class Emit {
         for (int elem = 0; elem < size; elem++) {
             DTrans dTrans = spec.dTransVector.elementAt(elem);
 
-            Utility.ASSERT(dTrans.dtrans.length == spec.dTransNCols);
+            assert dTrans.dtrans.length == spec.dTransNCols;
 
             yy_nxt[elem] = dTrans.dtrans;
         }
@@ -446,8 +446,8 @@ public class Emit {
 
     private void driver() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(null != out);
+            assert null != spec;
+            assert null != out;
         }
 
         table();
@@ -589,7 +589,7 @@ public class Emit {
 
     private void actions(String tabs) {
         if (Utility.DEBUG) {
-            Utility.ASSERT(spec.acceptVector.size() == spec.anchorArray.length);
+            assert spec.acceptVector.size() == spec.anchorArray.length;
         }
 
         int bogus_index = -2;
@@ -612,8 +612,8 @@ public class Emit {
 
     private void footer() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(null != out);
+            assert null != spec;
+            assert null != out;
         }
 
         out.println("}");

@@ -218,11 +218,11 @@ public class LexGen {
         }
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
-            Utility.ASSERT(initFlag);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
+            assert initFlag;
         }
 
         if (spec.verbose) {
@@ -278,10 +278,10 @@ public class LexGen {
         }
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         if (input.isEOFReached) {
@@ -350,7 +350,7 @@ public class LexGen {
         int specified
     ) throws IOException {
         if (Utility.DEBUG) {
-            Utility.ASSERT(
+            assert
                 INIT_CODE == specified ||
                 CLASS_CODE == specified ||
                 EOF_CODE == specified ||
@@ -358,7 +358,7 @@ public class LexGen {
                 INIT_THROW_CODE == specified ||
                 YYLEX_THROW_CODE == specified ||
                 EOF_THROW_CODE == specified
-            );
+            ;
         }
 
         if (0 != Utility.charsCmp(input.line, 0, startDir,0,startDir.length - 1)) {
@@ -436,10 +436,10 @@ public class LexGen {
 
     private void userDeclare() throws IOException {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         if (input.isEOFReached) {
@@ -768,10 +768,10 @@ public class LexGen {
         }
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         // TODO: UNDONE: Need to handle states preceding rules
@@ -788,7 +788,7 @@ public class LexGen {
         // printNFA();
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(END_OF_INPUT == spec.currentToken);
+            assert END_OF_INPUT == spec.currentToken;
         }
 
         if (spec.verbose) {
@@ -934,10 +934,10 @@ public class LexGen {
      */
     public SparseBitSet getStates() throws IOException {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         // Skip white space
@@ -1058,10 +1058,10 @@ public class LexGen {
      */
     private boolean expandMacro() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         // Check for macro
@@ -1100,7 +1100,7 @@ public class LexGen {
 
         // Debug checks
         if (Utility.DEBUG) {
-            Utility.ASSERT(0 < nameLength);
+            assert 0 < nameLength;
         }
 
         // Get macro definition
@@ -1160,10 +1160,10 @@ public class LexGen {
      */
     private void saveMacro() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         // Macro declarations are of the following form:
@@ -1278,9 +1278,9 @@ public class LexGen {
 
         // Debug checks
         if (Utility.DEBUG) {
-            Utility.ASSERT(0 < defLength);
-            Utility.ASSERT(0 < nameLength);
-            Utility.ASSERT(null != spec.macros);
+            assert 0 < defLength;
+            assert 0 < nameLength;
+            assert null != spec.macros;
         }
 
         if (Utility.OLD_DEBUG) {
@@ -1307,10 +1307,10 @@ public class LexGen {
      */
     private void saveStates() {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         // EOF found?
@@ -1320,11 +1320,10 @@ public class LexGen {
 
         // Debug checks
         if (Utility.DEBUG) {
-            Utility.ASSERT('%' == input.line[0]);
-            Utility.ASSERT('s' == input.line[1]);
-            Utility.ASSERT(input.lineIndex <= input.lineLength);
-            Utility.ASSERT(0 <= input.lineIndex);
-            Utility.ASSERT(0 <= input.lineLength);
+            assert '%' == input.line[0];
+            assert 's' == input.line[1];
+            assert input.lineIndex <= input.lineLength;
+            assert 0 <= input.lineIndex;
         }
 
         // Blank line? No states?
@@ -1387,9 +1386,9 @@ public class LexGen {
     private char expandEscape() {
         // Debug checks
         if (Utility.DEBUG) {
-            Utility.ASSERT(input.lineIndex < input.lineLength);
-            Utility.ASSERT(0 < input.lineLength);
-            Utility.ASSERT(0 <= input.lineIndex);
+            assert input.lineIndex < input.lineLength;
+            assert 0 < input.lineLength;
+            assert 0 <= input.lineIndex;
         }
 
         if ('\\' != input.line[input.lineIndex]) {
@@ -1485,10 +1484,10 @@ public class LexGen {
      */
     public Accept packAccept() throws IOException {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != out);
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != tokens);
-            Utility.ASSERT(null != spec);
+            assert null != out;
+            assert null != input;
+            assert null != tokens;
+            assert null != spec;
         }
 
         // Get a new line, if needed
@@ -1617,7 +1616,7 @@ public class LexGen {
         Accept accept = new Accept(action, actionIndex, input.lineNumber);
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != accept);
+            assert null != accept;
         }
 
         if (Utility.DESCENT_DEBUG) {
@@ -1676,7 +1675,7 @@ public class LexGen {
         }
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(input.lineIndex <= input.lineLength);
+            assert input.lineIndex <= input.lineLength;
         }
 
         while (true) {
@@ -1710,7 +1709,7 @@ public class LexGen {
             System.err.println("input.lineIndex = " + input.lineIndex);
             System.err.println("input.lineLength = " + input.lineLength);
 
-            Utility.ASSERT(input.lineIndex <= input.lineLength);
+            assert input.lineIndex <= input.lineLength;
         }
 
         /* Look for backslash, and corresponding
@@ -1791,7 +1790,7 @@ public class LexGen {
             String def = entry.getValue();
 
             if (Utility.DEBUG) {
-                Utility.ASSERT(null != def);
+                assert null != def;
             }
 
             System.err.println("Macro name \"" + name + "\" has definition \"" + def + "\".");
@@ -1811,7 +1810,7 @@ public class LexGen {
             System.err.println("Character counting is off.");
         } else {
             if (Utility.DEBUG) {
-                Utility.ASSERT(spec.countLines);
+                assert spec.countLines;
             }
 
             System.err.println("Character counting is on.");

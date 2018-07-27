@@ -31,7 +31,7 @@ public class Minimize {
      */
     private void set(Spec spec) {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != spec);
+            assert null != spec;
         }
 
         this.spec = spec;
@@ -146,7 +146,7 @@ public class Minimize {
         for (reducedNCols = 0; ; ++reducedNCols) {
             if (Utility.DEBUG) {
                 for (int i = 0; i < reducedNCols; ++i) {
-                    Utility.ASSERT(-1 != spec.colMap[i]);
+                    assert -1 != spec.colMap[i];
                 }
             }
 
@@ -162,8 +162,8 @@ public class Minimize {
             }
 
             if (Utility.DEBUG) {
-                Utility.ASSERT(!set.get(i));
-                Utility.ASSERT(-1 == spec.colMap[i]);
+                assert !set.get(i);
+                assert -1 == spec.colMap[i];
             }
 
             set.set(i);
@@ -189,7 +189,7 @@ public class Minimize {
                 int j = spec.colMap[i];
 
                 if (Utility.DEBUG) {
-                    Utility.ASSERT(j <= i);
+                    assert j <= i;
                 }
 
                 if (j == i) {
@@ -206,7 +206,7 @@ public class Minimize {
         truncCol();
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(k == reducedNCols);
+            assert k == reducedNCols;
         }
 
         // Allocate row map
@@ -223,7 +223,7 @@ public class Minimize {
         for (reducedNRows = 0; ; ++reducedNRows) {
             if (Utility.DEBUG) {
                 for (int i = 0; i < reducedNRows; ++i) {
-                    Utility.ASSERT(-1 != spec.rowMap[i]);
+                    assert -1 != spec.rowMap[i];
                 }
             }
 
@@ -239,8 +239,8 @@ public class Minimize {
             }
 
             if (Utility.DEBUG) {
-                Utility.ASSERT(!set.get(i));
-                Utility.ASSERT(-1 == spec.rowMap[i]);
+                assert !set.get(i);
+                assert -1 == spec.rowMap[i];
             }
 
             set.set(i);
@@ -266,7 +266,7 @@ public class Minimize {
                 int j = spec.rowMap[i];
 
                 if (Utility.DEBUG) {
-                    Utility.ASSERT(j <= i);
+                    assert j <= i;
                 }
 
                 if (j == i) {
@@ -282,7 +282,7 @@ public class Minimize {
         if (Utility.DEBUG) {
             // System.err.println("k = " + k + "\nreducedNRows = " + reducedNRows + "");
 
-            Utility.ASSERT(k == reducedNRows);
+            assert k == reducedNRows;
         }
     }
 
@@ -331,7 +331,7 @@ public class Minimize {
             oldGroupCount = groupCount;
 
             if (Utility.DEBUG) {
-                Utility.ASSERT(group.size() == groupCount);
+                assert group.size() == groupCount;
             }
 
             for (int i = 0; i < groupCount; ++i) {
@@ -362,7 +362,7 @@ public class Minimize {
                             )
                         ) {
                             if (Utility.DEBUG) {
-                                Utility.ASSERT(dTransGroup.elementAt(j) == next);
+                                assert dTransGroup.elementAt(j) == next;
                             }
 
                             dTransGroup.removeElementAt(j);
@@ -381,15 +381,15 @@ public class Minimize {
                             inGroup[next.label] = group.size() - 1;
 
                             if (Utility.DEBUG) {
-                                Utility.ASSERT(group.contains(newGroup));
-                                Utility.ASSERT(group.contains(dTransGroup));
-                                Utility.ASSERT(dTransGroup.contains(first));
-                                Utility.ASSERT(!dTransGroup.contains(next));
-                                Utility.ASSERT(!newGroup.contains(first));
-                                Utility.ASSERT(newGroup.contains(next));
-                                Utility.ASSERT(dTransGroup.size() == group_size);
-                                Utility.ASSERT(i == inGroup[first.label]);
-                                Utility.ASSERT((group.size() - 1) == inGroup[next.label]);
+                                assert group.contains(newGroup);
+                                assert group.contains(dTransGroup);
+                                assert dTransGroup.contains(first);
+                                assert !dTransGroup.contains(next);
+                                assert !newGroup.contains(first);
+                                assert newGroup.contains(next);
+                                assert dTransGroup.size() == group_size;
+                                assert i == inGroup[first.label];
+                                assert (group.size() - 1 == inGroup[next.label]);
                             }
 
                             break;
@@ -423,25 +423,25 @@ public class Minimize {
             DTrans dTrans = spec.dTransVector.elementAt(i);
 
             if (Utility.DEBUG) {
-                Utility.ASSERT(i == dTrans.label);
-                Utility.ASSERT(groupCount == group.size());
+                assert i == dTrans.label;
+                assert groupCount == group.size();
             }
 
             for (int j = 0; j < groupCount; ++j) {
                 Vector <DTrans> dTransGroup = group.elementAt(j);
 
                 if (Utility.DEBUG) {
-                    Utility.ASSERT(0 < dTransGroup.size());
+                    assert 0 < dTransGroup.size();
                 }
 
                 DTrans first = dTransGroup.elementAt(0);
 
                 if (Utility.SLOW_DEBUG) {
                     int s = dTransGroup.size();
-                    Utility.ASSERT(0 < s);
+                    assert 0 < s;
 
                     for (int k = 1; k < s; ++k) {
-                        Utility.ASSERT(dTransGroup.elementAt(k).accept == first.accept);
+                        assert dTransGroup.elementAt(k).accept == first.accept;
                     }
                 }
 
@@ -451,7 +451,7 @@ public class Minimize {
                     isGroupFound = true;
 
                     if (Utility.DEBUG) {
-                        Utility.ASSERT(j == inGroup[dTrans.label]);
+                        assert j == inGroup[dTrans.label];
                     }
 
                     break;

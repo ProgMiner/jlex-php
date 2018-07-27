@@ -33,9 +33,9 @@ public class MakeNFA {
      */
     private void set(LexGen lexGen, Spec spec, Input input) {
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != input);
-            Utility.ASSERT(null != lexGen);
-            Utility.ASSERT(null != spec);
+            assert null != input;
+            assert null != lexGen;
+            assert null != spec;
         }
 
         this.input = input;
@@ -50,7 +50,7 @@ public class MakeNFA {
      */
     public void allocateBolEof(Spec spec) {
         //noinspection ConstantConditions
-        Utility.ASSERT(Spec.NUM_PSEUDO == 2);
+        assert Spec.NUM_PSEUDO == 2;
 
         spec.BOL = spec.dTransNCols++;
         spec.EOF = spec.dTransNCols++;
@@ -257,7 +257,7 @@ public class MakeNFA {
         }
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != pair);
+            assert null != pair;
         }
 
         NFAPair e2Pair = Alloc.newNFAPair();
@@ -292,7 +292,7 @@ public class MakeNFA {
         }
 
         if (Utility.DEBUG) {
-            Utility.ASSERT(null != pair);
+            assert null != pair;
         }
 
         NFAPair e2Pair = Alloc.newNFAPair();
