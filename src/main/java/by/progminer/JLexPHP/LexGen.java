@@ -157,7 +157,7 @@ public class LexGen {
             // Open input stream
             input = new Input(new FileReader(in));
         } catch (IOException ex) {
-            System.err.println("Error: Unable to open input file " + in + ".");
+            System.err.println("Error: Unable to open input file \"" + in + "\".");
 
             throw ex;
         }
@@ -166,7 +166,9 @@ public class LexGen {
             // Open output stream
             this.out = new PrintWriter(out);
         } catch (IOException ex) {
-            System.err.println("Error: Unable to open output file " + out + ".");
+            System.err.println("Error: Unable to open output file \"" + out + "\".");
+
+            throw ex;
         }
 
         init();
