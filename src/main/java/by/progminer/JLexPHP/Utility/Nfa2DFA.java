@@ -56,7 +56,7 @@ public class Nfa2DFA {
      * Creates uncompressed DTrans transition table.
      */
     private void makeDTrans() {
-        System.err.print("Working on DFA states.");
+        System.out.print("Working on DFA states.");
 
         // Reference passing type and initializations
         Bunch bunch = new Bunch();
@@ -100,8 +100,8 @@ public class Nfa2DFA {
             // Main loop of DTrans creation
             DFA dfa;
             while (null != (dfa = getUnmarked())) {
-                System.err.print(".");
-                System.err.flush();
+                System.out.print(".");
+                System.out.flush();
 
                 if (Utility.DEBUG) {
                     assert !dfa.mark;
@@ -161,7 +161,7 @@ public class Nfa2DFA {
             }
         }
 
-        System.err.println();
+        System.out.println();
     }
 
     private void freeDFAStates() {

@@ -399,7 +399,7 @@ public class Minimize {
             }
         }
 
-        System.err.println(group.size() + " states after removal of redundant states.");
+        System.out.println(group.size() + " states after removal of redundant states.");
 
         if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
             System.err.println();
