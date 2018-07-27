@@ -101,7 +101,7 @@ public class Nfa2DFA {
             DFA dfa;
             while (null != (dfa = getUnmarked())) {
                 System.err.print(".");
-                System.out.flush();
+                System.err.flush();
 
                 if (Utility.DEBUG) {
                     Utility.ASSERT(!dfa.mark);
@@ -360,7 +360,7 @@ public class Nfa2DFA {
             if (!dfa.mark) {
                 if (Utility.OLD_DUMP_DEBUG) {
                     System.err.print("*");
-                    System.out.flush();
+                    System.err.flush();
                 }
 
                 if (spec.verbose && Utility.OLD_DUMP_DEBUG) {

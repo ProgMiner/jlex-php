@@ -226,7 +226,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.err.println("Processing first section -- user code.");
+            System.out.println("Processing first section -- user code.");
         }
 
         userCode();
@@ -236,7 +236,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.err.println("Processing second section -- JLex declarations.");
+            System.out.println("Processing second section -- JLex declarations.");
         }
 
         userDeclare();
@@ -246,7 +246,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.err.println("Processing third section -- lexical rules.");
+            System.out.println("Processing third section -- lexical rules.");
         }
 
         userRules();
@@ -256,7 +256,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.err.println("Outputting lexical analyzer code.");
+            System.out.println("Outputting lexical analyzer code.");
         }
 
         emit.all();
@@ -777,7 +777,7 @@ public class LexGen {
         // TODO: UNDONE: Need to handle states preceding rules
 
         if (spec.verbose) {
-            System.err.println("Creating NFA machine representation.");
+            System.out.println("Creating NFA machine representation.");
         }
 
         makeNFA.allocateBolEof(spec);
@@ -792,7 +792,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.err.println("Creating DFA transition table.");
+            System.out.println("Creating DFA transition table.");
         }
 
         nfa2DFA.makeDFA(this, spec);
@@ -802,7 +802,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.err.println("Minimizing DFA transition table.");
+            System.out.println("Minimizing DFA transition table.");
         }
 
         minimize.minDFA(spec);

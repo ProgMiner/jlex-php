@@ -87,7 +87,7 @@ public class MakeNFA {
         }
 
         if (this.spec.verbose) {
-            System.err.println("NFA comprised of " + (this.spec.nfaStates.size() + 1) + " states.");
+            System.out.println("NFA comprised of " + (this.spec.nfaStates.size() + 1) + " states.");
         }
 
         reset();
