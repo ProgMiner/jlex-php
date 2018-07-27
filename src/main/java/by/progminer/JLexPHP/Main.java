@@ -29,7 +29,7 @@ public class Main {
         }
 
         if (args.length <= optCount) {
-            System.out.println("Usage: " + APP_NAME + "-" + APP_VERSION + ".jar [-v|--verbose] <input file> [<output file>]");
+            System.out.println("Usage: " + APP_NAME + ".jar [-v|--verbose] <input file> [<output file>]");
             return;
         }
 
