@@ -68,7 +68,7 @@ public class SimplifyNFA {
         SparseBitSet clsA = new SparseBitSet(), clsB = new SparseBitSet();
         Hashtable<Integer, Integer> h = new Hashtable <Integer, Integer> ();
         
-        System.out.print("Working on character classes.");
+        System.err.print("Working on character classes.");
         
         for (NFA nfa: spec.nfaStates) {
             if (nfa.edge == NFA.EMPTY || nfa.edge == NFA.EPSILON) {
@@ -93,7 +93,7 @@ public class SimplifyNFA {
             
             clsA.and(clsB); // split the classes which show up on both sides of edge
             
-            System.out.print(clsA.size() == 0? ".": ":");
+            System.err.print(clsA.size() == 0? ".": ":");
             
             if (clsA.size() == 0) {
                 continue; // nothing to do
@@ -118,8 +118,8 @@ public class SimplifyNFA {
             }
         }
         
-        System.out.println();
-        System.out.println("NFA has " + nextCls + " distinct character classes.");
+        System.err.println();
+        System.err.println("NFA has " + nextCls + " distinct character classes.");
         
         this.mappedCharsetSize = nextCls;
     }

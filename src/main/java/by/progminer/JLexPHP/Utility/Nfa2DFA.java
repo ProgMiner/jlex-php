@@ -46,7 +46,7 @@ public class Nfa2DFA {
         freeNFAStates();
 
         if (this.spec.verbose && Utility.OLD_DUMP_DEBUG) {
-            System.out.println(this.spec.dfaStates.size() + " DFA states in original machine.");
+            System.err.println(this.spec.dfaStates.size() + " DFA states in original machine.");
         }
 
         freeDFAStates();
@@ -56,7 +56,7 @@ public class Nfa2DFA {
      * Creates uncompressed DTrans transition table.
      */
     private void makeDTrans() {
-        System.out.print("Working on DFA states.");
+        System.err.print("Working on DFA states.");
 
         // Reference passing type and initializations
         Bunch bunch = new Bunch();
@@ -100,7 +100,7 @@ public class Nfa2DFA {
             // Main loop of DTrans creation
             DFA dfa;
             while (null != (dfa = getUnmarked())) {
-                System.out.print(".");
+                System.err.print(".");
                 System.out.flush();
 
                 if (Utility.DEBUG) {
@@ -161,7 +161,7 @@ public class Nfa2DFA {
             }
         }
 
-        System.out.println();
+        System.err.println();
     }
 
     private void freeDFAStates() {
@@ -216,7 +216,7 @@ public class Nfa2DFA {
 
             if (Utility.OLD_DUMP_DEBUG) {
                 if (null != state.accept) {
-                    System.out.println(
+                    System.err.println(
                         "Looking at accepting state " + state.label +
                         " with <" + new String(state.accept.action, 0, state.accept.actionLength) + ">"
                     );
@@ -229,7 +229,7 @@ public class Nfa2DFA {
                 bunch.anchor = state.anchor;
 
                 if (Utility.OLD_DUMP_DEBUG) {
-                    System.out.println(
+                    System.err.println(
                         "Found accepting state " + state.label +
                         " with <" + new String(state.accept.action, 0, state.accept.actionLength) + ">"
                     );
@@ -301,8 +301,8 @@ public class Nfa2DFA {
 
                 bunch.nfaSet.addElement(state.next);
 
-                // System.out.println("Size of bitset: " + bunch.nfaBit.size());
-                // System.out.println("Reference index: " + state.next.label);
+                // System.err.println("Size of bitset: " + bunch.nfaBit.size());
+                // System.err.println("Reference index: " + state.next.label);
                 // System.out.flush();
 
                 bunch.nfaBit.set(state.next.label);
@@ -340,13 +340,13 @@ public class Nfa2DFA {
         }
 
         if (Utility.OLD_DEBUG) {
-            System.out.print("NFA vector indices: ");
+            System.err.print("NFA vector indices: ");
 
             for (int index = 0; index < size; ++index) {
-                System.out.print(NFASet.elementAt(index).label + " ");
+                System.err.print(NFASet.elementAt(index).label + " ");
             }
 
-            System.out.println();
+            System.err.println();
         }
     }
 
@@ -359,15 +359,15 @@ public class Nfa2DFA {
 
             if (!dfa.mark) {
                 if (Utility.OLD_DUMP_DEBUG) {
-                    System.out.print("*");
+                    System.err.print("*");
                     System.out.flush();
                 }
 
                 if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
-                    System.out.println("---------------");
-                    System.out.print("working on DFA state " + unmarkedDFA + " = NFA states: ");
+                    System.err.println("---------------");
+                    System.err.print("working on DFA state " + unmarkedDFA + " = NFA states: ");
                     lexGen.printSet(dfa.nfaSet);
-                    System.out.println();
+                    System.err.println();
                 }
 
                 return dfa;
@@ -415,9 +415,9 @@ public class Nfa2DFA {
         // registerCDfa(DFA);
 
         if (Utility.OLD_DUMP_DEBUG) {
-            System.out.print("Registering set : ");
+            System.err.print("Registering set : ");
             lexGen.printSet(dfa.nfaSet);
-            System.out.println();
+            System.err.println();
         }
 
         return dfa.label;
@@ -425,7 +425,7 @@ public class Nfa2DFA {
 
     private int inDStates(Bunch bunch) {
         if (Utility.OLD_DEBUG) {
-            System.out.print("Looking for set : ");
+            System.err.print("Looking for set : ");
             lexGen.printSet(bunch.nfaSet);
         }
 
@@ -433,14 +433,14 @@ public class Nfa2DFA {
 
         if (null != dfa) {
             if (Utility.OLD_DUMP_DEBUG) {
-                System.out.println(" FOUND!");
+                System.err.println(" FOUND!");
             }
 
             return dfa.label;
         }
 
         if (Utility.OLD_DUMP_DEBUG) {
-            System.out.println(" NOT FOUND!");
+            System.err.println(" NOT FOUND!");
         }
 
         return NOT_IN_DSTATES;

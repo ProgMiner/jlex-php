@@ -157,7 +157,7 @@ public class LexGen {
             // Open input stream
             input = new Input(new FileReader(in));
         } catch (IOException ex) {
-            System.out.println("Error: Unable to open input file " + in + ".");
+            System.err.println("Error: Unable to open input file " + in + ".");
 
             throw ex;
         }
@@ -166,7 +166,7 @@ public class LexGen {
             // Open output stream
             this.out = new PrintWriter(out);
         } catch (IOException ex) {
-            System.out.println("Error: Unable to open output file " + out + ".");
+            System.err.println("Error: Unable to open output file " + out + ".");
         }
 
         init();
@@ -226,7 +226,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.out.println("Processing first section -- user code.");
+            System.err.println("Processing first section -- user code.");
         }
 
         userCode();
@@ -236,7 +236,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.out.println("Processing second section -- JLex declarations.");
+            System.err.println("Processing second section -- JLex declarations.");
         }
 
         userDeclare();
@@ -246,7 +246,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.out.println("Processing third section -- lexical rules.");
+            System.err.println("Processing third section -- lexical rules.");
         }
 
         userRules();
@@ -256,7 +256,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.out.println("Outputting lexical analyzer code.");
+            System.err.println("Outputting lexical analyzer code.");
         }
 
         emit.all();
@@ -752,8 +752,8 @@ public class LexGen {
             }
 
             if (Utility.OLD_DEBUG) {
-                System.out.println("Line number " + input.lineNumber + ":");
-                System.out.print(new String(input.line, 0, input.lineLength));
+                System.err.println("Line number " + input.lineNumber + ":");
+                System.err.print(new String(input.line, 0, input.lineLength));
             }
         }
     }
@@ -777,7 +777,7 @@ public class LexGen {
         // TODO: UNDONE: Need to handle states preceding rules
 
         if (spec.verbose) {
-            System.out.println("Creating NFA machine representation.");
+            System.err.println("Creating NFA machine representation.");
         }
 
         makeNFA.allocateBolEof(spec);
@@ -792,7 +792,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.out.println("Creating DFA transition table.");
+            System.err.println("Creating DFA transition table.");
         }
 
         nfa2DFA.makeDFA(this, spec);
@@ -802,7 +802,7 @@ public class LexGen {
         }
 
         if (spec.verbose) {
-            System.out.println("Minimizing DFA transition table.");
+            System.err.println("Minimizing DFA transition table.");
         }
 
         minimize.minDFA(spec);
@@ -813,15 +813,15 @@ public class LexGen {
      * of character class.
      */
     private void printCCl(Set set) {
-        System.out.print(" [");
+        System.err.print(" [");
 
         for (int i = 0; i < spec.dTransNCols; ++i) {
             if (set.contains(i)) {
-                System.out.print(interpretInt(i));
+                System.err.print(interpretInt(i));
             }
         }
 
-        System.out.print(']');
+        System.err.print(']');
     }
 
     private String stateLabel(NFA state) {
@@ -860,16 +860,16 @@ public class LexGen {
     }
 
     public void printNFA() {
-        System.out.println("--------------------- NFA -----------------------");
+        System.err.println("--------------------- NFA -----------------------");
 
         for (NFA nfa: spec.nfaStates) {
-            System.out.print("nfa state " + stateLabel(nfa) + ": ");
+            System.err.print("nfa state " + stateLabel(nfa) + ": ");
 
             if (null == nfa.next) {
-                System.out.print("(TERMINAL)");
+                System.err.print("(TERMINAL)");
             } else {
-                System.out.print(" --> " + stateLabel(nfa.next));
-                System.out.print(" --> " + stateLabel(nfa.next2));
+                System.err.print(" --> " + stateLabel(nfa.next));
+                System.err.print(" --> " + stateLabel(nfa.next2));
 
                 switch (nfa.edge) {
                 case NFA.CCL:
@@ -877,21 +877,21 @@ public class LexGen {
                     break;
 
                 case NFA.EPSILON:
-                    System.out.print(" EPSILON ");
+                    System.err.print(" EPSILON ");
                     break;
 
                 default:
-                    System.out.print(" " + interpretInt(nfa.edge));
+                    System.err.print(" " + interpretInt(nfa.edge));
                     break;
                 }
             }
 
             if (0 == spec.nfaStates.indexOf(nfa)) {
-                System.out.print(" (START STATE)");
+                System.err.print(" (START STATE)");
             }
 
             if (null != nfa.accept) {
-                System.out.print(
+                System.err.print(
                     " accepting " +
                     ((0 != (nfa.anchor & Spec.START))? "^": "") +
                     "<" + new String(nfa.accept.action, 0, nfa.accept.actionLength) + ">" +
@@ -899,24 +899,24 @@ public class LexGen {
                 );
             }
 
-            System.out.println();
+            System.err.println();
         }
 
         for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
             String state = entry.getKey();
             int i = entry.getValue();
 
-            System.out.println("State \"" + state + "\" has identifying index " + i + ".");
-            System.out.print("\tStart states of matching rules: ");
+            System.err.println("State \"" + state + "\" has identifying index " + i + ".");
+            System.err.print("\tStart states of matching rules: ");
 
             for (NFA nfa: spec.stateRules[i]) {
-                System.out.print(spec.nfaStates.indexOf(nfa) + " ");
+                System.err.print(spec.nfaStates.indexOf(nfa) + " ");
             }
 
-            System.out.println();
+            System.err.println();
         }
 
-        System.out.println("-------------------- NFA ----------------------");
+        System.err.println("-------------------- NFA ----------------------");
     }
 
     /**
@@ -1027,7 +1027,7 @@ public class LexGen {
                 if (null == index) {
                     // Uninitialized state
 
-                    System.out.println("Uninitialized State Name: " + name);
+                    System.err.println("Uninitialized State Name: " + name);
                     Error.parseError(Error.E_STATE, input.lineNumber);
 
                     // For IDE
@@ -1109,14 +1109,14 @@ public class LexGen {
 
         if (null == def) {
             // Error.msg("Undefined macro \"" + name + "\".")
-            System.out.println("Error: Undefined macro \"" + name + "\".");
+            System.err.println("Error: Undefined macro \"" + name + "\".");
 
             Error.parseError(Error.E_NOMAC, input.lineNumber);
             return ERROR;
         }
 
         if (Utility.OLD_DUMP_DEBUG) {
-            System.out.println("expanded escape: " + def);
+            System.err.println("expanded escape: " + def);
         }
 
         // Replace macro in new buffer,
@@ -1148,7 +1148,7 @@ public class LexGen {
         input.lineLength = cursor;
 
         if (Utility.OLD_DEBUG) {
-            System.out.println(new String(input.line, 0, input.lineLength));
+            System.err.println(new String(input.line, 0, input.lineLength));
         }
 
         return NOT_ERROR;
@@ -1284,8 +1284,8 @@ public class LexGen {
         }
 
         if (Utility.OLD_DEBUG) {
-            System.out.println("macro name \"" + new String(input.line, startName, nameLength) + "\".");
-            System.out.println("macro definition \"" + new String(input.line, startDef, defLength) + "\".");
+            System.err.println("macro name \"" + new String(input.line, startName, nameLength) + "\".");
+            System.err.println("macro definition \"" + new String(input.line, startDef, defLength) + "\".");
         }
 
         // Add macro name and definition to table
@@ -1334,7 +1334,7 @@ public class LexGen {
 
         while (input.lineIndex < input.lineLength) {
             if (Utility.OLD_DEBUG) {
-                System.out.println("line read " + input.lineLength + "\tline index = " + input.lineIndex);
+                System.err.println("line read " + input.lineLength + "\tline index = " + input.lineIndex);
             }
 
             // Skip white space
@@ -1361,8 +1361,8 @@ public class LexGen {
             int stateLength = input.lineIndex - stateStart;
 
             if (Utility.OLD_DEBUG) {
-                System.out.println("State name \"" + new String(input.line, stateStart, stateLength) + "\".");
-                System.out.println("Integer index \"" + spec.states.size() + "\".");
+                System.err.println("State name \"" + new String(input.line, stateStart, stateLength) + "\".");
+                System.err.println("Integer index \"" + spec.states.size() + "\".");
             }
 
             // Enter new state name, along with unique index
@@ -1621,8 +1621,8 @@ public class LexGen {
         }
 
         if (Utility.DESCENT_DEBUG) {
-            System.out.print("Accepting action:");
-            System.out.println(new String(accept.action, 0, accept.actionLength));
+            System.err.print("Accepting action:");
+            System.err.println(new String(accept.action, 0, accept.actionLength));
         }
 
         return accept;
@@ -1707,8 +1707,8 @@ public class LexGen {
         }
 
         if (input.lineIndex > input.lineLength) {
-            System.out.println("input.lineIndex = " + input.lineIndex);
-            System.out.println("input.lineLength = " + input.lineLength);
+            System.err.println("input.lineIndex = " + input.lineIndex);
+            System.err.println("input.lineLength = " + input.lineLength);
 
             Utility.ASSERT(input.lineIndex <= input.lineLength);
         }
@@ -1769,7 +1769,7 @@ public class LexGen {
         }
 
         if (Utility.FOODEBUG) {
-            System.out.println(
+            System.err.println(
                 "Lexeme: " + spec.lexeme +
                 "\tToken: " + spec.currentToken +
                 "\tIndex: " + input.lineIndex
@@ -1783,8 +1783,8 @@ public class LexGen {
      * High level debugging routine.
      */
     private void details() {
-        System.out.println();
-        System.out.println("\t** Macros **");
+        System.err.println();
+        System.err.println("\t** Macros **");
 
         for (Map.Entry <String, String> entry: spec.macros.entrySet()) {
             String name = entry.getKey();
@@ -1794,71 +1794,71 @@ public class LexGen {
                 Utility.ASSERT(null != def);
             }
 
-            System.out.println("Macro name \"" + name + "\" has definition \"" + def + "\".");
+            System.err.println("Macro name \"" + name + "\" has definition \"" + def + "\".");
         }
 
-        System.out.println();
-        System.out.println("\t** States **");
+        System.err.println();
+        System.err.println("\t** States **");
 
         for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
-            System.out.println("State \"" + entry.getValue() + "\" has identifying index " + entry.getKey() + ".");
+            System.err.println("State \"" + entry.getValue() + "\" has identifying index " + entry.getKey() + ".");
         }
 
-        System.out.println();
-        System.out.println("\t** Character Counting **");
+        System.err.println();
+        System.err.println("\t** Character Counting **");
 
         if (!spec.countChars) {
-            System.out.println("Character counting is off.");
+            System.err.println("Character counting is off.");
         } else {
             if (Utility.DEBUG) {
                 Utility.ASSERT(spec.countLines);
             }
 
-            System.out.println("Character counting is on.");
+            System.err.println("Character counting is on.");
         }
 
-        System.out.println();
-        System.out.println("\t** Line Counting **");
+        System.err.println();
+        System.err.println("\t** Line Counting **");
 
         if (!spec.countLines) {
-            System.out.println("Line counting is off.");
+            System.err.println("Line counting is off.");
         } else {
-            System.out.println("Line counting is on.");
+            System.err.println("Line counting is on.");
         }
 
-        System.out.println();
-        System.out.println("\t** Operating System Specificity **");
+        System.err.println();
+        System.err.println("\t** Operating System Specificity **");
 
         if (!spec.unix) {
-            System.out.println("Not generating UNIX-specific code.");
-            System.out.println("(This means that \"\\r\\n\" is a newline, rather than \"\\n\".)");
+            System.err.println("Not generating UNIX-specific code.");
+            System.err.println("(This means that \"\\r\\n\" is a newline, rather than \"\\n\".)");
         } else {
-            System.out.println("Generating UNIX-specific code.");
-            System.out.println("(This means that \"\\n\" is a newline, rather than \"\\r\\n\".)");
+            System.err.println("Generating UNIX-specific code.");
+            System.err.println("(This means that \"\\n\" is a newline, rather than \"\\r\\n\".)");
         }
 
-        System.out.println();
-        System.out.println("\t** Java CUP Compatibility **");
+        System.err.println();
+        System.err.println("\t** Java CUP Compatibility **");
 
         if (!spec.cupCompatible) {
-            System.out.println("Generating CUP compatible code.");
-            System.out.println("(Scanner implements java_cup.runtime.Scanner.)");
+            System.err.println("Generating CUP compatible code.");
+            System.err.println("(Scanner implements java_cup.runtime.Scanner.)");
         } else {
-            System.out.println("Not generating CUP compatible code.");
+            System.err.println("Not generating CUP compatible code.");
         }
 
         if (Utility.FOODEBUG) {
             if (null != spec.nfaStates && null != spec.nfaStart) {
-                System.out.println();
-                System.out.println("\t** NFA machine **");
+                System.err.println();
+                System.err.println("\t** NFA machine **");
 
                 printNFA();
             }
         }
 
         if (null != spec.dTransVector) {
-            System.out.println();
-            System.out.println("\t** DFA transition table **");
+            System.err.println();
+            System.err.println("\t** DFA transition table **");
 
             // printHeader();
         }
@@ -1868,28 +1868,28 @@ public class LexGen {
         int size = nfaSet.size();
 
         if (0 == size) {
-            System.out.print("empty ");
+            System.err.print("empty ");
         }
 
         for (NFA nfa: nfaSet) {
-            // System.out.print(spec.nfaStates.indexOf(nfa) + " ");
-            System.out.print(nfa.label + " ");
+            // System.err.print(spec.nfaStates.indexOf(nfa) + " ");
+            System.err.print(nfa.label + " ");
         }
     }
 
     private void printHeader() {
-        System.out.println("/*---------------------- DFA -----------------------");
+        System.err.println("/*---------------------- DFA -----------------------");
 
         for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
             String state = entry.getKey();
             int i = entry.getValue();
 
-            System.out.println("State \"" + state + "\" has identifying index " + i + ".");
+            System.err.println("State \"" + state + "\" has identifying index " + i + ".");
 
             if (DTrans.F != spec.stateDTrans[i]) {
-                System.out.println("\tStart index in transition table: " + spec.stateDTrans[i]);
+                System.err.println("\tStart index in transition table: " + spec.stateDTrans[i]);
             } else {
-                System.out.println("\tNo associated transition states.");
+                System.err.println("\tNo associated transition states.");
             }
         }
 
@@ -1898,16 +1898,16 @@ public class LexGen {
 
             if (null == spec.acceptVector && null == spec.anchorArray) {
                 if (null == dTrans.accept) {
-                    System.out.print(" * State " + i + " [nonaccepting]");
+                    System.err.print(" * State " + i + " [nonaccepting]");
                 } else {
-                    System.out.print(
+                    System.err.print(
                         " * State " + i +
                         " [accepting, line " + dTrans.accept.lineNumber +
                         " <" + new String(dTrans.accept.action, 0, dTrans.accept.actionLength) + ">]"
                     );
 
                     if (Spec.NONE != dTrans.anchor) {
-                        System.out.print(
+                        System.err.print(
                             " Anchor: " +
                             ((0 != (dTrans.anchor & Spec.START))? "start ": "") +
                             ((0 != (dTrans.anchor & Spec.END))? "end ": "")
@@ -1918,16 +1918,16 @@ public class LexGen {
                 Accept accept = spec.acceptVector.elementAt(i);
 
                 if (null == accept) {
-                    System.out.print(" * State " + i + " [nonaccepting]");
+                    System.err.print(" * State " + i + " [nonaccepting]");
                 } else {
-                    System.out.print(
+                    System.err.print(
                         " * State " + i +
                         " [accepting, line " + accept.lineNumber +
                         " <" + new String(accept.action, 0, accept.actionLength) + ">]"
                     );
 
                     if (Spec.NONE != spec.anchorArray[i]) {
-                        System.out.print(
+                        System.err.print(
                             " Anchor: " +
                             ((0 != (spec.anchorArray[i] & Spec.START))? "start ": "") +
                             ((0 != (spec.anchorArray[i] & Spec.END))? "end ": "")
@@ -1942,27 +1942,27 @@ public class LexGen {
                     int chars_printed = 0;
 
                     if (lastTransition != dTrans.dtrans[j]) {
-                        System.out.println();
-                        System.out.print(" *    goto " + dTrans.dtrans[j] + " on ");
+                        System.err.println();
+                        System.err.print(" *    goto " + dTrans.dtrans[j] + " on ");
                     }
 
                     String str = interpretInt(j);
-                    System.out.print(str);
+                    System.err.print(str);
 
                     chars_printed = chars_printed + str.length();
                     if (56 < chars_printed) {
-                        System.out.println();
-                        System.out.print(" *             ");
+                        System.err.println();
+                        System.err.print(" *             ");
                     }
 
                     lastTransition = dTrans.dtrans[j];
                 }
             }
 
-            System.out.println();
+            System.err.println();
         }
 
-        System.out.println(" */");
-        System.out.println();
+        System.err.println(" */");
+        System.err.println();
     }
 }

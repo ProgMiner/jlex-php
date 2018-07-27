@@ -280,7 +280,7 @@ public class Minimize {
         spec.dTransVector.setSize(reducedNRows);
 
         if (Utility.DEBUG) {
-            // System.out.println("k = " + k + "\nreducedNRows = " + reducedNRows + "");
+            // System.err.println("k = " + k + "\nreducedNRows = " + reducedNRows + "");
 
             Utility.ASSERT(k == reducedNRows);
         }
@@ -399,11 +399,11 @@ public class Minimize {
             }
         }
 
-        System.out.println(group.size() + " states after removal of redundant states.");
+        System.err.println(group.size() + " states after removal of redundant states.");
 
         if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
-            System.out.println();
-            System.out.println("States grouped as follows after minimization");
+            System.err.println();
+            System.err.println("States grouped as follows after minimization");
 
             printGroups();
         }
@@ -470,29 +470,29 @@ public class Minimize {
         }
 
         if (spec.verbose && Utility.OLD_DUMP_DEBUG) {
-            System.out.println("Initial grouping:");
+            System.err.println("Initial grouping:");
             printGroups();
-            System.out.println();
+            System.err.println();
         }
     }
 
     private void printSet(Vector <DTrans> dTransGroup) {
         for (int i = 0; i < dTransGroup.size(); ++i) {
-            System.out.print(dTransGroup.elementAt(i).label + " ");
+            System.err.print(dTransGroup.elementAt(i).label + " ");
         }
     }
 
     private void printGroups() {
         for (int i = 0; i < group.size(); ++i) {
-            System.out.print("\tGroup " + i + " {");
+            System.err.print("\tGroup " + i + " {");
             printSet(group.elementAt(i));
-            System.out.println("}");
-            System.out.println();
+            System.err.println("}");
+            System.err.println();
         }
 
-        System.out.println();
+        System.err.println();
         for (int i = 0; i < spec.dTransVector.size(); ++i) {
-            System.out.println("\tstate " + i + " is in group " + inGroup[i]);
+            System.err.println("\tstate " + i + " is in group " + inGroup[i]);
         }
     }
 }

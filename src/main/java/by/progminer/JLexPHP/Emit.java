@@ -29,16 +29,16 @@ public class Emit {
      * Debugging output.
      */
     private void printDetails() {
-        System.out.println("---------------------- Transition Table ----------------------");
+        System.err.println("---------------------- Transition Table ----------------------");
 
         for (int i = 0; i < spec.rowMap.length; ++i) {
-            System.out.print("State " + i);
+            System.err.print("State " + i);
 
             Accept accept = spec.acceptVector.elementAt(i);
             if (null == accept) {
-                System.out.println(" [nonaccepting]");
+                System.err.println(" [nonaccepting]");
             } else {
-                System.out.println(
+                System.err.println(
                     " [accepting, line " + accept.lineNumber +
                         " <" + new String(accept.action, 0, accept.actionLength) + ">]"
                 );
@@ -52,7 +52,7 @@ public class Emit {
             if (DTrans.F != state) {
                 tr = true;
 
-                System.out.print("\tgoto " + state + " on [" + ((char) 0));
+                System.err.print("\tgoto " + state + " on [" + ((char) 0));
             }
 
             for (int j = 1; j < spec.dTransNCols; ++j) {
@@ -60,7 +60,7 @@ public class Emit {
 
                 if (state == next) {
                     if (DTrans.F != state) {
-                        System.out.print((char) j);
+                        System.err.print((char) j);
                     }
                 } else {
                     state = next;
@@ -68,23 +68,23 @@ public class Emit {
                     if (tr) {
                         tr = false;
 
-                        System.out.println("]");
+                        System.err.println("]");
                     }
 
                     if (DTrans.F != state) {
                         tr = true;
 
-                        System.out.print("\tgoto " + state + " on [" + ((char) j));
+                        System.err.print("\tgoto " + state + " on [" + ((char) j));
                     }
                 }
             }
 
             if (tr) {
-                System.out.println("]");
+                System.err.println("]");
             }
         }
 
-        System.out.println("---------------------- Transition Table ----------------------");
+        System.err.println("---------------------- Transition Table ----------------------");
     }
 
     /**

@@ -63,12 +63,12 @@ public class Error extends java.lang.Error {
     }
     
     public static void msg(String message) {
-        System.out.println("JLex Error: " + message);
+        System.err.println("JLex Error: " + message);
     }
     
     public static void parseError(int errorCode, int lineNumber) {
-        System.out.println("Parse error at line " + lineNumber + ".");
-        System.out.println("Description: " + ERRMSGS[errorCode]);
+        System.err.println("Parse error at line " + lineNumber + ".");
+        System.err.println("Description: " + ERRMSGS[errorCode]);
         
         throw new Error("Parse error.");
     }

@@ -521,6 +521,6 @@ public final class SparseBitSet implements Cloneable {
         c.and(b);
         Utility.ASSERT(c.size() == 0);
         
-        System.out.println("Success.");
+        System.err.println("Success.");
     }
 }

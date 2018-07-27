@@ -27,22 +27,14 @@ public class Utility {
      * Debugging routine.
      */
     public static void enter(String descent, char lexeme, int token) {
-        System.out.println("Entering " + descent + " [lexeme: " + lexeme + "] [token: " + token + "]");
+        System.err.println("Entering " + descent + " [lexeme: " + lexeme + "] [token: " + token + "]");
     }
     
     /**
      * Debugging routine.
      */
     public static void leave(String descent, char lexeme, int token) {
-        System.out.println("Leaving " + descent + " [lexeme:" + lexeme + "] [token:" + token + "]");
-    }
-    
-    /**
-     * Debugging routine.
-     */
-    public static void ASSERT(boolean expr) {
-        // noinspection ConstantConditions
-        assert !DEBUG || expr;
+        System.err.println("Leaving " + descent + " [lexeme:" + lexeme + "] [token:" + token + "]");
     }
     
     public static char[] doubleSize(char oldBuffer[]) {
@@ -130,26 +122,26 @@ public class Utility {
         int elem;
         
         for (elem = 0; elem < n; ++elem) {
-            // System.out.print((char) a[a_first + elem]);
-            // System.out.print((char) b[b_first + elem]);
+            // System.err.print((char) a[a_first + elem]);
+            // System.err.print((char) b[b_first + elem]);
             
             if ('\0' == a[a_first + elem] && '\0' == b[b_first + elem]) {
-                // System.out.println("return 0");
+                // System.err.println("return 0");
                 
                 return 0;
             }
             if (a[a_first + elem] < b[b_first + elem]) {
-                // System.out.println("return 1");
+                // System.err.println("return 1");
                 
                 return 1;
             } else if (a[a_first + elem] > b[b_first + elem]) {
-                // System.out.println("return -1");
+                // System.err.println("return -1");
                 
                 return -1;
             }
         }
         
-        // System.out.println("return 0");
+        // System.err.println("return 0");
         return 0;
     }
     
