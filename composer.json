@@ -1,7 +1,7 @@
 {
     "name": "progminer/jlex-php",
     "description": "A lexer generator for PHP written on Java",
-    "license": "JLex license",
+    "license": "public domain",
     "authors": [
         {
             "name": "wez",
