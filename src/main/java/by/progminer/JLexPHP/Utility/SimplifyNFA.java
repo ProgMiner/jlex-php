@@ -104,7 +104,7 @@ public class SimplifyNFA {
             h.clear(); // h will map old to new class name
             for (int i = 0; i < cCls.length; i++) {
                 if (clsA.get(cCls[i])) { // a split class
-                    if (nfa.edge == i || (nfa.edge == nfa.CCL && nfa.set.contains(i))) {
+                    if (nfa.edge == i || (nfa.edge == NFA.CCL && nfa.set.contains(i))) {
                         // on A side
                         
                         int split = cCls[i];
