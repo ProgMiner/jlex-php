@@ -214,6 +214,10 @@ public class LexGen {
         initFlag = true;
     }
 
+    public void setVerbose(boolean verbose) {
+        spec.verbose = verbose;
+    }
+
     public void generate() throws IOException {
         if (!initFlag) {
             Error.parseError(Error.E_INIT, 0);
