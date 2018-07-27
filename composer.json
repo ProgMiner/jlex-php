@@ -1,11 +1,18 @@
 {
     "name": "progminer/jlex-php",
     "description": "A lexer generator for PHP written on Java",
-    "license": "public domain",
+    "license": "MIT",
     "authors": [
         {
-            "name": "wez",
-            "homepage": "https://github.com/wez"
+            "name": "Elliot Joel Berk"
+        },
+        {
+            "name": "C. Scott Ananian",
+            "homepage": "http://cscott.net/"
+        },
+        {
+            "name": "Wez Furlong",
+            "homepage": "http://wezfurlong.org/"
         },
         {
             "name": "Eridan Domoratskiy",
