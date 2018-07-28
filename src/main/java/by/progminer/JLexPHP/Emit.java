@@ -235,7 +235,7 @@ public class Emit {
 
         out.print("class ");
         out.print(new String(spec.className, 0, spec.className.length));
-        out.print(" extends JLexPHP\\Base ");
+        out.print(" extends \\JLexPHP\\Base ");
 
         if (spec.implementsName.length > 0) {
             out.print(" implements ");
