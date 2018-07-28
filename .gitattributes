@@ -3,6 +3,4 @@
 
 /.idea              export-ignore
 /JLexPHP.iml        export-ignore
-/src                export-ignore
-
 /examples           export-ignore
