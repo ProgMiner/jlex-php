@@ -44,13 +44,13 @@ Classes in generated files has only one method `yylex` (or other that you specif
 
 Base usage is:
 ``` php
-$scanner = new Yylex(fopen("file", "r"));
+$scanner = new Yylex(fopen('file', 'r'));
 while ($scanner->yylex());
 ```
 
 If you use generated class as Lexer you can process a return value:
 ``` php
-$lexer = new Yylex(fopen("file", "r"));
+$lexer = new Yylex(fopen('file', 'r'));
 while ($token = $lexer->yylex()) {
     var_dump($token);
 }
