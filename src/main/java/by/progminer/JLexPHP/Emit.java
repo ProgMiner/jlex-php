@@ -171,11 +171,11 @@ public class Emit {
         // Member Variables
 
         if (spec.countChars) {
-            out.println("\tprivate $yy_count_chars = true;");
+            out.println("\tprotected $yy_count_chars = true;");
         }
 
         if (spec.countLines) {
-            out.println("\tprivate $yy_count_lines = true;");
+            out.println("\tprotected $yy_count_lines = true;");
         }
 
         out.println();
@@ -210,7 +210,7 @@ public class Emit {
         if (null != spec.eofCode) {
             // Function yy_do_eof
 
-            out.println("\tprivate function yy_do_eof () {");
+            out.println("\tprotected function yy_do_eof () {");
 
             out.println("\t\tif (false === $this->yy_eof_done) {");
             out.print(new String(spec.eofCode, 0, spec.eofLength));
@@ -232,7 +232,7 @@ public class Emit {
             out.println("\tconst " + entry.getKey() + " = " + entry.getValue() + ";");
         }
 
-        out.println("\tprivate static $yy_state_dtrans = [");
+        out.println("\tprotected static $yy_state_dtrans = [");
         for (int index = 0; index < spec.stateDTrans.length; ++index) {
             out.print("\t\t" + spec.stateDTrans[index]);
 
