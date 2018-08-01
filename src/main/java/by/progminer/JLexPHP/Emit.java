@@ -108,6 +108,33 @@ public class Emit {
     }
 
     /**
+     * Emits class header.
+     */
+    private void header() {
+        if (Utility.DEBUG) {
+            assert null != spec;
+            assert null != out;
+        }
+
+        out.println();
+
+        if (spec.public_) {
+            out.print("public ");
+        }
+
+        out.print("class ");
+        out.print(new String(spec.className, 0, spec.className.length));
+        out.print(" extends \\JLexPHP\\AbstractLexer ");
+
+        if (spec.implementsName.length > 0) {
+            out.print(" implements ");
+            out.print(new String(spec.implementsName, 0, spec.implementsName.length));
+        }
+
+        out.println(" {");
+    }
+
+    /**
      * Emits constructor, member variables, and constants.
      */
     private void constructor() {
@@ -144,11 +171,11 @@ public class Emit {
         // Member Variables
 
         if (spec.countChars) {
-            out.println("\tprotected $yy_count_chars = true;");
+            out.println("\tprivate $yy_count_chars = true;");
         }
 
         if (spec.countLines) {
-            out.println("\tprotected $yy_count_lines = true;");
+            out.println("\tprivate $yy_count_lines = true;");
         }
 
         out.println();
@@ -171,28 +198,6 @@ public class Emit {
     }
 
     /**
-     * Emits constants that serve as lexical states,
-     * including YYINITIAL.
-     */
-    private void states() {
-        for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
-            out.println("\tconst " + entry.getKey() + " = " + entry.getValue() + ";");
-        }
-
-        out.println("\tstatic $yy_state_dtrans = [");
-        for (int index = 0; index < spec.stateDTrans.length; ++index) {
-            out.print("\t\t" + spec.stateDTrans[index]);
-
-            if (index < spec.stateDTrans.length - 1) {
-                out.println(",");
-            } else {
-                out.println();
-            }
-        }
-        out.println("\t];");
-    }
-
-    /**
      * Emits helper functions, particularly
      * error handling and input buffering.
      */
@@ -205,7 +210,7 @@ public class Emit {
         if (null != spec.eofCode) {
             // Function yy_do_eof
 
-            out.print("\tprivate function yy_do_eof () {");
+            out.println("\tprivate function yy_do_eof () {");
 
             out.println("\t\tif (false === $this->yy_eof_done) {");
             out.print(new String(spec.eofCode, 0, spec.eofLength));
@@ -219,30 +224,177 @@ public class Emit {
     }
 
     /**
-     * Emits class header.
+     * Emits constants that serve as lexical states,
+     * including YYINITIAL.
      */
-    private void header() {
+    private void states() {
+        for (Map.Entry <String, Integer> entry: spec.states.entrySet()) {
+            out.println("\tconst " + entry.getKey() + " = " + entry.getValue() + ";");
+        }
+
+        out.println("\tprivate static $yy_state_dtrans = [");
+        for (int index = 0; index < spec.stateDTrans.length; ++index) {
+            out.print("\t\t" + spec.stateDTrans[index]);
+
+            if (index < spec.stateDTrans.length - 1) {
+                out.println(",");
+            } else {
+                out.println();
+            }
+        }
+        out.println("\t];");
+    }
+
+    private void driver() {
         if (Utility.DEBUG) {
             assert null != spec;
             assert null != out;
         }
 
+        table();
+
+        out.print("\tpublic function ");
+
+        if (!spec.integerType && !spec.intWrapType) {
+            out.print("/*");
+            out.print(new String(spec.typeName));
+            out.print("*/ ");
+        }
+
+        out.print(new String(spec.functionName));
+        out.println(" () {");
+
+        out.println("\t\t$yy_anchor = self::YY_NO_ANCHOR;");
+        out.println("\t\t$yy_state = self::$yy_state_dtrans[$this->yy_lexical_state];");
+        out.println("\t\t$yy_next_state = self::YY_NO_STATE;");
+        out.println("\t\t$yy_last_accept_state = self::YY_NO_STATE;");
+        out.println("\t\t$yy_initial = true;");
         out.println();
 
-        if (spec.public_) {
-            out.print("public ");
+        out.println("\t\t$this->yy_mark_start();");
+        out.println();
+
+        out.println("\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
+        out.println("\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
+        out.println("\t\t\t$yy_last_accept_state = $yy_state;");
+        out.println("\t\t\t$this->yy_mark_end();");
+        out.println("\t\t}");
+        out.println();
+
+        if (NOT_EDBG) {
+            out.println("\t\techo \"Begin\\n\";");
+            out.println();
         }
 
-        out.print("class ");
-        out.print(new String(spec.className, 0, spec.className.length));
-        out.print(" extends \\JLexPHP\\Base ");
+        out.println("\t\twhile (true) {");
 
-        if (spec.implementsName.length > 0) {
-            out.print(" implements ");
-            out.print(new String(spec.implementsName, 0, spec.implementsName.length));
+        out.println("\t\t\t$yy_lookahead = self::YY_BOL;");
+        out.println();
+
+        out.println("\t\t\tif (!$yy_initial || !$this->yy_at_bol) {");
+        out.println("\t\t\t\t$yy_lookahead = $this->yy_advance();");
+        out.println("\t\t\t}");
+        out.println();
+
+        out.println("\t\t\t$yy_next_state = self::$yy_nxt[self::$yy_rmap[$yy_state]][self::$yy_cmap[$yy_lookahead]];");
+        out.println();
+
+        if (NOT_EDBG) {
+            out.println("\t\t\techo \"Current state: $yy_state\tCurrent input: $yy_lookahead\";");
+            out.println();
+
+            out.println("\t\t\techo \"State = $yy_state\\n\";");
+            out.println("\t\t\techo \"Accepting status = $yy_this_accept\";");
+            out.println("\t\t\techo \"Last accepting state = $yy_last_accept_state\";");
+            out.println("\t\t\techo \"Next state = $yy_next_state\";");
+            out.println("\t\t\techo \"Lookahead input = $yy_lookahead;\"");
+            out.println();
         }
 
-        out.println(" {");
+        // handle bare EOF
+
+        out.println("\t\t\tif (self::YY_EOF === $yy_lookahead && $yy_initial) {");
+
+        if (null != spec.eofCode) {
+            out.println("\t\t\t\t$this->yy_do_eof();");
+        }
+
+        if (spec.integerType) {
+            out.println("\t\t\t\treturn self::YYEOF;");
+        } else if (null != spec.eofValueCode) {
+            out.print(new String(spec.eofValueCode, 0, spec.eofValueLength));
+        } else {
+            out.println("\t\t\t\treturn null;");
+        }
+
+        out.println("\t\t\t}");
+        out.println();
+
+        out.println("\t\t\tif (self::YY_F !== $yy_next_state) {");
+        out.println("\t\t\t\t$yy_state = $yy_next_state;");
+        out.println("\t\t\t\t$yy_initial = false;");
+        out.println();
+
+        out.println("\t\t\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
+        out.println("\t\t\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
+        out.println("\t\t\t\t\t$yy_last_accept_state = $yy_state;");
+        out.println("\t\t\t\t\t$this->yy_mark_end();");
+        out.println("\t\t\t\t}");
+        out.println("\t\t\t} else {");
+        out.println("\t\t\t\tif (self::YY_NO_STATE === $yy_last_accept_state) {");
+        out.println("\t\t\t\t\tthrow new \\Exception(\"Lexical Error: Unmatched Input.\");");
+        out.println("\t\t\t\t} else {");
+        out.println("\t\t\t\t\t$yy_anchor = self::$yy_acpt[$yy_last_accept_state];");
+        out.println();
+
+        out.println("\t\t\t\t\tif (0 !== (self::YY_END & $yy_anchor)) {");
+        out.println("\t\t\t\t\t\t$this->yy_move_end();");
+        out.println("\t\t\t\t\t}");
+        out.println();
+
+        out.println("\t\t\t\t\t$this->yy_to_mark();");
+        out.println();
+
+        out.println("\t\t\t\t\tswitch ($yy_last_accept_state) {");
+        actions("\t\t\t\t\t");
+
+        out.println("\t\t\t\t\t\tdefault:");
+        out.println("\t\t\t\t\t\t\t$this->yy_error('INTERNAL', false);");
+        out.println();
+
+        out.println("\t\t\t\t\t\tcase -1:");
+        out.println();
+
+        out.println("\t\t\t\t\t}");
+        out.println();
+
+        out.println("\t\t\t\t\t$yy_initial = true;");
+        out.println("\t\t\t\t\t$yy_state = self::$yy_state_dtrans[$this->yy_lexical_state];");
+        out.println("\t\t\t\t\t$yy_next_state = self::YY_NO_STATE;");
+        out.println("\t\t\t\t\t$yy_last_accept_state = self::YY_NO_STATE;");
+        out.println();
+
+        out.println("\t\t\t\t\t$this->yy_mark_start();");
+        out.println();
+
+        out.println("\t\t\t\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
+        out.println("\t\t\t\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
+        out.println("\t\t\t\t\t\t$yy_last_accept_state = $yy_state;");
+        out.println("\t\t\t\t\t\t$this->yy_mark_end();");
+        out.println("\t\t\t\t\t}");
+        out.println("\t\t\t\t}");
+        out.println("\t\t\t}");
+        out.println("\t\t}");
+        out.println("\t}");
+    }
+
+    private void footer() {
+        if (Utility.DEBUG) {
+            assert null != spec;
+            assert null != out;
+        }
+
+        out.println("}");
     }
 
     /**
@@ -444,149 +596,6 @@ public class Emit {
         out.print("\"" + outstr + "\"");
     }
 
-    private void driver() {
-        if (Utility.DEBUG) {
-            assert null != spec;
-            assert null != out;
-        }
-
-        table();
-
-        out.print("\tpublic function ");
-
-        if (!spec.integerType && !spec.intWrapType) {
-            out.print("/*");
-            out.print(new String(spec.typeName));
-            out.print("*/ ");
-        }
-
-        out.print(new String(spec.functionName));
-        out.println(" () {");
-
-        out.println("\t\t$yy_anchor = self::YY_NO_ANCHOR;");
-        out.println("\t\t$yy_state = self::$yy_state_dtrans[$this->yy_lexical_state];");
-        out.println("\t\t$yy_next_state = self::YY_NO_STATE;");
-        out.println("\t\t$yy_last_accept_state = self::YY_NO_STATE;");
-        out.println("\t\t$yy_initial = true;");
-        out.println();
-
-        out.println("\t\t$this->yy_mark_start();");
-        out.println();
-
-        out.println("\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
-        out.println("\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
-        out.println("\t\t\t$yy_last_accept_state = $yy_state;");
-        out.println("\t\t\t$this->yy_mark_end();");
-        out.println("\t\t}");
-        out.println();
-
-        if (NOT_EDBG) {
-            out.println("\t\techo \"Begin\\n\";");
-            out.println();
-        }
-
-        out.println("\t\twhile (true) {");
-
-        out.println("\t\t\t$yy_lookahead = self::YY_BOL;");
-        out.println();
-
-        out.println("\t\t\tif (!$yy_initial || !$this->yy_at_bol) {");
-        out.println("\t\t\t\t$yy_lookahead = $this->yy_advance();");
-        out.println("\t\t\t}");
-        out.println();
-
-        out.println("\t\t\t$yy_next_state = self::$yy_nxt[self::$yy_rmap[$yy_state]][self::$yy_cmap[$yy_lookahead]];");
-        out.println();
-
-        if (NOT_EDBG) {
-            out.println("\t\t\techo \"Current state: $yy_state\tCurrent input: $yy_lookahead\";");
-            out.println();
-
-            out.println("\t\t\techo \"State = $yy_state\\n\";");
-            out.println("\t\t\techo \"Accepting status = $yy_this_accept\";");
-            out.println("\t\t\techo \"Last accepting state = $yy_last_accept_state\";");
-            out.println("\t\t\techo \"Next state = $yy_next_state\";");
-            out.println("\t\t\techo \"Lookahead input = $yy_lookahead;\"");
-            out.println();
-        }
-
-        // handle bare EOF
-
-        out.println("\t\t\tif (self::YY_EOF === $yy_lookahead && $yy_initial) {");
-
-        if (null != spec.eofCode) {
-            out.println("\t\t\t\t$this->yy_do_eof();");
-        }
-
-        if (spec.integerType) {
-            out.println("\t\t\t\treturn self::YYEOF;");
-        } else if (null != spec.eofValueCode) {
-            out.print(new String(spec.eofValueCode, 0, spec.eofValueLength));
-        } else {
-            out.println("\t\t\t\treturn null;");
-        }
-
-        out.println("\t\t\t}");
-        out.println();
-
-        out.println("\t\t\tif (self::YY_F !== $yy_next_state) {");
-        out.println("\t\t\t\t$yy_state = $yy_next_state;");
-        out.println("\t\t\t\t$yy_initial = false;");
-        out.println();
-
-        out.println("\t\t\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
-        out.println("\t\t\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
-        out.println("\t\t\t\t\t$yy_last_accept_state = $yy_state;");
-        out.println("\t\t\t\t\t$this->yy_mark_end();");
-        out.println("\t\t\t\t}");
-        out.println("\t\t\t} else {");
-        out.println("\t\t\t\tif (self::YY_NO_STATE === $yy_last_accept_state) {");
-        out.println("\t\t\t\t\tthrow new \\Exception(\"Lexical Error: Unmatched Input.\");");
-        out.println("\t\t\t\t} else {");
-        out.println("\t\t\t\t\t$yy_anchor = self::$yy_acpt[$yy_last_accept_state];");
-        out.println();
-
-        out.println("\t\t\t\t\tif (0 !== (self::YY_END & $yy_anchor)) {");
-        out.println("\t\t\t\t\t\t$this->yy_move_end();");
-        out.println("\t\t\t\t\t}");
-        out.println();
-
-        out.println("\t\t\t\t\t$this->yy_to_mark();");
-        out.println();
-
-        out.println("\t\t\t\t\tswitch ($yy_last_accept_state) {");
-        actions("\t\t\t\t\t");
-
-        out.println("\t\t\t\t\t\tdefault:");
-        out.println("\t\t\t\t\t\t\t$this->yy_error('INTERNAL', false);");
-        out.println();
-
-        out.println("\t\t\t\t\t\tcase -1:");
-        out.println();
-
-        out.println("\t\t\t\t\t}");
-        out.println();
-
-        out.println("\t\t\t\t\t$yy_initial = true;");
-        out.println("\t\t\t\t\t$yy_state = self::$yy_state_dtrans[$this->yy_lexical_state];");
-        out.println("\t\t\t\t\t$yy_next_state = self::YY_NO_STATE;");
-        out.println("\t\t\t\t\t$yy_last_accept_state = self::YY_NO_STATE;");
-        out.println();
-
-        out.println("\t\t\t\t\t$this->yy_mark_start();");
-        out.println();
-
-        out.println("\t\t\t\t\t$yy_this_accept = self::$yy_acpt[$yy_state];");
-        out.println("\t\t\t\t\tif (self::YY_NOT_ACCEPT !== $yy_this_accept) {");
-        out.println("\t\t\t\t\t\t$yy_last_accept_state = $yy_state;");
-        out.println("\t\t\t\t\t\t$this->yy_mark_end();");
-        out.println("\t\t\t\t\t}");
-        out.println("\t\t\t\t}");
-        out.println("\t\t\t}");
-        out.println("\t\t}");
-        out.println("\t}");
-    }
-
     private void actions(String tabs) {
         if (Utility.DEBUG) {
             assert spec.acceptVector.size() == spec.anchorArray.length;
@@ -608,14 +617,5 @@ public class Emit {
                 --bogus_index;
             }
         }
-    }
-
-    private void footer() {
-        if (Utility.DEBUG) {
-            assert null != spec;
-            assert null != out;
-        }
-
-        out.println("}");
     }
 }
